@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Board — Joshua &amp; Amrit</title>
+<!-- Home-screen app: icon, name, full-screen launch and status bar -->
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-light.png">
+<link rel="apple-touch-icon" href="icons/touch-light.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-title" content="The Board">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#EDF1EC">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Audiowide&family=Exo+2:wght@600;700&family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -1625,7 +1634,17 @@ function setTheme(t){
   theme = t;
   document.documentElement.setAttribute('data-theme', t);
   markActiveTheme();
+  syncThemeColor();
   saveTheme();
+}
+// Tint the browser / status bar to match the theme's background, and offer that theme's icon.
+// iOS copies the home-screen icon when you tap "Add to Home Screen", so it shows whichever
+// theme was active at that moment; the browser tab icon follows the theme live.
+function syncThemeColor(){
+  const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  if (bg) document.querySelector('meta[name="theme-color"]').setAttribute('content', bg);
+  document.querySelector('link[rel="apple-touch-icon"]').setAttribute('href', `icons/touch-${theme}.png`);
+  document.querySelector('link[rel="icon"]').setAttribute('href', `icons/favicon-${theme}.png`);
 }
 function markActiveTheme(){
   document.querySelectorAll('.themeopt').forEach(b=> b.classList.toggle('active', b.dataset.t===theme));
@@ -1691,6 +1710,7 @@ document.querySelectorAll('.themeopt').forEach(b=> b.addEventListener('click', (
   currentWeekIdx = findCurrentWeekIndex();
   currentYear = yearOf(SCHEDULE.weeks[currentWeekIdx]);
   markActiveTheme();
+  syncThemeColor();
   setSyncNote('');
   renderWeek();
   measureHeader();
