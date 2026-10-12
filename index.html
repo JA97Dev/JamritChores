@@ -220,7 +220,9 @@
   html[data-theme="ios"] .check:checked::after{ border-color: #fff; }
   html[data-theme="ios"] .btn-primary,
   html[data-theme="ios"] .yearchip.active{ background: var(--joshua); border-color: var(--joshua); color: #fff; border-radius: 999px; }
-  html[data-theme="ios"] .filterchip.active,
+  /* White text on the coloured pills; "Everyone" keeps the default, which contrasts with its ink-coloured highlight in light and dark mode */
+  html[data-theme="ios"] .filterchip.active[data-f="J"],
+  html[data-theme="ios"] .filterchip.active[data-f="A"],
   html[data-theme="ios"] .todaytag,
   html[data-theme="ios"] .todaybtn,
   html[data-theme="ios"] .dayhead .dmeta .pill.alldone{ color: #fff; }
@@ -507,10 +509,15 @@
   .dayhead .dmeta .pill.alldone{ background: var(--joshua-soft); color: var(--joshua); }
   li.emptyday{ padding: 10px 16px; font-size: 13px; color: var(--ink-soft); }
 
-  /* Floating "whose chores" switcher, hovering above the bottom of the screen */
-  .filterrow{
+  /* Floating dock at the bottom: the "whose chores" switcher and the today-only button.
+     Sits just above the iPhone home bar (the safe area is ~34px; the dock tucks a little into it). */
+  .dock{
     position: fixed; left: 50%; transform: translateX(-50%); z-index: 25;
-    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    bottom: max(10px, calc(env(safe-area-inset-bottom, 0px) - 8px));
+    display:flex; align-items:center; gap: 8px;
+  }
+  .filterrow{
+    position: relative;
     display:flex; gap: 2px; padding: 4px;
     background: color-mix(in srgb, var(--surface) 82%, transparent);
     -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4);
@@ -524,6 +531,30 @@
     transition: background .15s ease, color .15s ease;
   }
   .filterchip .dot{ width: 7px; height: 7px; }
+  /* Today-only toggle: a round glass "calendar" showing today's date */
+  .todayonly{
+    width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0; padding: 0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; line-height: 1;
+    color: var(--ink); border: 1px solid var(--glass-edge, var(--line));
+    background: var(--glass-strong, var(--surface));
+    -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4);
+    box-shadow: inset 0 1px 0 var(--glass-edge, transparent), 0 10px 30px rgba(0,0,0,.2), 0 2px 6px rgba(0,0,0,.08);
+    transition: background .2s ease, color .2s ease, box-shadow .2s ease;
+  }
+  .todayonly .tm{ font-size: 8.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--danger); }
+  .todayonly .td{ font-size: 17px; font-weight: 700; margin-top: 1px; }
+  .todayonly[aria-pressed="true"]{
+    --gc: var(--joshua);
+    color: var(--surface); border-color: transparent;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--gc), white 22%), var(--gc));
+    box-shadow: inset 0 1px 1px rgba(255,255,255,.55), inset 0 -2px 4px rgba(0,0,0,.14), 0 6px 16px color-mix(in srgb, var(--gc) 45%, transparent);
+  }
+  .todayonly[aria-pressed="true"] .tm{ color: inherit; opacity: .85; }
+  html[data-theme="ios"] .todayonly[aria-pressed="true"]{ color: #fff; }
+  @media (max-width: 359px){   /* very small phones: slimmer switcher so the dock fits */
+    .filterchip{ padding: 9px 11px; }
+    .filterchip .dot{ display: none; }
+  }
   .filterchip.active{ background: var(--ink); color: var(--surface); }
   .filterchip.active[data-f="J"]{ background: var(--joshua); }
   .filterchip.active[data-f="A"]{ background: var(--amrit); }
@@ -996,6 +1027,7 @@ let RULES = DEFAULT_RULES;
 let editingRuleId = null;   // rule id being edited in House rules, or 'new'
 let personFilter = 'ALL';   // 'ALL' | 'J' | 'A': whose chores the week shows
 let toggledDays = {};       // date -> true when the user opened a collapsed day or closed an open one
+let todayOnly = false;      // show only today's card
 
 /* ---------- utils ---------- */
 function uid(){
@@ -1120,6 +1152,7 @@ async function loadAll(){
   try{ saved = localStorage.getItem('jamrit_filter'); } catch(e){}
   const me = { joshua:'J', amrit:'A' }[String(store.memberName||'').trim().toLowerCase()];
   personFilter = saved || me || 'ALL';
+  try{ todayOnly = localStorage.getItem('jamrit_today') === '1'; } catch(e){}
   document.documentElement.setAttribute('data-theme', theme);
   renderAccount();
 }
@@ -1269,16 +1302,16 @@ function renderWeekNav(){
   const posInYear = inYear.indexOf(currentWeekIdx);
   const prevBtn = document.getElementById('prevWeek');
   prevBtn.disabled = posInYear<=0;
-  prevBtn.onclick = ()=>{ currentWeekIdx = inYear[posInYear-1]; renderAll(); };
+  prevBtn.onclick = ()=>{ todayOnly && setTodayOnly(false); currentWeekIdx = inYear[posInYear-1]; renderAll(); };
 
   const nextBtn = document.getElementById('nextWeek');
   const isLastOverall = currentWeekIdx === SCHEDULE.weeks.length-1;
   if (posInYear < inYear.length-1){
     nextBtn.textContent = '›'; nextBtn.disabled = false; nextBtn.classList.remove('addweek');
-    nextBtn.onclick = ()=>{ currentWeekIdx = inYear[posInYear+1]; renderAll(); };
+    nextBtn.onclick = ()=>{ todayOnly && setTodayOnly(false); currentWeekIdx = inYear[posInYear+1]; renderAll(); };
   } else if (isLastOverall){
     nextBtn.textContent = '+ Add week'; nextBtn.disabled = false; nextBtn.classList.add('addweek');
-    nextBtn.onclick = ()=> addNextWeek();
+    nextBtn.onclick = ()=>{ todayOnly && setTodayOnly(false); addNextWeek(); };
   } else {
     nextBtn.textContent = '›'; nextBtn.disabled = true; nextBtn.classList.remove('addweek');
   }
@@ -1376,10 +1409,29 @@ function dayCardHTML(week, day){
 }
 function filterRowHTML(){
   const opt = (v, label, color) => `<button type="button" class="filterchip ${personFilter===v?'active':''}" data-f="${v}" aria-pressed="${personFilter===v}">${color?`<span class="dot" style="background:var(${color})"></span>`:''}${label}</button>`;
-  return `<div class="filterrow" role="group" aria-label="Whose chores to show">
-    <span class="glider" aria-hidden="true"></span>
-    ${opt('ALL','Everyone')}${opt('J','Joshua','--joshua')}${opt('A','Amrit','--amrit')}
+  const now = new Date();
+  const mon = now.toLocaleDateString('en-GB', { month:'short' });
+  return `<div class="dock">
+    <div class="filterrow" role="group" aria-label="Whose chores to show">
+      <span class="glider" aria-hidden="true"></span>
+      ${opt('ALL','Everyone')}${opt('J','Joshua','--joshua')}${opt('A','Amrit','--amrit')}
+    </div>
+    <button type="button" class="todayonly" id="todayOnlyBtn" aria-pressed="${todayOnly}"
+      aria-label="${todayOnly ? 'Show the whole week' : "Show only today's chores"}" title="${todayOnly ? 'Show the whole week' : 'Only today'}">
+      <span class="tm">${mon}</span><span class="td">${now.getDate()}</span>
+    </button>
   </div>`;
+}
+// Today-only: show just today's card. Jumps to this week; moving to another week turns it off.
+function setTodayOnly(on){
+  todayOnly = on;
+  try{ localStorage.setItem('jamrit_today', on ? '1' : ''); } catch(e){}
+  if (on){
+    currentWeekIdx = findCurrentWeekIndex();
+    currentYear = yearOf(SCHEDULE.weeks[currentWeekIdx]);
+    window.scrollTo(0, 0);
+  }
+  renderAll();
 }
 // Slide the glass highlight from where it was to the chosen button. The bar is re-rendered
 // with the week, so remember the last position and animate from there.
@@ -1449,12 +1501,20 @@ function renderWeek(){
     return;
   }
   const week = SCHEDULE.weeks[currentWeekIdx];
-  const totalTasks = week.days.reduce((a,d)=>a+visibleTasks(d).length,0);
-  container.innerHTML = filterRowHTML() + week.days.map(d=>dayCardHTML(week,d)).join('') +
-    `<div class="weekfoot"><span>${totalTasks} tasks this week</span>
-     <button class="resetlink" id="resetWeek">Uncheck this week</button></div>`;
+  const todays = week.days.filter(d => d.date === todayStr());
+  const showToday = todayOnly && todays.length > 0;
+  const days = showToday ? todays : week.days;
+  const totalTasks = days.reduce((a,d)=>a+visibleTasks(d).length,0);
+  container.innerHTML = filterRowHTML() + days.map(d=>dayCardHTML(week,d)).join('') +
+    `<div class="weekfoot"><span>${totalTasks} tasks ${showToday ? 'today' : 'this week'}</span>
+     ${showToday
+       ? '<button class="resetlink" id="showWeek">Show the whole week</button>'
+       : '<button class="resetlink" id="resetWeek">Uncheck this week</button>'}</div>`;
 
   container.querySelectorAll('.filterchip').forEach(b=> b.addEventListener('click', ()=> setPersonFilter(b.dataset.f)));
+  document.getElementById('todayOnlyBtn').addEventListener('click', ()=> setTodayOnly(!todayOnly));
+  const showWeek = document.getElementById('showWeek');
+  if (showWeek) showWeek.addEventListener('click', ()=> setTodayOnly(false));
   placeGlider();
   container.querySelectorAll('.dayhead').forEach(h=> h.addEventListener('click', ()=>{
     const d = h.dataset.day;
