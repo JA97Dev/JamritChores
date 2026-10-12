@@ -396,7 +396,7 @@
   .titlebtn .caret{ font-family: 'Inter', sans-serif; font-size: .5em; color: var(--ink-soft); transition: transform .2s ease; }
   .titlebtn[aria-expanded="true"] .caret{ transform: rotate(180deg); }
   .menu{
-    position: absolute; left: 0; top: calc(100% + 8px); z-index: 30;
+    position: fixed; left: 16px; top: 72px; z-index: 30;   /* placed under the title by setMenuOpen() */
     width: 260px; max-width: calc(100vw - 32px);
     background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
     padding: 14px;
@@ -2153,10 +2153,20 @@ function markActiveTheme(){
 /* ---------- settings menu ---------- */
 const settingsBtn = document.getElementById('settingsBtn');
 const settingsMenu = document.getElementById('settingsMenu');
+// The menu lives at the top level of the page rather than inside the frosted header:
+// glass nested inside other glass can only blur that parent, so the cards behind it
+// would show through unblurred. Opening it places it just under the title.
+document.body.appendChild(settingsMenu);
 function setMenuOpen(open){
+  if (open){
+    const r = settingsBtn.getBoundingClientRect();
+    settingsMenu.style.left = Math.max(16, r.left) + 'px';
+    settingsMenu.style.top = (r.bottom + 8) + 'px';
+  }
   settingsMenu.hidden = !open;
   settingsBtn.setAttribute('aria-expanded', String(open));
 }
+window.addEventListener('scroll', ()=>{ if (!settingsMenu.hidden) setMenuOpen(false); }, { passive: true });
 settingsBtn.addEventListener('click', e=>{ e.stopPropagation(); setMenuOpen(settingsMenu.hidden); });
 document.addEventListener('click', e=>{ if (!settingsMenu.hidden && !settingsMenu.contains(e.target)) setMenuOpen(false); });
 document.addEventListener('keydown', e=>{ if (e.key==='Escape' && !settingsMenu.hidden){ setMenuOpen(false); settingsBtn.focus(); } });
