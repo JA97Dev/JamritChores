@@ -1,0 +1,21 @@
+rules_version = '2';
+
+// Only Google accounts listed in the "members" collection can read or change the board.
+// Add a member by creating a document in "members" whose ID is their Google email address.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isMember() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && exists(/databases/$(database)/documents/members/$(request.auth.token.email));
+    }
+
+    match /board/{docId} {
+      allow read, write: if isMember();
+    }
+
+    match /members/{email} {
+      allow read: if request.auth != null && request.auth.token.email == email;
+    }
+  }
+}
