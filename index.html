@@ -6,7 +6,7 @@
 <title>The Board — Joshua &amp; Amrit</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Audiowide&family=Exo+2:wght@600;700&family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg: #EDF1EC;
@@ -73,6 +73,264 @@
     --shadow: 0 2px 4px rgba(200,80,130,0.06), 0 10px 26px rgba(200,80,130,0.12);
   }
 
+  html[data-theme="spotify"]{
+    --bg: #121212;
+    --bg-alt: #1F1F1F;
+    --surface: #181818;
+    --surface-soft: #202020;
+    --ink: #FFFFFF;
+    --ink-soft: #A7A7A7;
+    --line: #2E2E2E;
+    --line-soft: #242424;
+    --danger: #F3727F;
+
+    --joshua: #1ED760;
+    --joshua-soft: #10351D;
+    --amrit: #FF6FB5;
+    --amrit-soft: #3D1A2C;
+    --both: #FFC862;
+    --both-soft: #3A2E14;
+    --radius: 10px;
+    --radius-sm: 8px;
+    --shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  /* Spotify look: bold sans headings, green ticks, black text on green buttons */
+  html[data-theme="spotify"] .brand h1,
+  html[data-theme="spotify"] .dayhead .dname,
+  html[data-theme="spotify"] .area-group h3,
+  html[data-theme="spotify"] .authcard h2{ font-family: 'Inter', sans-serif; font-weight: 700; letter-spacing: -0.03em; }
+  html[data-theme="spotify"] .check:checked{ border-color: #1ED760; background: #1ED760; }
+  html[data-theme="spotify"] .check:checked::after{ border-color: #000; }
+  html[data-theme="spotify"] .btn-primary,
+  html[data-theme="spotify"] .yearchip.active{ background: #1ED760; border-color: #1ED760; color: #000; border-radius: 999px; }
+  html[data-theme="spotify"] .persongroup button.sel.J{ color: #000; }
+  html[data-theme="spotify"] .tabs button.active{ background: #2A2A2A; }
+
+  html[data-theme="kitty"]{
+    --bg: #FFF5F8;
+    --bg-alt: #FFE3EC;
+    --surface: #FFFFFF;
+    --surface-soft: #FFF9FB;
+    --ink: #3B2A30;
+    --ink-soft: #A0708A;
+    --line: #FFD0DF;
+    --line-soft: #FFE8F0;
+    --danger: #E60033;
+
+    --joshua: #4A90D9;
+    --joshua-soft: #E2EFFC;
+    --amrit: #E60033;
+    --amrit-soft: #FFE0E7;
+    --both: #D99A00;
+    --both-soft: #FFF3C9;
+    --radius: 22px;
+    --radius-sm: 14px;
+    --shadow: 0 2px 0 #FFD0DF, 0 8px 22px rgba(230,0,51,0.08);
+  }
+  /* Hello Kitty look: rounded font, polka dots, red bow, red ticks */
+  html[data-theme="kitty"] body{
+    background-image: radial-gradient(#FFD6E4 2.5px, transparent 3px), var(--mesh);
+    background-size: 26px 26px, 100% 100%, 100% 100%, 100% 100%;
+  }
+  html[data-theme="kitty"] .brand h1,
+  html[data-theme="kitty"] .dayhead .dname,
+  html[data-theme="kitty"] .area-group h3,
+  html[data-theme="kitty"] .authcard h2,
+  html[data-theme="kitty"] .weeklabel .range{ font-family: 'Fredoka', 'Inter', sans-serif; font-weight: 600; letter-spacing: 0; }
+  html[data-theme="kitty"] .brand h1{ font-size: 20px; }
+  html[data-theme="kitty"] .brand h1::after{ content: '🎀'; font-size: .75em; margin-left: 3px; }
+  html[data-theme="kitty"] .check{ border-color: #FFB3C9; }
+  html[data-theme="kitty"] .check:checked{ border-color: #E60033; background: #E60033; }
+  html[data-theme="kitty"] .check:checked::after{ border-color: #fff; }
+  html[data-theme="kitty"] .btn-primary,
+  html[data-theme="kitty"] .yearchip.active{ background: #E60033; border-color: #E60033; color: #fff; border-radius: 999px; }
+  html[data-theme="kitty"] .daycard{ border: 2px solid #FFD0DF; }
+
+  /* ---------- iOS (2026 "Liquid Glass"): frosted glass over soft colour, follows the phone's light/dark mode ---------- */
+  html[data-theme="ios"]{
+    --bg: #F2F2F7;
+    --bg-alt: rgba(118,118,128,.12);
+    --surface: #FFFFFF;
+    --surface-soft: transparent;
+    --ink: #1C1C1E;
+    --ink-soft: rgba(60,60,67,.6);
+    --line: rgba(60,60,67,.18);
+    --line-soft: rgba(60,60,67,.1);
+    --danger: #FF3B30;
+
+    --joshua: #007AFF;
+    --joshua-soft: rgba(0,122,255,.13);
+    --amrit: #FF2D55;
+    --amrit-soft: rgba(255,45,85,.13);
+    --both: #FF9500;
+    --both-soft: rgba(255,149,0,.15);
+    --radius: 26px;
+    --radius-sm: 14px;
+    --shadow: 0 8px 32px rgba(0,0,0,.07);
+    --glass: rgba(255,255,255,.58);
+    --glass-strong: rgba(255,255,255,.86);
+    --glass-edge: rgba(255,255,255,.75);
+    --glass-blur: blur(24px) saturate(1.8);
+    --mesh-1: rgba(0,122,255,.22); --mesh-2: rgba(255,45,85,.18); --mesh-3: rgba(255,149,0,.16);
+  }
+  @media (prefers-color-scheme: dark){
+    html[data-theme="ios"]{
+      --bg: #000000;
+      --bg-alt: rgba(118,118,128,.24);
+      --surface: #1C1C1E;
+      --ink: #FFFFFF;
+      --ink-soft: rgba(235,235,245,.6);
+      --line: rgba(84,84,88,.6);
+      --line-soft: rgba(84,84,88,.35);
+      --danger: #FF453A;
+      --joshua: #0A84FF;
+      --joshua-soft: rgba(10,132,255,.2);
+      --amrit: #FF375F;
+      --amrit-soft: rgba(255,55,95,.2);
+      --both: #FF9F0A;
+      --both-soft: rgba(255,159,10,.2);
+      --shadow: 0 8px 32px rgba(0,0,0,.4);
+      --glass: rgba(44,44,46,.55);
+      --glass-strong: rgba(36,36,38,.86);
+      --glass-edge: rgba(255,255,255,.14);
+      --mesh-1: rgba(10,132,255,.28); --mesh-2: rgba(255,55,95,.2); --mesh-3: rgba(255,159,10,.14);
+    }
+  }
+  html[data-theme="ios"] body{ font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', system-ui, sans-serif; }
+  html[data-theme="ios"] .brand h1,
+  html[data-theme="ios"] .dayhead .dname,
+  html[data-theme="ios"] .area-group h3,
+  html[data-theme="ios"] .authcard h2{ font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+  html[data-theme="ios"] .mono{ font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+  /* Segmented control */
+  html[data-theme="ios"] .tabs{ background: var(--bg-alt); }
+  html[data-theme="ios"] .tabs button.active{ background: var(--surface); color: var(--ink); box-shadow: 0 3px 8px rgba(0,0,0,.12), 0 3px 1px rgba(0,0,0,.04); }
+  /* Controls */
+  html[data-theme="ios"] .check{ border-color: var(--line); background: transparent; }
+  html[data-theme="ios"] .check:checked{ border-color: var(--joshua); background: var(--joshua); }
+  html[data-theme="ios"] .check:checked::after{ border-color: #fff; }
+  html[data-theme="ios"] .btn-primary,
+  html[data-theme="ios"] .yearchip.active{ background: var(--joshua); border-color: var(--joshua); color: #fff; border-radius: 999px; }
+  html[data-theme="ios"] .filterchip.active,
+  html[data-theme="ios"] .todaytag,
+  html[data-theme="ios"] .todaybtn,
+  html[data-theme="ios"] .dayhead .dmeta .pill.alldone{ color: #fff; }
+  html[data-theme="ios"] .filterchip.active .dot{ background: #fff !important; }
+  html[data-theme="ios"] .themeopt, html[data-theme="ios"] .addbtn{ background: transparent; }
+
+  /* ---------- Halo: Master Chief (olive armour, gold visor) ---------- */
+  html[data-theme="chief"]{
+    --bg: #12140D;
+    --bg-alt: #1D2116;
+    --surface: #1B1F14;
+    --surface-soft: #22271A;
+    --ink: #E8E6D6;
+    --ink-soft: #A2A58A;
+    --line: #353B28;
+    --line-soft: #2A2F20;
+    --danger: #E8664A;
+
+    --joshua: #F2A93B;
+    --joshua-soft: #3A2C12;
+    --amrit: #7FC6D8;
+    --amrit-soft: #1C3138;
+    --both: #A9C25A;
+    --both-soft: #2B3418;
+    --radius: 4px;
+    --radius-sm: 3px;
+    --shadow: 0 0 0 1px #353B28, 0 6px 18px rgba(0,0,0,0.45);
+  }
+  html[data-theme="chief"] .brand h1,
+  html[data-theme="chief"] .dayhead .dname,
+  html[data-theme="chief"] .area-group h3,
+  html[data-theme="chief"] .authcard h2{ font-family: 'Rajdhani', 'Inter', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+  html[data-theme="chief"] .daycard{ border-left: 3px solid #F2A93B; }
+  html[data-theme="chief"] .check{ border-radius: 3px; }
+  html[data-theme="chief"] .check:checked{ border-color: #F2A93B; background: #F2A93B; }
+  html[data-theme="chief"] .check:checked::after{ border-color: #12140D; }
+  html[data-theme="chief"] .btn-primary,
+  html[data-theme="chief"] .yearchip.active{ background: #F2A93B; border-color: #F2A93B; color: #12140D; }
+  html[data-theme="chief"] .persongroup button.sel{ color: #12140D; }
+  html[data-theme="chief"] .tabs,
+  html[data-theme="chief"] .tabs button,
+  html[data-theme="chief"] .gearbtn,
+  html[data-theme="chief"] .weeknav .navbtn{ border-radius: 3px; }
+
+  /* ---------- Halo: Covenant (purple alloy, plasma glow) ---------- */
+  html[data-theme="covenant"]{
+    --bg: #12091F;
+    --bg-alt: #1E1232;
+    --surface: #1C1030;
+    --surface-soft: #24153D;
+    --ink: #EEE7FF;
+    --ink-soft: #A897CC;
+    --line: #3A2A5E;
+    --line-soft: #2B1F48;
+    --danger: #FF6B8B;
+
+    --joshua: #4DD8FF;
+    --joshua-soft: #12334A;
+    --amrit: #FF5FD2;
+    --amrit-soft: #42173C;
+    --both: #8CFF7A;
+    --both-soft: #1F3A22;
+    --radius: 22px;
+    --radius-sm: 14px;
+    --shadow: 0 0 0 1px #3A2A5E, 0 0 22px rgba(160,90,255,0.16);
+  }
+  html[data-theme="covenant"] body{ background-image: radial-gradient(ellipse at top, #2A1650 0%, transparent 60%), var(--mesh); }
+  html[data-theme="covenant"] .brand h1{ font-family: 'Audiowide', 'Inter', sans-serif; font-weight: 400; font-size: 19px; color: #D9C2FF; text-shadow: 0 0 12px rgba(180,120,255,.55); }
+  html[data-theme="covenant"] .dayhead .dname,
+  html[data-theme="covenant"] .area-group h3,
+  html[data-theme="covenant"] .authcard h2{ font-family: 'Audiowide', 'Inter', sans-serif; font-weight: 400; letter-spacing: .02em; }
+  html[data-theme="covenant"] .check:checked{ border-color: #4DD8FF; background: #4DD8FF; box-shadow: 0 0 10px rgba(77,216,255,.7); }
+  html[data-theme="covenant"] .check:checked::after{ border-color: #12091F; }
+  html[data-theme="covenant"] .btn-primary,
+  html[data-theme="covenant"] .yearchip.active{ background: #9B5CFF; border-color: #9B5CFF; color: #fff; box-shadow: 0 0 14px rgba(155,92,255,.55); }
+  html[data-theme="covenant"] .persongroup button.sel{ color: #12091F; }
+  html[data-theme="covenant"] .tabs button.active{ background: #3A2266; box-shadow: 0 0 12px rgba(155,92,255,.45); }
+
+  /* ---------- Halo: Cortana (hologram blue, circuit grid) ---------- */
+  html[data-theme="cortana"]{
+    --bg: #050B1A;
+    --bg-alt: #0C1A33;
+    --surface: #0A1630;
+    --surface-soft: #0E1D3B;
+    --ink: #DDF3FF;
+    --ink-soft: #7FA9CC;
+    --line: #18345C;
+    --line-soft: #12284A;
+    --danger: #FF7A9A;
+
+    --joshua: #3FD0FF;
+    --joshua-soft: #0F2E4A;
+    --amrit: #B48CFF;
+    --amrit-soft: #261E4A;
+    --both: #5CF2C2;
+    --both-soft: #10372F;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 0 0 1px rgba(63,208,255,.18), 0 0 20px rgba(63,208,255,.08);
+  }
+  html[data-theme="cortana"] body{
+    background-image:
+      linear-gradient(rgba(63,208,255,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(63,208,255,.05) 1px, transparent 1px),
+      var(--mesh);
+    background-size: 24px 24px, 24px 24px, 100% 100%, 100% 100%, 100% 100%;
+  }
+  html[data-theme="cortana"] .brand h1,
+  html[data-theme="cortana"] .dayhead .dname,
+  html[data-theme="cortana"] .area-group h3,
+  html[data-theme="cortana"] .authcard h2{ font-family: 'Exo 2', 'Inter', sans-serif; font-weight: 700; letter-spacing: .01em; }
+  html[data-theme="cortana"] .brand h1{ color: #8FE3FF; text-shadow: 0 0 10px rgba(63,208,255,.6); }
+  html[data-theme="cortana"] .check:checked{ border-color: #3FD0FF; background: #3FD0FF; box-shadow: 0 0 10px rgba(63,208,255,.75); }
+  html[data-theme="cortana"] .check:checked::after{ border-color: #050B1A; }
+  html[data-theme="cortana"] .btn-primary,
+  html[data-theme="cortana"] .yearchip.active{ background: #3FD0FF; border-color: #3FD0FF; color: #050B1A; box-shadow: 0 0 12px rgba(63,208,255,.5); }
+  html[data-theme="cortana"] .persongroup button.sel{ color: #050B1A; }
+  html[data-theme="cortana"] .daycard{ border: 1px solid rgba(63,208,255,.22); }
+
   *{ box-sizing: border-box; }
   html, body{ margin:0; padding:0; }
   body{
@@ -81,7 +339,7 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
-    padding-bottom: 48px;
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));   /* room for the floating switcher */
     transition: background .2s ease, color .2s ease;
   }
   .mono{ font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; }
@@ -101,7 +359,17 @@
     padding-top: 18px; padding-bottom: 10px;
     border-bottom: 1px solid var(--line);
   }
-  .brand{ display:flex; align-items:center; justify-content: space-between; margin-bottom: 12px; }
+  .brand{ display:flex; align-items:center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+  .brand > div:first-child{ flex-shrink: 0; }
+  .tabs .short{ display:none; }
+  @media (max-width: 359px){   /* very small phones: "House rules" becomes "Rules" and the title shrinks */
+    .tabs .long{ display:none; }
+    .tabs .short{ display:inline; }
+    .brand{ gap: 6px; }
+    .brand h1{ font-size: 19px; }
+    .tabs button{ padding: 6px 7px; }
+    html[data-theme="kitty"] .brand h1::after{ content: none; }
+  }
   .brand h1{
     font-family:'Fraunces', Georgia, serif;
     font-optical-sizing: auto;
@@ -109,27 +377,55 @@
   }
   .brand .sub{ font-size: 11px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--ink-soft); margin-top: 1px; }
 
-  .theme-switch{ display:flex; gap:6px; }
-  .swatch{
-    width: 24px; height: 24px; border-radius: 50%;
-    border: 2px solid transparent;
-    padding: 0;
-    position: relative;
+  /* ---------- Settings menu ---------- */
+  .settings{ position: relative; }
+  .gearbtn{
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    display:flex; align-items:center; justify-content:center; padding: 0;
   }
+  .gearbtn svg{ width: 18px; height: 18px; }
+  .gearbtn[aria-expanded="true"]{ border-color: var(--ink); }
+  .menu{
+    position: absolute; right: 0; top: 42px; z-index: 30;
+    width: 260px; max-width: calc(100vw - 32px);
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 14px;
+  }
+  .menu h4{ margin: 0 0 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-soft); font-weight: 600; }
+  .menu .section + .section{ margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line-soft); }
+  .themegrid{ display:grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .themeopt{
+    display:flex; align-items:center; gap: 8px;
+    border: 1.5px solid var(--line); background: var(--surface-soft); color: var(--ink);
+    border-radius: var(--radius-sm); padding: 7px 8px; font-size: 13px; font-weight: 600; text-align:left;
+  }
+  .themeopt.active{ border-color: var(--ink); }
+  .swatch{ width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(127,127,127,.35); }
   .swatch[data-t="light"]{ background: linear-gradient(135deg, #EDF1EC 50%, #2B6E76 50%); }
   .swatch[data-t="dark"]{ background: linear-gradient(135deg, #141816 50%, #6FC6CE 50%); }
   .swatch[data-t="pink"]{ background: linear-gradient(135deg, #FFF1F6 50%, #E8628F 50%); }
-  .swatch.active{ border-color: var(--ink); }
+  .swatch[data-t="spotify"]{ background: linear-gradient(135deg, #121212 50%, #1ED760 50%); }
+  .swatch[data-t="kitty"]{ background: linear-gradient(135deg, #FFFFFF 50%, #E60033 50%); }
+  .swatch[data-t="ios"]{ background: conic-gradient(from 200deg, #007AFF, #FF2D55, #FF9500, #007AFF); }
+  .swatch[data-t="chief"]{ background: linear-gradient(135deg, #4B5A2A 50%, #F2A93B 50%); }
+  .swatch[data-t="covenant"]{ background: linear-gradient(135deg, #3A1E6E 50%, #4DD8FF 50%); }
+  .swatch[data-t="cortana"]{ background: linear-gradient(135deg, #0A1630 50%, #3FD0FF 50%); }
+  .menu .account{ font-size: 12.5px; color: var(--ink-soft); line-height: 1.4; word-break: break-word; }
+  .menu .account strong{ color: var(--ink); font-weight: 600; }
+  .menu .signout{ margin-top: 8px; width: 100%; border: 1px solid var(--line); background: none; color: var(--ink); border-radius: var(--radius-sm); padding: 7px; font-size: 13px; font-weight: 600; }
 
-  .tabs{ display:flex; gap: 4px; background: var(--bg-alt); border-radius: 999px; padding: 3px; margin-bottom: 10px; }
+  /* Tabs sit between the title and the settings button */
+  .tabs{ display:flex; gap: 2px; background: var(--bg-alt); border-radius: 999px; padding: 3px; flex: 1 1 auto; min-width: max-content; max-width: 240px; }
   .tabs button{
-    flex:1; border:none; background: transparent; padding: 7px 10px; border-radius: 999px;
-    font-size: 13px; font-weight: 600; color: var(--ink-soft);
+    flex:1; border:none; background: transparent; padding: 6px 7px; border-radius: 999px; white-space: nowrap;
+    font-size: 12px; font-weight: 600; color: var(--ink-soft);
     transition: background .15s ease, color .15s ease;
   }
   .tabs button.active{ background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
 
   .yearchips{ display:flex; gap:6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .yearchips.single{ display:none !important; }   /* only worth showing once there's more than one year */
   .yearchip{
     border: 1px solid var(--line); background: var(--surface);
     border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 600;
@@ -167,9 +463,43 @@
   main{ padding-top: 16px; }
   .daycard{ background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden; }
   .daycard .dayhead{
-    display:flex; align-items:center; justify-content: space-between;
+    display:flex; align-items:center; justify-content: space-between; gap: 10px;
     padding: 12px 16px; border-bottom: 1px solid var(--line-soft); background: var(--surface-soft);
+    width: 100%; border-top: none; border-left: none; border-right: none; color: inherit; text-align: left; font: inherit;
   }
+  .dayhead > div:first-child{ flex: 1; min-width: 0; }
+  .dayhead .chev{ color: var(--ink-soft); font-size: 18px; line-height: 1; transform: rotate(90deg); transition: transform .15s ease; }
+  .daycard.collapsed .dayhead{ border-bottom: none; }
+  .daycard.collapsed .chev{ transform: rotate(0deg); }
+  .daycard.collapsed ul.tasks{ display: none; }
+  .daycard.collapsed{ opacity: .75; }
+  .daycard.today{ box-shadow: 0 0 0 2px var(--joshua), var(--shadow); }
+  .todaytag{ font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--joshua); background: var(--joshua-soft); padding: 2px 7px; border-radius: 999px; vertical-align: 2px; margin-left: 4px; }
+  .dayhead .dmeta .pill.alldone{ background: var(--joshua-soft); color: var(--joshua); }
+  li.emptyday{ padding: 10px 16px; font-size: 13px; color: var(--ink-soft); }
+
+  /* Floating "whose chores" switcher, hovering above the bottom of the screen */
+  .filterrow{
+    position: fixed; left: 50%; transform: translateX(-50%); z-index: 25;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    display:flex; gap: 2px; padding: 4px;
+    background: color-mix(in srgb, var(--surface) 82%, transparent);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4);
+    border: 1px solid var(--line); border-radius: 999px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.08);
+  }
+  .filterchip{
+    display:flex; align-items:center; gap: 6px;
+    border: none; background: transparent; color: var(--ink-soft);
+    border-radius: 999px; padding: 9px 16px; font-size: 13.5px; font-weight: 600; white-space: nowrap;
+    transition: background .15s ease, color .15s ease;
+  }
+  .filterchip .dot{ width: 7px; height: 7px; }
+  .filterchip.active{ background: var(--ink); color: var(--surface); }
+  .filterchip.active[data-f="J"]{ background: var(--joshua); }
+  .filterchip.active[data-f="A"]{ background: var(--amrit); }
+  .filterchip.active .dot{ background: var(--surface) !important; }
   .dayhead .dname{ font-family:'Fraunces', Georgia, serif; font-weight: 600; font-size: 16px; }
   .dayhead .ddate{ font-size: 11.5px; color: var(--ink-soft); margin-top: 1px; }
   .dayhead .dmeta{ text-align:right; font-size: 11px; color: var(--ink-soft); }
@@ -251,15 +581,27 @@
   .area-group{ margin-bottom: 18px; }
   .area-group h3{ font-family:'Fraunces', Georgia, serif; font-size: 15px; font-weight: 600; margin: 0 0 8px 2px; }
   .rule-card{ background: var(--surface); border-radius: var(--radius-sm); box-shadow: var(--shadow); margin-bottom: 8px; padding: 10px 14px; }
-  .rule-top{ display:flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .rule-top{ display:flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .rule-top .rowactions{ margin-right: -6px; }
+  .rules-intro{ font-size: 12.5px; color: var(--ink-soft); margin: 0 2px 12px; line-height: 1.45; }
+  .rules-add{ margin-bottom: 16px; }
+  .ruleform{ display:flex; flex-direction:column; gap: 9px; }
+  .ruleform label, .ruleform .lbl{ display:flex; flex-direction:column; gap: 4px; font-size: 11px; font-weight: 600; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .05em; }
+  .ruleform input, .ruleform select{
+    border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 14px;
+    background: var(--surface); color: var(--ink); width: 100%; text-transform: none; letter-spacing: 0; font-weight: 400;
+  }
+  .ruleform .two{ display:grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+  .ruleform .persongroup button{ flex: 1; }
+  .ruleform .persongroup button.sel.ALT{ background: var(--ink); border-color: var(--ink); color: var(--surface); }
+  .ruleform .formbtns{ margin-left: 0; justify-content: flex-end; }
+  .ruleform [hidden]{ display:none !important; }
   .rule-name{ font-size: 14px; font-weight: 600; }
   .rule-min{ font-size: 11px; color: var(--ink-soft); white-space:nowrap; }
   .rule-sub{ font-size: 11.5px; color: var(--ink-soft); margin-top: 3px; }
   .rule-note{ font-size: 11.5px; color: var(--ink-soft); margin-top: 5px; font-style: italic; }
 
   .loadnote{ text-align:center; font-size: 12px; color: var(--ink-soft); padding: 10px 0 0; min-height: 16px; }
-  .accountnote{ text-align:center; font-size: 11.5px; color: var(--ink-soft); padding: 6px 0 24px; }
-  .accountnote button{ background:none; border:none; color: var(--ink-soft); text-decoration: underline; font-size: 11.5px; padding: 0 2px; }
 
   /* ---------- Sign-in gate ---------- */
   .authgate{ position: fixed; inset: 0; z-index: 50; background: var(--bg); display:flex; align-items:center; justify-content:center; padding: 24px 16px; }
@@ -268,6 +610,83 @@
   .authcard p{ color: var(--ink-soft); font-size: 13.5px; margin: 0 0 18px; line-height: 1.45; }
   .authcard .btn-primary{ font-size: 14px; padding: 10px 18px; }
   .authcard .btn-text{ display:block; margin: 10px auto 0; }
+
+  /* ---------- Liquid glass, for every theme ----------
+     Surfaces are frosted and tinted by the theme; a soft wash of the theme's
+     Joshua / Amrit / Both colours sits behind them so the glass has something to show. */
+  :root{
+    --glass: color-mix(in srgb, var(--surface) 62%, transparent);
+    --glass-strong: color-mix(in srgb, var(--surface) 86%, transparent);
+    --glass-edge: rgba(255,255,255,.7);
+    --glass-blur: blur(22px) saturate(1.7);
+    --mesh-1: color-mix(in srgb, var(--joshua) 22%, transparent);
+    --mesh-2: color-mix(in srgb, var(--amrit) 18%, transparent);
+    --mesh-3: color-mix(in srgb, var(--both) 16%, transparent);
+    --mesh:
+      radial-gradient(60% 40% at 0% 0%, var(--mesh-1), transparent 70%),
+      radial-gradient(50% 40% at 100% 30%, var(--mesh-2), transparent 70%),
+      radial-gradient(60% 45% at 30% 100%, var(--mesh-3), transparent 70%);
+  }
+  html[data-theme="dark"], html[data-theme="spotify"], html[data-theme="chief"],
+  html[data-theme="covenant"], html[data-theme="cortana"]{ --glass-edge: rgba(255,255,255,.1); }
+  body{ background-color: var(--bg); background-image: var(--mesh); background-attachment: fixed; }
+
+  header.top, .daycard, .rule-card, .menu, .gearbtn, .weeknav .navbtn, .authcard{
+    background: var(--glass);
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-edge);
+    box-shadow: inset 0 1px 0 var(--glass-edge), var(--shadow);
+  }
+  header.top{ border-width: 0 0 1px; border-color: var(--line-soft); box-shadow: none; }
+  .menu, .filterrow{ background: var(--glass-strong); }
+  .daycard .dayhead{ background: transparent; border-bottom-color: var(--line-soft); }
+  ul.tasks li.taskrow{ border-bottom-color: var(--line-soft); }
+  .tabs button.active{
+    background: linear-gradient(180deg, color-mix(in srgb, var(--surface), white 12%), var(--surface));
+    box-shadow: inset 0 1px 0 var(--glass-edge), 0 2px 8px rgba(0,0,0,.12);
+  }
+
+  /* ---------- Pills: glossy capsules ---------- */
+  /* Shared "gem" look: a lit top edge, a soft shade underneath and a glow in the pill's own colour */
+  .todaytag, .todaybtn, .dayhead .dmeta .pill.alldone{
+    --gc: var(--joshua);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--gc), white 22%), var(--gc));
+    color: var(--surface);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,.5), inset 0 -1px 2px rgba(0,0,0,.15), 0 3px 10px color-mix(in srgb, var(--gc) 40%, transparent);
+  }
+  .todaybtn{ padding: 6px 12px; font-weight: 700; }
+  .dayhead .dmeta .pill{
+    background: color-mix(in srgb, var(--ink) 7%, transparent);
+    border: 1px solid var(--line-soft);
+    box-shadow: inset 0 1px 0 var(--glass-edge);
+  }
+  .dayhead .dmeta .pill.alldone{ border-color: transparent; }
+
+  .who-badge{
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10.5px; font-weight: 700; letter-spacing: .01em;
+    padding: 2px 8px 2px 6px; border-radius: 999px;
+    border: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.35);
+  }
+  .who-badge::before{ content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 6px currentColor; }
+  .who-badge.J{ color: var(--joshua); }
+  .who-badge.A{ color: var(--amrit); }
+  .who-badge.BOTH{ color: var(--both); }
+  .who-badge.J, .who-badge.A, .who-badge.BOTH{
+    background: linear-gradient(180deg, color-mix(in srgb, currentColor 18%, transparent), color-mix(in srgb, currentColor 8%, transparent));
+  }
+
+  /* Floating switcher: a glass "glider" slides to the chosen person */
+  .filterrow{ isolation: isolate; border-color: var(--glass-edge); box-shadow: inset 0 1px 0 var(--glass-edge), 0 10px 30px rgba(0,0,0,.2), 0 2px 6px rgba(0,0,0,.08); }
+  .filterrow .glider{
+    position: absolute; top: 4px; bottom: 4px; left: 4px; width: 0; z-index: -1; border-radius: 999px;
+    --gc: var(--ink);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--gc), white 22%), var(--gc));
+    box-shadow: inset 0 1px 1px rgba(255,255,255,.55), inset 0 -2px 4px rgba(0,0,0,.14), 0 6px 16px color-mix(in srgb, var(--gc) 45%, transparent);
+    transition: left .4s cubic-bezier(.3,1.35,.5,1), width .4s cubic-bezier(.3,1.35,.5,1), background .3s ease, box-shadow .3s ease;
+  }
+  .filterchip.active, .filterchip.active[data-f="J"], .filterchip.active[data-f="A"]{ background: transparent; color: var(--surface); }
 
   @media (prefers-reduced-motion: reduce){ *{ transition: none !important; } }
 </style>
@@ -281,16 +700,32 @@
         <h1 class="display">The Board</h1>
         <div class="sub">Joshua &amp; Amrit</div>
       </div>
-      <div class="theme-switch" id="themeSwitch">
-        <button class="swatch" data-t="light" title="Light" aria-label="Light theme"></button>
-        <button class="swatch" data-t="dark" title="Dark" aria-label="Dark theme"></button>
-        <button class="swatch" data-t="pink" title="Pink" aria-label="Pink theme"></button>
+      <div class="tabs">
+        <button id="tabWeek" class="active">This week</button>
+        <button id="tabRules"><span class="long">House rules</span><span class="short">Rules</span></button>
       </div>
-    </div>
-
-    <div class="tabs">
-      <button id="tabWeek" class="active">This week</button>
-      <button id="tabRules">House rules</button>
+      <div class="settings">
+        <button class="gearbtn" id="settingsBtn" aria-label="Settings" aria-haspopup="true" aria-expanded="false" aria-controls="settingsMenu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <div class="menu" id="settingsMenu" hidden>
+          <div class="section">
+            <h4>Theme</h4>
+            <div class="themegrid">
+              <button class="themeopt" data-t="light"><span class="swatch" data-t="light"></span>Light</button>
+              <button class="themeopt" data-t="dark"><span class="swatch" data-t="dark"></span>Dark</button>
+              <button class="themeopt" data-t="pink"><span class="swatch" data-t="pink"></span>Pink</button>
+              <button class="themeopt" data-t="spotify"><span class="swatch" data-t="spotify"></span>Spotify</button>
+              <button class="themeopt" data-t="kitty"><span class="swatch" data-t="kitty"></span>Hello Kitty</button>
+              <button class="themeopt" data-t="ios"><span class="swatch" data-t="ios"></span>iOS</button>
+              <button class="themeopt" data-t="chief"><span class="swatch" data-t="chief"></span>Master Chief</button>
+              <button class="themeopt" data-t="covenant"><span class="swatch" data-t="covenant"></span>Covenant</button>
+              <button class="themeopt" data-t="cortana"><span class="swatch" data-t="cortana"></span>Cortana</button>
+            </div>
+          </div>
+          <div class="section" id="accountNote"></div>
+        </div>
+      </div>
     </div>
 
     <div id="yearRow" class="yearchips"></div>
@@ -324,7 +759,6 @@
   <div id="weekView"></div>
   <div id="rulesView" style="display:none;"></div>
   <div class="loadnote" id="syncNote"></div>
-  <div class="accountnote" id="accountNote"></div>
 </main>
 
 <div class="authgate" id="authGate" style="display:none;">
@@ -346,7 +780,7 @@
 /* ---------- store: Firebase when configured, otherwise this device only ---------- */
 const SDK = 'https://www.gstatic.com/firebasejs/10.12.2/';
 const cfg = window.FIREBASE_CONFIG;
-const LS = { schedule: 'jamrit_schedule', checked: 'jamrit_checked' };
+const LS = { schedule: 'jamrit_schedule', checked: 'jamrit_checked', rules: 'jamrit_rules' };
 
 function lsGet(k){ try{ return localStorage.getItem(k); } catch(e){ return null; } }
 function lsSet(k, v){ localStorage.setItem(k, v); }   // let failures surface as "Couldn't save"
@@ -356,10 +790,13 @@ function localStore(){
   try{ checked = JSON.parse(lsGet(LS.checked) || '{}') || {}; } catch(e){}
   let schedule = null;
   try{ schedule = JSON.parse(lsGet(LS.schedule) || 'null'); } catch(e){}
+  let rules = null;
+  try{ rules = JSON.parse(lsGet(LS.rules) || 'null'); } catch(e){}
   return {
     mode: 'local',
-    schedule, checked, user: null,
+    schedule, checked, rules, user: null, memberName: null,
     async saveSchedule(s){ lsSet(LS.schedule, JSON.stringify(s)); },
+    async saveRules(r){ lsSet(LS.rules, JSON.stringify(r)); },
     async setChecked(ids, on){
       ids.forEach(id => { if (on) checked[id] = true; else delete checked[id]; });
       lsSet(LS.checked, JSON.stringify(checked));
@@ -391,6 +828,7 @@ async function cloudStore(){
   const db = fs.getFirestore(app);
   const scheduleRef = fs.doc(db, 'board', 'schedule');
   const checkedRef = fs.doc(db, 'board', 'checked');
+  const rulesRef = fs.doc(db, 'board', 'rules');
 
   signInBtn.onclick = async () => {
     const provider = new au.GoogleAuthProvider();
@@ -409,17 +847,24 @@ async function cloudStore(){
     });
     try{
       const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Timed out reaching Firebase')), 15000));
-      const [sSnap, cSnap] = await Promise.race([Promise.all([fs.getDoc(scheduleRef), fs.getDoc(checkedRef)]), timeout]);
+      const [sSnap, cSnap, rSnap, mSnap] = await Promise.race([Promise.all([
+        fs.getDoc(scheduleRef), fs.getDoc(checkedRef), fs.getDoc(rulesRef), fs.getDoc(fs.doc(db, 'members', user.email)),
+      ]), timeout]);
       if (!cSnap.exists()) await fs.setDoc(checkedRef, { ids: {} }, { merge: true });
       gate.style.display = 'none';
-      let schedule = null;
+      let schedule = null, rules = null;
       if (sSnap.exists()){ try{ schedule = JSON.parse(sSnap.data().json); } catch(e){} }
+      if (rSnap.exists()){ try{ rules = JSON.parse(rSnap.data().json); } catch(e){} }
       return {
         mode: 'cloud',
-        user, schedule,
+        user, schedule, rules,
+        memberName: mSnap.exists() ? (mSnap.data().name || null) : null,
         checked: cSnap.exists() ? { ...(cSnap.data().ids || {}) } : {},
         async saveSchedule(s){
           await fs.setDoc(scheduleRef, { json: JSON.stringify(s), updatedBy: user.email, updatedAt: fs.serverTimestamp() });
+        },
+        async saveRules(r){
+          await fs.setDoc(rulesRef, { json: JSON.stringify(r), updatedBy: user.email, updatedAt: fs.serverTimestamp() });
         },
         async setChecked(ids, on){
           if (!ids.length) return;
@@ -436,6 +881,10 @@ async function cloudStore(){
           fs.onSnapshot(checkedRef, snap => {
             if (snap.metadata.hasPendingWrites || !snap.exists()) return;
             onChange('checked', { ...(snap.data().ids || {}) });
+          });
+          fs.onSnapshot(rulesRef, snap => {
+            if (snap.metadata.hasPendingWrites || !snap.exists()) return;
+            try{ onChange('rules', JSON.parse(snap.data().json)); } catch(e){}
           });
         },
         signOut: () => au.signOut(auth).then(() => location.reload()),
@@ -463,10 +912,49 @@ window.__resolveStore(store);
 
 <script>
 const SEED_WEEKS = [{"sheet_name":"24 Aug 2026","week_start":"2026-08-24","week_end":"2026-08-30","rotation_week":1,"joshua_total_minutes":250,"amrit_total_minutes":287,"days":[{"date":"2026-08-24","dow":"MON","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s1"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s2"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s3"}]},{"date":"2026-08-25","dow":"TUE","total_minutes":35,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s4"},{"person":"A","task":"Dust and Wipe Surfaces","minutes":10,"id":"s5"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s6"}]},{"date":"2026-08-26","dow":"WED","total_minutes":45,"tasks":[{"person":"J","task":"Dust landing and hallway","minutes":10,"id":"s7"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s8"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s9"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s10"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s11"}]},{"date":"2026-08-27","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Clean Area Around Bin","minutes":5,"id":"s12"},{"person":"J","task":"Clean Bin","minutes":5,"id":"s13"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s14"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s15"},{"person":"J","task":"Wipe floor","minutes":5,"id":"s16"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s17"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s18"}]},{"date":"2026-08-28","dow":"FRI","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s19"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s20"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s21"}]},{"date":"2026-08-29","dow":"SAT","total_minutes":202,"tasks":[{"person":"J","task":"Apply Mould Prevention Spray","minutes":5,"id":"s22"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s23"},{"person":"J","task":"Vacuum Ground Floor","minutes":20,"id":"s24"},{"person":"A","task":"Deep clean bathroom","minutes":60,"id":"s25"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s26"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s27"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s28"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s29"},{"person":"A","task":"Vacuum Upper Floor","minutes":10,"id":"s30"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s31"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s32"}]},{"date":"2026-08-30","dow":"SUN","total_minutes":120,"tasks":[{"person":"J","task":"Change bedding - Joshua","minutes":15,"id":"s33"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s34"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s35"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s36"},{"person":"J","task":"Sofa Reset","minutes":15,"id":"s37"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s38"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s39"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s40"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s41"},{"person":"A","task":"Water Plants","minutes":10,"id":"s42"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s43"}]}]},{"sheet_name":"31 Aug 2026","week_start":"2026-08-31","week_end":"2026-09-06","rotation_week":2,"joshua_total_minutes":265,"amrit_total_minutes":272,"days":[{"date":"2026-08-31","dow":"MON","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s44"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s45"}]},{"date":"2026-09-01","dow":"TUE","total_minutes":40,"tasks":[{"person":"J","task":"Dust and Wipe Surfaces","minutes":10,"id":"s46"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s47"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s48"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s49"}]},{"date":"2026-09-02","dow":"WED","total_minutes":40,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s50"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s51"},{"person":"A","task":"Dust landing and hallway","minutes":10,"id":"s52"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s53"}]},{"date":"2026-09-03","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s54"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s55"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s56"},{"person":"A","task":"Clean Area Around Bin","minutes":5,"id":"s57"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s58"},{"person":"A","task":"Wipe floor","minutes":5,"id":"s59"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s60"}]},{"date":"2026-09-04","dow":"FRI","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s61"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s62"}]},{"date":"2026-09-05","dow":"SAT","total_minutes":187,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s63"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s64"},{"person":"J","task":"Laundry - Lights","minutes":25,"id":"s65"},{"person":"J","task":"Vacuum Upper Floor","minutes":10,"id":"s66"},{"person":"A","task":"Apply Mould Prevention Spray","minutes":5,"id":"s67"},{"person":"A","task":"Change bedding - Amrit","minutes":15,"id":"s68"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s69"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s70"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s71"},{"person":"A","task":"Vacuum Ground Floor","minutes":20,"id":"s72"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s73"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s74"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s75"}]},{"date":"2026-09-06","dow":"SUN","total_minutes":145,"tasks":[{"person":"J","task":"Cooking Dinner","minutes":60,"id":"s76"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s77"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s78"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s79"},{"person":"J","task":"Water Plants","minutes":10,"id":"s80"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s81"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s82"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s83"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s84"}]}]},{"sheet_name":"07 Sep 2026","week_start":"2026-09-07","week_end":"2026-09-13","rotation_week":3,"joshua_total_minutes":290,"amrit_total_minutes":247,"days":[{"date":"2026-09-07","dow":"MON","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s85"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s86"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s87"}]},{"date":"2026-09-08","dow":"TUE","total_minutes":35,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s88"},{"person":"A","task":"Dust and Wipe Surfaces","minutes":10,"id":"s89"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s90"}]},{"date":"2026-09-09","dow":"WED","total_minutes":45,"tasks":[{"person":"J","task":"Dust landing and hallway","minutes":10,"id":"s91"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s92"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s93"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s94"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s95"}]},{"date":"2026-09-10","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Clean Area Around Bin","minutes":5,"id":"s96"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s97"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s98"},{"person":"J","task":"Wipe floor","minutes":5,"id":"s99"},{"person":"A","task":"Clean Bin","minutes":5,"id":"s100"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s101"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s102"}]},{"date":"2026-09-11","dow":"FRI","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s103"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s104"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s105"}]},{"date":"2026-09-12","dow":"SAT","total_minutes":202,"tasks":[{"person":"J","task":"Apply Mould Prevention Spray","minutes":5,"id":"s106"},{"person":"J","task":"Deep clean bathroom","minutes":60,"id":"s107"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s108"},{"person":"J","task":"Vacuum Ground Floor","minutes":20,"id":"s109"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s110"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s111"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s112"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s113"},{"person":"A","task":"Vacuum Upper Floor","minutes":10,"id":"s114"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s115"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s116"}]},{"date":"2026-09-13","dow":"SUN","total_minutes":120,"tasks":[{"person":"J","task":"Change bedding - Joshua","minutes":15,"id":"s117"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s118"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s119"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s120"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s121"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s122"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s123"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s124"},{"person":"A","task":"Sofa Reset","minutes":15,"id":"s125"},{"person":"A","task":"Water Plants","minutes":10,"id":"s126"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s127"}]}]},{"sheet_name":"14 Sep 2026","week_start":"2026-09-14","week_end":"2026-09-20","rotation_week":4,"joshua_total_minutes":265,"amrit_total_minutes":272,"days":[{"date":"2026-09-14","dow":"MON","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s128"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s129"}]},{"date":"2026-09-15","dow":"TUE","total_minutes":40,"tasks":[{"person":"J","task":"Dust and Wipe Surfaces","minutes":10,"id":"s130"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s131"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s132"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s133"}]},{"date":"2026-09-16","dow":"WED","total_minutes":40,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s134"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s135"},{"person":"A","task":"Dust landing and hallway","minutes":10,"id":"s136"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s137"}]},{"date":"2026-09-17","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s138"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s139"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s140"},{"person":"A","task":"Clean Area Around Bin","minutes":5,"id":"s141"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s142"},{"person":"A","task":"Wipe floor","minutes":5,"id":"s143"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s144"}]},{"date":"2026-09-18","dow":"FRI","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s145"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s146"}]},{"date":"2026-09-19","dow":"SAT","total_minutes":187,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s147"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s148"},{"person":"J","task":"Laundry - Lights","minutes":25,"id":"s149"},{"person":"J","task":"Vacuum Upper Floor","minutes":10,"id":"s150"},{"person":"A","task":"Apply Mould Prevention Spray","minutes":5,"id":"s151"},{"person":"A","task":"Change bedding - Amrit","minutes":15,"id":"s152"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s153"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s154"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s155"},{"person":"A","task":"Vacuum Ground Floor","minutes":20,"id":"s156"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s157"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s158"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s159"}]},{"date":"2026-09-20","dow":"SUN","total_minutes":145,"tasks":[{"person":"J","task":"Cooking Dinner","minutes":60,"id":"s160"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s161"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s162"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s163"},{"person":"J","task":"Water Plants","minutes":10,"id":"s164"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s165"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s166"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s167"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s168"}]}]},{"sheet_name":"21 Sep 2026","week_start":"2026-09-21","week_end":"2026-09-27","rotation_week":1,"joshua_total_minutes":250,"amrit_total_minutes":287,"days":[{"date":"2026-09-21","dow":"MON","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s169"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s170"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s171"}]},{"date":"2026-09-22","dow":"TUE","total_minutes":35,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s172"},{"person":"A","task":"Dust and Wipe Surfaces","minutes":10,"id":"s173"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s174"}]},{"date":"2026-09-23","dow":"WED","total_minutes":45,"tasks":[{"person":"J","task":"Dust landing and hallway","minutes":10,"id":"s175"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s176"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s177"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s178"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s179"}]},{"date":"2026-09-24","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Clean Area Around Bin","minutes":5,"id":"s180"},{"person":"J","task":"Clean Bin","minutes":5,"id":"s181"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s182"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s183"},{"person":"J","task":"Wipe floor","minutes":5,"id":"s184"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s185"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s186"}]},{"date":"2026-09-25","dow":"FRI","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s187"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s188"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s189"}]},{"date":"2026-09-26","dow":"SAT","total_minutes":202,"tasks":[{"person":"J","task":"Apply Mould Prevention Spray","minutes":5,"id":"s190"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s191"},{"person":"J","task":"Vacuum Ground Floor","minutes":20,"id":"s192"},{"person":"A","task":"Deep clean bathroom","minutes":60,"id":"s193"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s194"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s195"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s196"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s197"},{"person":"A","task":"Vacuum Upper Floor","minutes":10,"id":"s198"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s199"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s200"}]},{"date":"2026-09-27","dow":"SUN","total_minutes":120,"tasks":[{"person":"J","task":"Change bedding - Joshua","minutes":15,"id":"s201"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s202"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s203"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s204"},{"person":"J","task":"Sofa Reset","minutes":15,"id":"s205"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s206"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s207"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s208"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s209"},{"person":"A","task":"Water Plants","minutes":10,"id":"s210"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s211"}]}]},{"sheet_name":"28 Sep 2026","week_start":"2026-09-28","week_end":"2026-10-04","rotation_week":2,"joshua_total_minutes":265,"amrit_total_minutes":272,"days":[{"date":"2026-09-28","dow":"MON","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s212"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s213"}]},{"date":"2026-09-29","dow":"TUE","total_minutes":40,"tasks":[{"person":"J","task":"Dust and Wipe Surfaces","minutes":10,"id":"s214"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s215"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s216"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s217"}]},{"date":"2026-09-30","dow":"WED","total_minutes":40,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s218"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s219"},{"person":"A","task":"Dust landing and hallway","minutes":10,"id":"s220"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s221"}]},{"date":"2026-10-01","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s222"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s223"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s224"},{"person":"A","task":"Clean Area Around Bin","minutes":5,"id":"s225"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s226"},{"person":"A","task":"Wipe floor","minutes":5,"id":"s227"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s228"}]},{"date":"2026-10-02","dow":"FRI","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s229"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s230"}]},{"date":"2026-10-03","dow":"SAT","total_minutes":187,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s231"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s232"},{"person":"J","task":"Laundry - Lights","minutes":25,"id":"s233"},{"person":"J","task":"Vacuum Upper Floor","minutes":10,"id":"s234"},{"person":"A","task":"Apply Mould Prevention Spray","minutes":5,"id":"s235"},{"person":"A","task":"Change bedding - Amrit","minutes":15,"id":"s236"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s237"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s238"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s239"},{"person":"A","task":"Vacuum Ground Floor","minutes":20,"id":"s240"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s241"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s242"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s243"}]},{"date":"2026-10-04","dow":"SUN","total_minutes":145,"tasks":[{"person":"J","task":"Cooking Dinner","minutes":60,"id":"s244"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s245"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s246"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s247"},{"person":"J","task":"Water Plants","minutes":10,"id":"s248"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s249"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s250"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s251"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s252"}]}]},{"sheet_name":"05 Oct 2026","week_start":"2026-10-05","week_end":"2026-10-11","rotation_week":3,"joshua_total_minutes":290,"amrit_total_minutes":247,"days":[{"date":"2026-10-05","dow":"MON","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s253"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s254"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s255"}]},{"date":"2026-10-06","dow":"TUE","total_minutes":35,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s256"},{"person":"A","task":"Dust and Wipe Surfaces","minutes":10,"id":"s257"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s258"}]},{"date":"2026-10-07","dow":"WED","total_minutes":45,"tasks":[{"person":"J","task":"Dust landing and hallway","minutes":10,"id":"s259"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s260"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s261"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s262"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s263"}]},{"date":"2026-10-08","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Clean Area Around Bin","minutes":5,"id":"s264"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s265"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s266"},{"person":"J","task":"Wipe floor","minutes":5,"id":"s267"},{"person":"A","task":"Clean Bin","minutes":5,"id":"s268"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s269"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s270"}]},{"date":"2026-10-09","dow":"FRI","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s271"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s272"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s273"}]},{"date":"2026-10-10","dow":"SAT","total_minutes":202,"tasks":[{"person":"J","task":"Apply Mould Prevention Spray","minutes":5,"id":"s274"},{"person":"J","task":"Deep clean bathroom","minutes":60,"id":"s275"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s276"},{"person":"J","task":"Vacuum Ground Floor","minutes":20,"id":"s277"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s278"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s279"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s280"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s281"},{"person":"A","task":"Vacuum Upper Floor","minutes":10,"id":"s282"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s283"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s284"}]},{"date":"2026-10-11","dow":"SUN","total_minutes":120,"tasks":[{"person":"J","task":"Change bedding - Joshua","minutes":15,"id":"s285"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s286"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s287"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s288"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s289"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s290"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s291"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s292"},{"person":"A","task":"Sofa Reset","minutes":15,"id":"s293"},{"person":"A","task":"Water Plants","minutes":10,"id":"s294"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s295"}]}]},{"sheet_name":"12 Oct 2026","week_start":"2026-10-12","week_end":"2026-10-18","rotation_week":4,"joshua_total_minutes":265,"amrit_total_minutes":272,"days":[{"date":"2026-10-12","dow":"MON","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s296"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s297"}]},{"date":"2026-10-13","dow":"TUE","total_minutes":40,"tasks":[{"person":"J","task":"Dust and Wipe Surfaces","minutes":10,"id":"s298"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s299"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s300"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s301"}]},{"date":"2026-10-14","dow":"WED","total_minutes":40,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s302"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s303"},{"person":"A","task":"Dust landing and hallway","minutes":10,"id":"s304"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s305"}]},{"date":"2026-10-15","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s306"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s307"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s308"},{"person":"A","task":"Clean Area Around Bin","minutes":5,"id":"s309"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s310"},{"person":"A","task":"Wipe floor","minutes":5,"id":"s311"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s312"}]},{"date":"2026-10-16","dow":"FRI","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s313"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s314"}]},{"date":"2026-10-17","dow":"SAT","total_minutes":187,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s315"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s316"},{"person":"J","task":"Laundry - Lights","minutes":25,"id":"s317"},{"person":"J","task":"Vacuum Upper Floor","minutes":10,"id":"s318"},{"person":"A","task":"Apply Mould Prevention Spray","minutes":5,"id":"s319"},{"person":"A","task":"Change bedding - Amrit","minutes":15,"id":"s320"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s321"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s322"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s323"},{"person":"A","task":"Vacuum Ground Floor","minutes":20,"id":"s324"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s325"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s326"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s327"}]},{"date":"2026-10-18","dow":"SUN","total_minutes":145,"tasks":[{"person":"J","task":"Cooking Dinner","minutes":60,"id":"s328"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s329"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s330"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s331"},{"person":"J","task":"Water Plants","minutes":10,"id":"s332"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s333"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s334"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s335"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s336"}]}]},{"sheet_name":"19 Oct 2026","week_start":"2026-10-19","week_end":"2026-10-25","rotation_week":1,"joshua_total_minutes":250,"amrit_total_minutes":287,"days":[{"date":"2026-10-19","dow":"MON","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s337"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s338"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s339"}]},{"date":"2026-10-20","dow":"TUE","total_minutes":35,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s340"},{"person":"A","task":"Dust and Wipe Surfaces","minutes":10,"id":"s341"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s342"}]},{"date":"2026-10-21","dow":"WED","total_minutes":45,"tasks":[{"person":"J","task":"Dust landing and hallway","minutes":10,"id":"s343"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s344"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s345"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s346"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s347"}]},{"date":"2026-10-22","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Clean Area Around Bin","minutes":5,"id":"s348"},{"person":"J","task":"Clean Bin","minutes":5,"id":"s349"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s350"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s351"},{"person":"J","task":"Wipe floor","minutes":5,"id":"s352"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s353"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s354"}]},{"date":"2026-10-23","dow":"FRI","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s355"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s356"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s357"}]},{"date":"2026-10-24","dow":"SAT","total_minutes":202,"tasks":[{"person":"J","task":"Apply Mould Prevention Spray","minutes":5,"id":"s358"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s359"},{"person":"J","task":"Vacuum Ground Floor","minutes":20,"id":"s360"},{"person":"A","task":"Deep clean bathroom","minutes":60,"id":"s361"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s362"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s363"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s364"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s365"},{"person":"A","task":"Vacuum Upper Floor","minutes":10,"id":"s366"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s367"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s368"}]},{"date":"2026-10-25","dow":"SUN","total_minutes":120,"tasks":[{"person":"J","task":"Change bedding - Joshua","minutes":15,"id":"s369"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s370"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s371"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s372"},{"person":"J","task":"Sofa Reset","minutes":15,"id":"s373"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s374"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s375"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s376"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s377"},{"person":"A","task":"Water Plants","minutes":10,"id":"s378"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s379"}]}]},{"sheet_name":"26 Oct 2026","week_start":"2026-10-26","week_end":"2026-11-01","rotation_week":2,"joshua_total_minutes":265,"amrit_total_minutes":272,"days":[{"date":"2026-10-26","dow":"MON","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s380"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s381"}]},{"date":"2026-10-27","dow":"TUE","total_minutes":40,"tasks":[{"person":"J","task":"Dust and Wipe Surfaces","minutes":10,"id":"s382"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s383"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s384"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s385"}]},{"date":"2026-10-28","dow":"WED","total_minutes":40,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s386"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s387"},{"person":"A","task":"Dust landing and hallway","minutes":10,"id":"s388"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s389"}]},{"date":"2026-10-29","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s390"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s391"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s392"},{"person":"A","task":"Clean Area Around Bin","minutes":5,"id":"s393"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s394"},{"person":"A","task":"Wipe floor","minutes":5,"id":"s395"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s396"}]},{"date":"2026-10-30","dow":"FRI","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s397"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s398"}]},{"date":"2026-10-31","dow":"SAT","total_minutes":187,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s399"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s400"},{"person":"J","task":"Laundry - Lights","minutes":25,"id":"s401"},{"person":"J","task":"Vacuum Upper Floor","minutes":10,"id":"s402"},{"person":"A","task":"Apply Mould Prevention Spray","minutes":5,"id":"s403"},{"person":"A","task":"Change bedding - Amrit","minutes":15,"id":"s404"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s405"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s406"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s407"},{"person":"A","task":"Vacuum Ground Floor","minutes":20,"id":"s408"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s409"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s410"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s411"}]},{"date":"2026-11-01","dow":"SUN","total_minutes":145,"tasks":[{"person":"J","task":"Cooking Dinner","minutes":60,"id":"s412"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s413"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s414"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s415"},{"person":"J","task":"Water Plants","minutes":10,"id":"s416"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s417"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s418"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s419"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s420"}]}]},{"sheet_name":"02 Nov 2026","week_start":"2026-11-02","week_end":"2026-11-08","rotation_week":3,"joshua_total_minutes":290,"amrit_total_minutes":247,"days":[{"date":"2026-11-02","dow":"MON","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s421"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s422"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s423"}]},{"date":"2026-11-03","dow":"TUE","total_minutes":35,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s424"},{"person":"A","task":"Dust and Wipe Surfaces","minutes":10,"id":"s425"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s426"}]},{"date":"2026-11-04","dow":"WED","total_minutes":45,"tasks":[{"person":"J","task":"Dust landing and hallway","minutes":10,"id":"s427"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s428"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s429"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s430"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s431"}]},{"date":"2026-11-05","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Clean Area Around Bin","minutes":5,"id":"s432"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s433"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s434"},{"person":"J","task":"Wipe floor","minutes":5,"id":"s435"},{"person":"A","task":"Clean Bin","minutes":5,"id":"s436"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s437"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s438"}]},{"date":"2026-11-06","dow":"FRI","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s439"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s440"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s441"}]},{"date":"2026-11-07","dow":"SAT","total_minutes":202,"tasks":[{"person":"J","task":"Apply Mould Prevention Spray","minutes":5,"id":"s442"},{"person":"J","task":"Deep clean bathroom","minutes":60,"id":"s443"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s444"},{"person":"J","task":"Vacuum Ground Floor","minutes":20,"id":"s445"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s446"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s447"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s448"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s449"},{"person":"A","task":"Vacuum Upper Floor","minutes":10,"id":"s450"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s451"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s452"}]},{"date":"2026-11-08","dow":"SUN","total_minutes":120,"tasks":[{"person":"J","task":"Change bedding - Joshua","minutes":15,"id":"s453"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s454"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s455"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s456"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s457"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s458"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s459"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s460"},{"person":"A","task":"Sofa Reset","minutes":15,"id":"s461"},{"person":"A","task":"Water Plants","minutes":10,"id":"s462"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s463"}]}]},{"sheet_name":"09 Nov 2026","week_start":"2026-11-09","week_end":"2026-11-15","rotation_week":4,"joshua_total_minutes":265,"amrit_total_minutes":272,"days":[{"date":"2026-11-09","dow":"MON","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s464"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s465"}]},{"date":"2026-11-10","dow":"TUE","total_minutes":40,"tasks":[{"person":"J","task":"Dust and Wipe Surfaces","minutes":10,"id":"s466"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s467"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s468"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s469"}]},{"date":"2026-11-11","dow":"WED","total_minutes":40,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s470"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s471"},{"person":"A","task":"Dust landing and hallway","minutes":10,"id":"s472"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s473"}]},{"date":"2026-11-12","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s474"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s475"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s476"},{"person":"A","task":"Clean Area Around Bin","minutes":5,"id":"s477"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s478"},{"person":"A","task":"Wipe floor","minutes":5,"id":"s479"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s480"}]},{"date":"2026-11-13","dow":"FRI","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s481"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s482"}]},{"date":"2026-11-14","dow":"SAT","total_minutes":187,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s483"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s484"},{"person":"J","task":"Laundry - Lights","minutes":25,"id":"s485"},{"person":"J","task":"Vacuum Upper Floor","minutes":10,"id":"s486"},{"person":"A","task":"Apply Mould Prevention Spray","minutes":5,"id":"s487"},{"person":"A","task":"Change bedding - Amrit","minutes":15,"id":"s488"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s489"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s490"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s491"},{"person":"A","task":"Vacuum Ground Floor","minutes":20,"id":"s492"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s493"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s494"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s495"}]},{"date":"2026-11-15","dow":"SUN","total_minutes":145,"tasks":[{"person":"J","task":"Cooking Dinner","minutes":60,"id":"s496"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s497"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s498"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s499"},{"person":"J","task":"Water Plants","minutes":10,"id":"s500"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s501"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s502"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s503"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s504"}]}]},{"sheet_name":"16 Nov 2026","week_start":"2026-11-16","week_end":"2026-11-22","rotation_week":1,"joshua_total_minutes":250,"amrit_total_minutes":287,"days":[{"date":"2026-11-16","dow":"MON","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s505"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s506"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s507"}]},{"date":"2026-11-17","dow":"TUE","total_minutes":35,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s508"},{"person":"A","task":"Dust and Wipe Surfaces","minutes":10,"id":"s509"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s510"}]},{"date":"2026-11-18","dow":"WED","total_minutes":45,"tasks":[{"person":"J","task":"Dust landing and hallway","minutes":10,"id":"s511"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s512"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s513"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s514"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s515"}]},{"date":"2026-11-19","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Clean Area Around Bin","minutes":5,"id":"s516"},{"person":"J","task":"Clean Bin","minutes":5,"id":"s517"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s518"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s519"},{"person":"J","task":"Wipe floor","minutes":5,"id":"s520"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s521"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s522"}]},{"date":"2026-11-20","dow":"FRI","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s523"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s524"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s525"}]},{"date":"2026-11-21","dow":"SAT","total_minutes":202,"tasks":[{"person":"J","task":"Apply Mould Prevention Spray","minutes":5,"id":"s526"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s527"},{"person":"J","task":"Vacuum Ground Floor","minutes":20,"id":"s528"},{"person":"A","task":"Deep clean bathroom","minutes":60,"id":"s529"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s530"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s531"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s532"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s533"},{"person":"A","task":"Vacuum Upper Floor","minutes":10,"id":"s534"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s535"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s536"}]},{"date":"2026-11-22","dow":"SUN","total_minutes":120,"tasks":[{"person":"J","task":"Change bedding - Joshua","minutes":15,"id":"s537"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s538"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s539"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s540"},{"person":"J","task":"Sofa Reset","minutes":15,"id":"s541"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s542"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s543"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s544"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s545"},{"person":"A","task":"Water Plants","minutes":10,"id":"s546"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s547"}]}]},{"sheet_name":"23 Nov 2026","week_start":"2026-11-23","week_end":"2026-11-29","rotation_week":2,"joshua_total_minutes":265,"amrit_total_minutes":272,"days":[{"date":"2026-11-23","dow":"MON","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s548"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s549"}]},{"date":"2026-11-24","dow":"TUE","total_minutes":40,"tasks":[{"person":"J","task":"Dust and Wipe Surfaces","minutes":10,"id":"s550"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s551"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s552"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s553"}]},{"date":"2026-11-25","dow":"WED","total_minutes":40,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s554"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s555"},{"person":"A","task":"Dust landing and hallway","minutes":10,"id":"s556"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s557"}]},{"date":"2026-11-26","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s558"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s559"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s560"},{"person":"A","task":"Clean Area Around Bin","minutes":5,"id":"s561"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s562"},{"person":"A","task":"Wipe floor","minutes":5,"id":"s563"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s564"}]},{"date":"2026-11-27","dow":"FRI","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s565"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s566"}]},{"date":"2026-11-28","dow":"SAT","total_minutes":187,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s567"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s568"},{"person":"J","task":"Laundry - Lights","minutes":25,"id":"s569"},{"person":"J","task":"Vacuum Upper Floor","minutes":10,"id":"s570"},{"person":"A","task":"Apply Mould Prevention Spray","minutes":5,"id":"s571"},{"person":"A","task":"Change bedding - Amrit","minutes":15,"id":"s572"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s573"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s574"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s575"},{"person":"A","task":"Vacuum Ground Floor","minutes":20,"id":"s576"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s577"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s578"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s579"}]},{"date":"2026-11-29","dow":"SUN","total_minutes":145,"tasks":[{"person":"J","task":"Cooking Dinner","minutes":60,"id":"s580"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s581"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s582"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s583"},{"person":"J","task":"Water Plants","minutes":10,"id":"s584"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s585"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s586"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s587"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s588"}]}]},{"sheet_name":"30 Nov 2026","week_start":"2026-11-30","week_end":"2026-12-06","rotation_week":3,"joshua_total_minutes":290,"amrit_total_minutes":247,"days":[{"date":"2026-11-30","dow":"MON","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s589"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s590"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s591"}]},{"date":"2026-12-01","dow":"TUE","total_minutes":35,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s592"},{"person":"A","task":"Dust and Wipe Surfaces","minutes":10,"id":"s593"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s594"}]},{"date":"2026-12-02","dow":"WED","total_minutes":45,"tasks":[{"person":"J","task":"Dust landing and hallway","minutes":10,"id":"s595"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s596"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s597"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s598"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s599"}]},{"date":"2026-12-03","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Clean Area Around Bin","minutes":5,"id":"s600"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s601"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s602"},{"person":"J","task":"Wipe floor","minutes":5,"id":"s603"},{"person":"A","task":"Clean Bin","minutes":5,"id":"s604"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s605"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s606"}]},{"date":"2026-12-04","dow":"FRI","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s607"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s608"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s609"}]},{"date":"2026-12-05","dow":"SAT","total_minutes":202,"tasks":[{"person":"J","task":"Apply Mould Prevention Spray","minutes":5,"id":"s610"},{"person":"J","task":"Deep clean bathroom","minutes":60,"id":"s611"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s612"},{"person":"J","task":"Vacuum Ground Floor","minutes":20,"id":"s613"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s614"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s615"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s616"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s617"},{"person":"A","task":"Vacuum Upper Floor","minutes":10,"id":"s618"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s619"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s620"}]},{"date":"2026-12-06","dow":"SUN","total_minutes":120,"tasks":[{"person":"J","task":"Change bedding - Joshua","minutes":15,"id":"s621"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s622"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s623"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s624"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s625"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s626"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s627"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s628"},{"person":"A","task":"Sofa Reset","minutes":15,"id":"s629"},{"person":"A","task":"Water Plants","minutes":10,"id":"s630"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s631"}]}]},{"sheet_name":"07 Dec 2026","week_start":"2026-12-07","week_end":"2026-12-13","rotation_week":4,"joshua_total_minutes":265,"amrit_total_minutes":272,"days":[{"date":"2026-12-07","dow":"MON","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s632"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s633"}]},{"date":"2026-12-08","dow":"TUE","total_minutes":40,"tasks":[{"person":"J","task":"Dust and Wipe Surfaces","minutes":10,"id":"s634"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s635"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s636"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s637"}]},{"date":"2026-12-09","dow":"WED","total_minutes":40,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s638"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s639"},{"person":"A","task":"Dust landing and hallway","minutes":10,"id":"s640"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s641"}]},{"date":"2026-12-10","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s642"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s643"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s644"},{"person":"A","task":"Clean Area Around Bin","minutes":5,"id":"s645"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s646"},{"person":"A","task":"Wipe floor","minutes":5,"id":"s647"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s648"}]},{"date":"2026-12-11","dow":"FRI","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s649"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s650"}]},{"date":"2026-12-12","dow":"SAT","total_minutes":187,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s651"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s652"},{"person":"J","task":"Laundry - Lights","minutes":25,"id":"s653"},{"person":"J","task":"Vacuum Upper Floor","minutes":10,"id":"s654"},{"person":"A","task":"Apply Mould Prevention Spray","minutes":5,"id":"s655"},{"person":"A","task":"Change bedding - Amrit","minutes":15,"id":"s656"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s657"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s658"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s659"},{"person":"A","task":"Vacuum Ground Floor","minutes":20,"id":"s660"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s661"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s662"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s663"}]},{"date":"2026-12-13","dow":"SUN","total_minutes":145,"tasks":[{"person":"J","task":"Cooking Dinner","minutes":60,"id":"s664"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s665"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s666"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s667"},{"person":"J","task":"Water Plants","minutes":10,"id":"s668"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s669"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s670"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s671"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s672"}]}]},{"sheet_name":"14 Dec 2026","week_start":"2026-12-14","week_end":"2026-12-20","rotation_week":1,"joshua_total_minutes":250,"amrit_total_minutes":287,"days":[{"date":"2026-12-14","dow":"MON","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s673"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s674"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s675"}]},{"date":"2026-12-15","dow":"TUE","total_minutes":35,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s676"},{"person":"A","task":"Dust and Wipe Surfaces","minutes":10,"id":"s677"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s678"}]},{"date":"2026-12-16","dow":"WED","total_minutes":45,"tasks":[{"person":"J","task":"Dust landing and hallway","minutes":10,"id":"s679"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s680"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s681"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s682"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s683"}]},{"date":"2026-12-17","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Clean Area Around Bin","minutes":5,"id":"s684"},{"person":"J","task":"Clean Bin","minutes":5,"id":"s685"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s686"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s687"},{"person":"J","task":"Wipe floor","minutes":5,"id":"s688"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s689"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s690"}]},{"date":"2026-12-18","dow":"FRI","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s691"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s692"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s693"}]},{"date":"2026-12-19","dow":"SAT","total_minutes":202,"tasks":[{"person":"J","task":"Apply Mould Prevention Spray","minutes":5,"id":"s694"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s695"},{"person":"J","task":"Vacuum Ground Floor","minutes":20,"id":"s696"},{"person":"A","task":"Deep clean bathroom","minutes":60,"id":"s697"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s698"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s699"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s700"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s701"},{"person":"A","task":"Vacuum Upper Floor","minutes":10,"id":"s702"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s703"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s704"}]},{"date":"2026-12-20","dow":"SUN","total_minutes":120,"tasks":[{"person":"J","task":"Change bedding - Joshua","minutes":15,"id":"s705"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s706"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s707"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s708"},{"person":"J","task":"Sofa Reset","minutes":15,"id":"s709"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s710"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s711"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s712"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s713"},{"person":"A","task":"Water Plants","minutes":10,"id":"s714"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s715"}]}]},{"sheet_name":"21 Dec 2026","week_start":"2026-12-21","week_end":"2026-12-27","rotation_week":2,"joshua_total_minutes":265,"amrit_total_minutes":272,"days":[{"date":"2026-12-21","dow":"MON","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s716"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s717"}]},{"date":"2026-12-22","dow":"TUE","total_minutes":40,"tasks":[{"person":"J","task":"Dust and Wipe Surfaces","minutes":10,"id":"s718"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s719"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s720"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s721"}]},{"date":"2026-12-23","dow":"WED","total_minutes":40,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s722"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s723"},{"person":"A","task":"Dust landing and hallway","minutes":10,"id":"s724"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s725"}]},{"date":"2026-12-24","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s726"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s727"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s728"},{"person":"A","task":"Clean Area Around Bin","minutes":5,"id":"s729"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s730"},{"person":"A","task":"Wipe floor","minutes":5,"id":"s731"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s732"}]},{"date":"2026-12-25","dow":"FRI","total_minutes":25,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s733"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s734"}]},{"date":"2026-12-26","dow":"SAT","total_minutes":187,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s735"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s736"},{"person":"J","task":"Laundry - Lights","minutes":25,"id":"s737"},{"person":"J","task":"Vacuum Upper Floor","minutes":10,"id":"s738"},{"person":"A","task":"Apply Mould Prevention Spray","minutes":5,"id":"s739"},{"person":"A","task":"Change bedding - Amrit","minutes":15,"id":"s740"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s741"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s742"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s743"},{"person":"A","task":"Vacuum Ground Floor","minutes":20,"id":"s744"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s745"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s746"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s747"}]},{"date":"2026-12-27","dow":"SUN","total_minutes":145,"tasks":[{"person":"J","task":"Cooking Dinner","minutes":60,"id":"s748"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s749"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s750"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s751"},{"person":"J","task":"Water Plants","minutes":10,"id":"s752"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s753"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s754"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s755"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s756"}]}]},{"sheet_name":"28 Dec 2026","week_start":"2026-12-28","week_end":"2027-01-03","rotation_week":3,"joshua_total_minutes":290,"amrit_total_minutes":247,"days":[{"date":"2026-12-28","dow":"MON","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s757"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s758"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s759"}]},{"date":"2026-12-29","dow":"TUE","total_minutes":35,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s760"},{"person":"A","task":"Dust and Wipe Surfaces","minutes":10,"id":"s761"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s762"}]},{"date":"2026-12-30","dow":"WED","total_minutes":45,"tasks":[{"person":"J","task":"Dust landing and hallway","minutes":10,"id":"s763"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s764"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s765"},{"person":"J","task":"Take Out Household Rubbish","minutes":5,"id":"s766"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s767"}]},{"date":"2026-12-31","dow":"THU","total_minutes":55,"tasks":[{"person":"J","task":"Clean Area Around Bin","minutes":5,"id":"s768"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s769"},{"person":"J","task":"Put Bins Out (Recycling + General)","minutes":10,"id":"s770"},{"person":"J","task":"Wipe floor","minutes":5,"id":"s771"},{"person":"A","task":"Clean Bin","minutes":5,"id":"s772"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s773"},{"person":"BOTH","task":"Weekly Fridge Check","minutes":5,"id":"s774"}]},{"date":"2027-01-01","dow":"FRI","total_minutes":30,"tasks":[{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s775"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s776"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s777"}]},{"date":"2027-01-02","dow":"SAT","total_minutes":202,"tasks":[{"person":"J","task":"Apply Mould Prevention Spray","minutes":5,"id":"s778"},{"person":"J","task":"Deep clean bathroom","minutes":60,"id":"s779"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s780"},{"person":"J","task":"Vacuum Ground Floor","minutes":20,"id":"s781"},{"person":"A","task":"Dust - Amrit's Room","minutes":10,"id":"s782"},{"person":"A","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s783"},{"person":"A","task":"Laundry - Darks","minutes":30,"id":"s784"},{"person":"A","task":"Laundry - Towel & Bathmat","minutes":22,"id":"s785"},{"person":"A","task":"Vacuum Upper Floor","minutes":10,"id":"s786"},{"person":"A","task":"Vacuum floor - Amrit's Room","minutes":5,"id":"s787"},{"person":"BOTH","task":"Weekly Ocado Shop","minutes":15,"id":"s788"}]},{"date":"2027-01-03","dow":"SUN","total_minutes":120,"tasks":[{"person":"J","task":"Change bedding - Joshua","minutes":15,"id":"s789"},{"person":"J","task":"Dust - Joshua's Room","minutes":5,"id":"s790"},{"person":"J","task":"Empty Dishwasher (morning)","minutes":5,"id":"s791"},{"person":"J","task":"End-Of-Day Kitchen Clean","minutes":20,"id":"s792"},{"person":"J","task":"Vacuum floor - Joshua's Room","minutes":5,"id":"s793"},{"person":"J","task":"Wipe Desk","minutes":10,"id":"s794"},{"person":"A","task":"Iron Laundry","minutes":10,"id":"s795"},{"person":"A","task":"Laundry - Bedding","minutes":20,"id":"s796"},{"person":"A","task":"Sofa Reset","minutes":15,"id":"s797"},{"person":"A","task":"Water Plants","minutes":10,"id":"s798"},{"person":"A","task":"Wipe Surfaces","minutes":5,"id":"s799"}]}]}];
-const MASTER_ALLOC = [{"Chore":"Change bedding - Amrit","Owner / Rotation":"Amrit","Frequency":"Fortnightly","Area":"Amrit's Room","Minutes":15,"Preferred Day":"Saturday","Notes":null,"Timing Treatment":"Counted"},{"Chore":"Dust - Amrit's Room","Owner / Rotation":"Amrit","Frequency":"Weekly","Area":"Amrit's Room","Minutes":10,"Preferred Day":"Saturday","Notes":null,"Timing Treatment":"Counted"},{"Chore":"Vacuum floor - Amrit's Room","Owner / Rotation":"Amrit","Frequency":"Weekly","Area":"Amrit's Room","Minutes":5,"Preferred Day":"Saturday","Notes":null,"Timing Treatment":"Counted"},{"Chore":"Wipe Surfaces","Owner / Rotation":"Amrit","Frequency":"Every other day","Area":"Bathroom","Minutes":5,"Preferred Day":null,"Notes":"Sink, toilet, bath lip, floor, window sill, cabinet","Timing Treatment":"Counted"},{"Chore":"Apply Mould Prevention Spray","Owner / Rotation":"Alternates weekly","Frequency":"Weekly","Area":"Bathroom","Minutes":5,"Preferred Day":"Saturday","Notes":null,"Timing Treatment":"Counted"},{"Chore":"Deep clean bathroom","Owner / Rotation":"Alternates each occurrence","Frequency":"Fortnightly","Area":"Bathroom","Minutes":60,"Preferred Day":"Saturday","Notes":"Vacuum, mop, tub, shower, toilet, sink, cabinet, demould","Timing Treatment":"Counted"},{"Chore":"Dust landing and hallway","Owner / Rotation":"Alternates weekly","Frequency":"Weekly","Area":"Hallway","Minutes":10,"Preferred Day":"Wednesday","Notes":null,"Timing Treatment":"Counted"},{"Chore":"Dust - Joshua's Room","Owner / Rotation":"Joshua","Frequency":"Weekly","Area":"Joshua's Room","Minutes":5,"Preferred Day":"Sunday","Notes":null,"Timing Treatment":"Counted"},{"Chore":"Change bedding - Joshua","Owner / Rotation":"Joshua","Frequency":"Fortnightly","Area":"Joshua's Room","Minutes":15,"Preferred Day":"Sunday","Notes":null,"Timing Treatment":"Counted"},{"Chore":"Vacuum floor - Joshua's Room","Owner / Rotation":"Joshua","Frequency":"Weekly","Area":"Joshua's Room","Minutes":5,"Preferred Day":"Sunday","Notes":null,"Timing Treatment":"Counted"},{"Chore":"Wipe Desk","Owner / Rotation":"Joshua","Frequency":"Weekly","Area":"Joshua's Room","Minutes":10,"Preferred Day":"Sunday","Notes":null,"Timing Treatment":"Counted"},{"Chore":"Cooking Dinner","Owner / Rotation":"Joshua","Frequency":"Fortnightly","Area":"Kitchen","Minutes":60,"Preferred Day":"Sunday","Notes":null,"Timing Treatment":"Counted"},{"Chore":"Empty Dishwasher (morning)","Owner / Rotation":"Joshua","Frequency":"Daily","Area":"Kitchen","Minutes":5,"Preferred Day":null,"Notes":null,"Timing Treatment":"Counted"},{"Chore":"End-Of-Day Kitchen Clean","Owner / Rotation":"Alternates daily","Frequency":"Daily","Area":"Kitchen","Minutes":20,"Preferred Day":null,"Notes":"Dishwasher, pans, surfaces, sink, sweep","Timing Treatment":"Counted"},{"Chore":"Wipe floor","Owner / Rotation":"Alternates weekly","Frequency":"Weekly","Area":"Kitchen","Minutes":5,"Preferred Day":"Thursday","Notes":"Flat mop","Timing Treatment":"Counted"},{"Chore":"Weekly Fridge Check","Owner / Rotation":"Together","Frequency":"Weekly","Area":"Kitchen","Minutes":5,"Preferred Day":"Thursday","Notes":"Check fridge before the weekly shop; only shared chore","Timing Treatment":"Counted for both"},{"Chore":"Weekly Ocado Shop","Owner / Rotation":"Together","Frequency":"Weekly","Area":"Kitchen","Minutes":15,"Preferred Day":"Saturday","Notes":"Only shared chore","Timing Treatment":"Counted for both"},{"Chore":"Put Bins Out (Recycling + General)","Owner / Rotation":"Joshua","Frequency":"Weekly","Area":"Kitchen","Minutes":10,"Preferred Day":"Thursday evening","Notes":"Put recycling + general bins out on Thursday evening for Friday morning collection","Timing Treatment":"Counted"},{"Chore":"Take Out Household Rubbish","Owner / Rotation":"Joshua","Frequency":"Weekly","Area":"Kitchen","Minutes":5,"Preferred Day":"Wednesday","Notes":"No longer 'as needed'","Timing Treatment":"Counted"},{"Chore":"Clean Area Around Bin","Owner / Rotation":"Alternates weekly","Frequency":"Weekly","Area":"Kitchen","Minutes":5,"Preferred Day":"Thursday","Notes":null,"Timing Treatment":"Counted"},{"Chore":"Clean Bin","Owner / Rotation":"Alternates each occurrence","Frequency":"Fortnightly","Area":"Kitchen","Minutes":5,"Preferred Day":"Thursday","Notes":null,"Timing Treatment":"Counted"},{"Chore":"Dust and Wipe Surfaces","Owner / Rotation":"Alternates weekly","Frequency":"Weekly","Area":"Living Room","Minutes":10,"Preferred Day":"Tuesday","Notes":null,"Timing Treatment":"Counted"},{"Chore":"Sofa Reset","Owner / Rotation":"Alternates each occurrence","Frequency":"Fortnightly","Area":"Living Room","Minutes":15,"Preferred Day":"Sunday","Notes":null,"Timing Treatment":"Counted"},{"Chore":"Water Plants","Owner / Rotation":"Alternates weekly","Frequency":"Weekly","Area":"Living Room","Minutes":10,"Preferred Day":"Sunday","Notes":"Check first; water only where needed","Timing Treatment":"Counted"},{"Chore":"Laundry - Towel & Bathmat","Owner / Rotation":"Amrit","Frequency":"Weekly","Area":"Whole House","Minutes":22,"Preferred Day":"Saturday","Notes":"Includes hang/dry handling + put away","Timing Treatment":"Counted"},{"Chore":"Laundry - Lights","Owner / Rotation":"Joshua","Frequency":"Fortnightly","Area":"Whole House","Minutes":25,"Preferred Day":"Saturday","Notes":"Reassigned for workload balance; includes hang/dry handling + put away","Timing Treatment":"Counted"},{"Chore":"Laundry - Darks","Owner / Rotation":"Amrit","Frequency":"Weekly","Area":"Whole House","Minutes":30,"Preferred Day":"Saturday","Notes":"Includes hang/dry handling + put away","Timing Treatment":"Counted"},{"Chore":"Laundry - Bedding","Owner / Rotation":"Amrit","Frequency":"Weekly","Area":"Whole House","Minutes":20,"Preferred Day":"Sunday","Notes":"Wash bedding changed that week; includes hang/dry handling + put away","Timing Treatment":"Counted"},{"Chore":"Vacuum Ground Floor","Owner / Rotation":"Alternates weekly","Frequency":"Weekly","Area":"Whole House","Minutes":20,"Preferred Day":"Saturday","Notes":"After dusting","Timing Treatment":"Counted"},{"Chore":"Vacuum Upper Floor","Owner / Rotation":"Alternates weekly","Frequency":"Weekly","Area":"Whole House","Minutes":10,"Preferred Day":"Saturday","Notes":"Stairs, landing, bedrooms","Timing Treatment":"Counted"},{"Chore":"Iron Laundry","Owner / Rotation":"Amrit","Frequency":"Weekly","Area":"Whole House","Minutes":10,"Preferred Day":"Sunday","Notes":null,"Timing Treatment":"Counted"}];
+/* ---------- house rules ----------
+   who:   'J' | 'A' | 'BOTH' | 'ALT' (take turns, one occurrence each)
+   freq:  'daily' | 'alt-days' (every other day) | 'weekly' | 'fortnightly'
+   day:   for weekly / fortnightly chores
+   weeks: fortnightly: 0 = rotation weeks 1 & 3, 1 = weeks 2 & 4; alt-days: 0 = starts Monday of week 1
+   first: for 'ALT', who takes the first turn (rotation week 1, or Monday of week 1 for daily chores) */
+const DEFAULT_RULES = [
+  { id:'r1',  chore:'Change bedding - Amrit',             area:"Amrit's Room",  minutes:15, who:'A',    freq:'fortnightly', day:'SAT', weeks:1 },
+  { id:'r2',  chore:"Dust - Amrit's Room",                area:"Amrit's Room",  minutes:10, who:'A',    freq:'weekly',      day:'SAT' },
+  { id:'r3',  chore:"Vacuum floor - Amrit's Room",        area:"Amrit's Room",  minutes:5,  who:'A',    freq:'weekly',      day:'SAT' },
+  { id:'r4',  chore:'Wipe Surfaces',                      area:'Bathroom',      minutes:5,  who:'A',    freq:'alt-days',    weeks:0, notes:'Sink, toilet, bath lip, floor, window sill, cabinet' },
+  { id:'r5',  chore:'Apply Mould Prevention Spray',       area:'Bathroom',      minutes:5,  who:'ALT',  freq:'weekly',      day:'SAT', first:'J' },
+  { id:'r6',  chore:'Deep clean bathroom',                area:'Bathroom',      minutes:60, who:'ALT',  freq:'fortnightly', day:'SAT', weeks:0, first:'A', notes:'Vacuum, mop, tub, shower, toilet, sink, cabinet, demould' },
+  { id:'r7',  chore:'Dust landing and hallway',           area:'Hallway',       minutes:10, who:'ALT',  freq:'weekly',      day:'WED', first:'J' },
+  { id:'r8',  chore:"Dust - Joshua's Room",               area:"Joshua's Room", minutes:5,  who:'J',    freq:'weekly',      day:'SUN' },
+  { id:'r9',  chore:'Change bedding - Joshua',            area:"Joshua's Room", minutes:15, who:'J',    freq:'fortnightly', day:'SUN', weeks:0 },
+  { id:'r10', chore:"Vacuum floor - Joshua's Room",       area:"Joshua's Room", minutes:5,  who:'J',    freq:'weekly',      day:'SUN' },
+  { id:'r11', chore:'Wipe Desk',                          area:"Joshua's Room", minutes:10, who:'J',    freq:'weekly',      day:'SUN' },
+  { id:'r12', chore:'Cooking Dinner',                     area:'Kitchen',       minutes:60, who:'J',    freq:'fortnightly', day:'SUN', weeks:1 },
+  { id:'r13', chore:'Empty Dishwasher (morning)',         area:'Kitchen',       minutes:5,  who:'J',    freq:'daily' },
+  { id:'r14', chore:'End-Of-Day Kitchen Clean',           area:'Kitchen',       minutes:20, who:'ALT',  freq:'daily',       first:'J', notes:'Dishwasher, pans, surfaces, sink, sweep' },
+  { id:'r15', chore:'Wipe floor',                         area:'Kitchen',       minutes:5,  who:'ALT',  freq:'weekly',      day:'THU', first:'J', notes:'Flat mop' },
+  { id:'r16', chore:'Weekly Fridge Check',                area:'Kitchen',       minutes:5,  who:'BOTH', freq:'weekly',      day:'THU', notes:'Check fridge before the weekly shop' },
+  { id:'r17', chore:'Weekly Ocado Shop',                  area:'Kitchen',       minutes:15, who:'BOTH', freq:'weekly',      day:'SAT' },
+  { id:'r18', chore:'Put Bins Out (Recycling + General)', area:'Kitchen',       minutes:10, who:'J',    freq:'weekly',      day:'THU', notes:'Thursday evening, for Friday morning collection' },
+  { id:'r19', chore:'Take Out Household Rubbish',         area:'Kitchen',       minutes:5,  who:'J',    freq:'weekly',      day:'WED' },
+  { id:'r20', chore:'Clean Area Around Bin',              area:'Kitchen',       minutes:5,  who:'ALT',  freq:'weekly',      day:'THU', first:'J' },
+  { id:'r21', chore:'Clean Bin',                          area:'Kitchen',       minutes:5,  who:'ALT',  freq:'fortnightly', day:'THU', weeks:0, first:'J' },
+  { id:'r22', chore:'Dust and Wipe Surfaces',             area:'Living Room',   minutes:10, who:'ALT',  freq:'weekly',      day:'TUE', first:'A' },
+  { id:'r23', chore:'Sofa Reset',                         area:'Living Room',   minutes:15, who:'ALT',  freq:'fortnightly', day:'SUN', weeks:0, first:'J' },
+  { id:'r24', chore:'Water Plants',                       area:'Living Room',   minutes:10, who:'ALT',  freq:'weekly',      day:'SUN', first:'A', notes:'Check first; water only where needed' },
+  { id:'r25', chore:'Laundry - Towel & Bathmat',          area:'Whole House',   minutes:22, who:'A',    freq:'weekly',      day:'SAT', notes:'Includes hang/dry handling + put away' },
+  { id:'r26', chore:'Laundry - Lights',                   area:'Whole House',   minutes:25, who:'J',    freq:'fortnightly', day:'SAT', weeks:1, notes:'Includes hang/dry handling + put away' },
+  { id:'r27', chore:'Laundry - Darks',                    area:'Whole House',   minutes:30, who:'A',    freq:'weekly',      day:'SAT', notes:'Includes hang/dry handling + put away' },
+  { id:'r28', chore:'Laundry - Bedding',                  area:'Whole House',   minutes:20, who:'A',    freq:'weekly',      day:'SUN', notes:'Wash bedding changed that week; includes hang/dry handling + put away' },
+  { id:'r29', chore:'Vacuum Ground Floor',                area:'Whole House',   minutes:20, who:'ALT',  freq:'weekly',      day:'SAT', first:'J', notes:'After dusting' },
+  { id:'r30', chore:'Vacuum Upper Floor',                 area:'Whole House',   minutes:10, who:'ALT',  freq:'weekly',      day:'SAT', first:'A', notes:'Stairs, landing, bedrooms' },
+  { id:'r31', chore:'Iron Laundry',                       area:'Whole House',   minutes:10, who:'A',    freq:'weekly',      day:'SUN' },
+];
 
 const DOW_NAME = { MON:'Monday', TUE:'Tuesday', WED:'Wednesday', THU:'Thursday', FRI:'Friday', SAT:'Saturday', SUN:'Sunday' };
 const PEOPLE = ['J','A','BOTH'];
+const PERSON_NAME = { J:'Joshua', A:'Amrit', BOTH:'Both' };
 
 let SCHEDULE = { weeks: [] };
 let checked = {};
@@ -476,6 +964,10 @@ let currentYear = null;
 let currentTab = 'week';
 let addingInDay = null;     // date string of the day currently showing the add-task form
 let editingTaskId = null;   // id of task currently being edited
+let RULES = DEFAULT_RULES;
+let editingRuleId = null;   // rule id being edited in House rules, or 'new'
+let personFilter = 'ALL';   // 'ALL' | 'J' | 'A': whose chores the week shows
+let toggledDays = {};       // date -> true when the user opened a collapsed day or closed an open one
 
 /* ---------- utils ---------- */
 function uid(){
@@ -501,6 +993,75 @@ function escapeAttr(s){ return escapeHTML(s).replace(/"/g,'&quot;'); }
 
 function dayMinutes(day){ return day.tasks.reduce((a,t)=>a+t.minutes,0); }
 
+/* ---------- week generator: builds weeks from the house rules ---------- */
+const EPOCH = '2026-08-24';            // Monday of rotation week 1
+const DOWS = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+const PERSON_ORDER = { J:0, A:1, BOTH:2 };
+const WEEKS_AHEAD = 4;                 // always keep this many weeks after the current one
+
+function daysSinceEpoch(dateStr){
+  const [y,m,d] = dateStr.split('-').map(Number);
+  return Math.round((Date.UTC(y,m-1,d) - Date.UTC(2026,7,24)) / 864e5);
+}
+function mod(n, m){ return ((n % m) + m) % m; }
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function mondayOf(dateStr){ return addDays(dateStr, -mod(daysSinceEpoch(dateStr), 7)); }
+
+// Who does a rule's nth occurrence (n counts from the first turn).
+function personFor(rule, n){
+  if (rule.who !== 'ALT') return rule.who;
+  const other = rule.first === 'A' ? 'J' : 'A';
+  return mod(n, 2) === 0 ? (rule.first || 'J') : other;
+}
+function generateWeek(weekStart, rules){
+  const wi = Math.floor(daysSinceEpoch(weekStart) / 7);
+  const days = DOWS.map((dow, i) => ({ date: addDays(weekStart, i), dow, tasks: [] }));
+  rules.forEach(rule => {
+    days.forEach((day, i) => {
+      const di = wi*7 + i;
+      let n = null;
+      if (rule.freq === 'daily') n = di;
+      else if (rule.freq === 'alt-days'){ const k = di - (rule.weeks||0); if (mod(k,2)===0) n = k/2; }
+      else if (rule.freq === 'weekly'){ if (day.dow === rule.day) n = wi; }
+      else if (rule.freq === 'fortnightly'){ const k = wi - (rule.weeks||0); if (day.dow === rule.day && mod(k,2)===0) n = k/2; }
+      if (n === null) return;
+      // Fixed ids, so two phones generating the same week produce identical tasks.
+      day.tasks.push({ id: `g_${day.date}_${rule.id}`, person: personFor(rule, n), task: rule.chore, minutes: rule.minutes, rule: rule.id });
+    });
+  });
+  days.forEach(d => d.tasks.sort((a,b) => (PERSON_ORDER[a.person]-PERSON_ORDER[b.person]) || a.task.localeCompare(b.task)));
+  return { sheet_name: weekStart, week_start: weekStart, week_end: addDays(weekStart, 6),
+           rotation_week: mod(wi, 4) + 1, days, generated: true };
+}
+// Add generated weeks so the schedule always reaches WEEKS_AHEAD weeks past today. Returns true if it added any.
+function ensureWeeksAhead(){
+  const target = addDays(mondayOf(todayStr()), 7*WEEKS_AHEAD);
+  const weeks = SCHEDULE.weeks;
+  let added = false;
+  while (!weeks.length || weeks[weeks.length-1].week_start < target){
+    const next = weeks.length ? addDays(weeks[weeks.length-1].week_start, 7) : mondayOf(todayStr());
+    weeks.push(generateWeek(next, RULES));
+    added = true;
+  }
+  return added;
+}
+function weekSignature(w){
+  return w.days.flatMap(d => d.tasks.map(t => `${d.date}|${t.person}|${t.task}|${t.minutes}`)).sort().join('\n');
+}
+// After the rules change, rebuild every week after this one that nobody has edited by hand.
+// A week counts as untouched if it still matches what the old rules would have produced.
+function regenerateFutureWeeks(oldRules){
+  const thisWeek = mondayOf(todayStr());
+  SCHEDULE.weeks = SCHEDULE.weeks.map(w => {
+    if (w.week_start <= thisWeek || w.edited) return w;
+    if (weekSignature(w) !== weekSignature(generateWeek(w.week_start, oldRules))) return w;
+    return generateWeek(w.week_start, RULES);
+  });
+}
+
 function findCurrentWeekIndex(){
   const today = new Date(); today.setHours(0,0,0,0);
   const weeks = SCHEDULE.weeks;
@@ -521,9 +1082,16 @@ async function loadAll(){
   store = await window.storeReady;
   SCHEDULE = store.schedule && store.schedule.weeks && store.schedule.weeks.length ? store.schedule : { weeks: SEED_WEEKS };
   checked = store.checked || {};
-  if (!store.schedule) saveSchedule();   // first run: save the starting schedule
+  RULES = store.rules && store.rules.length ? store.rules : DEFAULT_RULES;
+  // Save on first run, or when the schedule needed extending past its last week.
+  if (ensureWeeksAhead() || !store.schedule) saveSchedule();
 
   try{ theme = localStorage.getItem('jamrit_theme') || 'light'; } catch(e){ theme = 'light'; }
+  // Whose chores to show: what this phone picked last time, otherwise the signed-in person.
+  let saved = null;
+  try{ saved = localStorage.getItem('jamrit_filter'); } catch(e){}
+  const me = { joshua:'J', amrit:'A' }[String(store.memberName||'').trim().toLowerCase()];
+  personFilter = saved || me || 'ALL';
   document.documentElement.setAttribute('data-theme', theme);
   renderAccount();
 }
@@ -549,10 +1117,11 @@ function setSyncNote(msg){
 function renderAccount(){
   const el = document.getElementById('accountNote');
   if (store.mode==='cloud'){
-    el.innerHTML = `Signed in as ${escapeHTML(store.user.email)} · <button id="signOutBtn">Sign out</button>`;
+    el.innerHTML = `<h4>Account</h4><div class="account">Signed in as <strong>${escapeHTML(store.user.email)}</strong></div>
+      <button class="signout" id="signOutBtn">Sign out</button>`;
     document.getElementById('signOutBtn').addEventListener('click', ()=> store.signOut());
   } else {
-    el.textContent = store.cloudError ? "Couldn't reach Firebase, so changes are saved on this device only." : 'Changes are saved on this device only.';
+    el.innerHTML = `<h4>Saving</h4><div class="account">${store.cloudError ? "Couldn't reach Firebase, so changes are saved on this device only." : 'Changes are saved on this device only.'}</div>`;
   }
 }
 
@@ -561,11 +1130,13 @@ function onRemoteChange(kind, value){
   if (kind==='schedule'){
     SCHEDULE = value;
     if (currentWeekIdx >= SCHEDULE.weeks.length) currentWeekIdx = SCHEDULE.weeks.length-1;
+  } else if (kind==='rules'){
+    RULES = value;
   } else {
     checked = value;
   }
-  // Don't wipe out a half-typed task; the form re-renders the week when it closes.
-  if (addingInDay || editingTaskId) return;
+  // Don't wipe out a half-typed task or rule; the form re-renders when it closes.
+  if (addingInDay || editingTaskId || editingRuleId) return;
   renderAll();
 }
 
@@ -579,6 +1150,7 @@ function addTask(dayDate, task){
   const week = SCHEDULE.weeks[currentWeekIdx];
   const day = week.days.find(d=>d.date===dayDate);
   day.tasks.push({ id: uid(), person: task.person, task: task.task, minutes: task.minutes });
+  week.edited = true;   // keep hand edits when the house rules change
   addingInDay = null;
   saveSchedule(); renderWeek();
 }
@@ -588,6 +1160,7 @@ function editTask(taskId, updates){
     const t = day.tasks.find(t=>t.id===taskId);
     if (t){ Object.assign(t, updates); break; }
   }
+  week.edited = true;
   editingTaskId = null;
   saveSchedule(); renderWeek();
 }
@@ -598,22 +1171,14 @@ function deleteTask(taskId, taskName){
     const idx = day.tasks.findIndex(t=>t.id===taskId);
     if (idx>-1){ day.tasks.splice(idx,1); break; }
   }
+  week.edited = true;
   const wasChecked = !!checked[taskId];
   delete checked[taskId];
   saveSchedule(); if (wasChecked) saveChecked([taskId], false); renderWeek();
 }
 function addNextWeek(){
   const weeks = SCHEDULE.weeks;
-  const last = weeks[weeks.length-1];
-  const newStart = addDays(last.week_end, 1);
-  const newEnd = addDays(newStart, 6);
-  const newRotation = (last.rotation_week % 4) + 1;
-  const newDays = last.days.map(d => ({
-    date: addDays(d.date, 7),
-    dow: d.dow,
-    tasks: d.tasks.map(t => ({ id: uid(), person: t.person, task: t.task, minutes: t.minutes }))
-  }));
-  const newWeek = { sheet_name: newStart, week_start: newStart, week_end: newEnd, rotation_week: newRotation, days: newDays };
+  const newWeek = generateWeek(addDays(weeks[weeks.length-1].week_start, 7), RULES);
   weeks.push(newWeek);
   saveSchedule();
   currentWeekIdx = weeks.length-1;
@@ -641,6 +1206,7 @@ function computeWeekProgress(week){
 function renderYearChips(){
   const years = [...new Set(SCHEDULE.weeks.map(yearOf))].sort((a,b)=>a-b);
   if (currentYear===null || !years.includes(currentYear)) currentYear = years[years.length-1];
+  document.getElementById('yearRow').classList.toggle('single', years.length < 2);
   document.getElementById('yearRow').innerHTML = years.map(y=>
     `<button class="yearchip ${y===currentYear?'active':''}" data-y="${y}">${y}</button>`
   ).join('');
@@ -707,7 +1273,7 @@ function renderBalance(){
 
 /* ---------- render: task form ---------- */
 function taskFormHTML(dayDate, existing){
-  const t = existing || { person:'J', task:'', minutes:5 };
+  const t = existing || { person: personFilter==='ALL' ? 'J' : personFilter, task:'', minutes:5 };
   const isEdit = !!existing;
   return `<div class="taskform" data-day="${dayDate}" data-editing="${isEdit? t.id : ''}">
     <input type="text" class="fname" placeholder="Task name" value="${escapeAttr(t.task)}">
@@ -736,7 +1302,7 @@ function taskRowHTML(week, day, t){
     <div class="tasktext">
       <div class="taskname">${escapeHTML(t.task)}</div>
       <div class="taskmeta">
-        <span class="who-badge ${t.person}">${t.person}</span>
+        <span class="who-badge ${t.person}">${PERSON_NAME[t.person]}</span>
         <span class="taskmin mono">${t.minutes}m</span>
       </div>
     </div>
@@ -746,25 +1312,74 @@ function taskRowHTML(week, day, t){
     </div>
   </li>`;
 }
+function visibleTasks(day){
+  if (personFilter === 'ALL') return day.tasks;
+  return day.tasks.filter(t => t.person === personFilter || t.person === 'BOTH');
+}
+// Days before today in the current week start collapsed; tapping a day's header flips it.
+function isCollapsed(week, day){
+  const pastThisWeek = week.week_start === mondayOf(todayStr()) && day.date < todayStr();
+  return pastThisWeek !== !!toggledDays[day.date];
+}
 function dayCardHTML(week, day){
-  const items = day.tasks.map(t=>taskRowHTML(week, day, t)).join('');
-  const doneCount = day.tasks.filter(t=>checked[t.id]).length;
+  const tasks = visibleTasks(day);
+  const items = tasks.map(t=>taskRowHTML(week, day, t)).join('');
+  const doneCount = tasks.filter(t=>checked[t.id]).length;
+  const isToday = day.date === todayStr();
+  const collapsed = isCollapsed(week, day) && addingInDay !== day.date && !tasks.some(t => t.id === editingTaskId);
   const addRow = addingInDay === day.date
     ? `<li class="addrow">${taskFormHTML(day.date, null)}</li>`
     : `<li class="addrow"><button type="button" class="addbtn" data-day="${day.date}">+ Add task</button></li>`;
-  return `<div class="daycard">
-    <div class="dayhead">
+  const empty = !tasks.length ? `<li class="emptyday">Nothing for ${personFilter==='J'?'Joshua':'Amrit'} today.</li>` : '';
+  return `<div class="daycard ${collapsed?'collapsed':''} ${isToday?'today':''}">
+    <button type="button" class="dayhead" data-day="${day.date}" aria-expanded="${!collapsed}">
       <div>
-        <div class="dname">${DOW_NAME[day.dow]}</div>
+        <div class="dname">${DOW_NAME[day.dow]}${isToday?' <span class="todaytag">Today</span>':''}</div>
         <div class="ddate mono">${formatDayDate(day.date)}</div>
       </div>
       <div class="dmeta">
-        <div class="mono">${dayMinutes(day)}m planned</div>
-        <div class="pill mono">${doneCount}/${day.tasks.length}</div>
+        <div class="mono">${tasks.reduce((a,t)=>a+t.minutes,0)}m planned</div>
+        <div class="pill mono ${tasks.length && doneCount===tasks.length?'alldone':''}">${doneCount}/${tasks.length}</div>
       </div>
-    </div>
-    <ul class="tasks">${items}${addRow}</ul>
+      <span class="chev" aria-hidden="true">›</span>
+    </button>
+    <ul class="tasks">${items}${empty}${addRow}</ul>
   </div>`;
+}
+function filterRowHTML(){
+  const opt = (v, label, color) => `<button type="button" class="filterchip ${personFilter===v?'active':''}" data-f="${v}" aria-pressed="${personFilter===v}">${color?`<span class="dot" style="background:var(${color})"></span>`:''}${label}</button>`;
+  return `<div class="filterrow" role="group" aria-label="Whose chores to show">
+    <span class="glider" aria-hidden="true"></span>
+    ${opt('ALL','Everyone')}${opt('J','Joshua','--joshua')}${opt('A','Amrit','--amrit')}
+  </div>`;
+}
+// Slide the glass highlight from where it was to the chosen button. The bar is re-rendered
+// with the week, so remember the last position and animate from there.
+let lastGlider = null;
+function placeGlider(){
+  const row = document.querySelector('.filterrow');
+  const glider = row && row.querySelector('.glider');
+  const active = row && row.querySelector('.filterchip.active');
+  if (!glider || !active || !active.offsetWidth) return;
+  const colour = { ALL:'var(--ink)', J:'var(--joshua)', A:'var(--amrit)' }[active.dataset.f];
+  const next = { left: active.offsetLeft, width: active.offsetWidth, colour };
+  if (lastGlider){
+    glider.style.transition = 'none';
+    Object.assign(glider.style, { left: lastGlider.left+'px', width: lastGlider.width+'px' });
+    glider.style.setProperty('--gc', lastGlider.colour);
+    glider.offsetWidth;   // apply the old position before animating
+    glider.style.transition = '';
+  }
+  Object.assign(glider.style, { left: next.left+'px', width: next.width+'px' });
+  glider.style.setProperty('--gc', colour);
+  lastGlider = next;
+}
+window.addEventListener('resize', ()=>{ lastGlider = null; placeGlider(); });
+document.fonts && document.fonts.ready.then(()=>{ lastGlider = null; placeGlider(); });
+function setPersonFilter(f){
+  personFilter = f;
+  try{ localStorage.setItem('jamrit_filter', f); } catch(e){}
+  renderWeek();
 }
 
 function wireTaskForm(container){
@@ -806,10 +1421,18 @@ function renderWeek(){
     return;
   }
   const week = SCHEDULE.weeks[currentWeekIdx];
-  const totalTasks = week.days.reduce((a,d)=>a+d.tasks.length,0);
-  container.innerHTML = week.days.map(d=>dayCardHTML(week,d)).join('') +
+  const totalTasks = week.days.reduce((a,d)=>a+visibleTasks(d).length,0);
+  container.innerHTML = filterRowHTML() + week.days.map(d=>dayCardHTML(week,d)).join('') +
     `<div class="weekfoot"><span>${totalTasks} tasks this week</span>
      <button class="resetlink" id="resetWeek">Uncheck this week</button></div>`;
+
+  container.querySelectorAll('.filterchip').forEach(b=> b.addEventListener('click', ()=> setPersonFilter(b.dataset.f)));
+  placeGlider();
+  container.querySelectorAll('.dayhead').forEach(h=> h.addEventListener('click', ()=>{
+    const d = h.dataset.day;
+    if (toggledDays[d]) delete toggledDays[d]; else toggledDays[d] = true;
+    renderWeek();
+  }));
 
   container.querySelectorAll('.check').forEach(cb=> cb.addEventListener('change', ()=>toggleTask(cb.dataset.id)));
   container.querySelectorAll('.addbtn').forEach(btn=> btn.addEventListener('click', ()=>{ addingInDay = btn.dataset.day; editingTaskId=null; renderWeek(); }));
@@ -826,24 +1449,142 @@ function renderWeek(){
 }
 
 /* ---------- rules view ---------- */
+const WHO_LABEL = { J:'Joshua', A:'Amrit', BOTH:'Together', ALT:'Take turns' };
+const FREQ_LABEL = { daily:'Every day', 'alt-days':'Every other day', weekly:'Weekly', fortnightly:'Every 2 weeks' };
+
+function ruleSummary(r){
+  const who = r.who==='ALT' ? `Take turns (${r.first==='A'?'Amrit':'Joshua'} first)` : WHO_LABEL[r.who];
+  let when = FREQ_LABEL[r.freq];
+  if (r.freq==='weekly' || r.freq==='fortnightly') when += ' · ' + DOW_NAME[r.day];
+  if (r.freq==='fortnightly') when += r.weeks ? ' (weeks 2 & 4)' : ' (weeks 1 & 3)';
+  return who + ' · ' + when;
+}
+function ruleFormHTML(r){
+  const isNew = !r;
+  r = r || { chore:'', area:'', minutes:10, who: personFilter==='ALL' ? 'J' : personFilter, freq:'weekly', day:'SAT', weeks:0, first:'J', notes:'' };
+  const areas = [...new Set(RULES.map(x=>x.area).filter(Boolean))].sort();
+  const sel = (v, cur) => v===cur ? 'selected' : '';
+  return `<div class="rule-card"><div class="ruleform" data-id="${isNew?'new':r.id}">
+    <label>Chore<input type="text" class="rf-chore" value="${escapeAttr(r.chore)}" placeholder="e.g. Clean the oven"></label>
+    <div class="two">
+      <label>Room<input type="text" class="rf-area" list="areaList" value="${escapeAttr(r.area||'')}" placeholder="e.g. Kitchen"></label>
+      <label>Minutes<input type="number" class="rf-min" min="1" max="240" value="${r.minutes}"></label>
+    </div>
+    <datalist id="areaList">${areas.map(a=>`<option value="${escapeAttr(a)}">`).join('')}</datalist>
+    <div class="lbl">Who
+      <div class="persongroup">
+        ${['J','A','BOTH','ALT'].map(p=>`<button type="button" class="pbtn ${p===r.who?'sel '+p:''}" data-p="${p}">${WHO_LABEL[p]}</button>`).join('')}
+      </div>
+    </div>
+    <div class="two">
+      <label>How often
+        <select class="rf-freq">${Object.keys(FREQ_LABEL).map(f=>`<option value="${f}" ${sel(f,r.freq)}>${FREQ_LABEL[f]}</option>`).join('')}</select>
+      </label>
+      <label class="rf-day-wrap">Day
+        <select class="rf-day">${DOWS.map(d=>`<option value="${d}" ${sel(d,r.day||'SAT')}>${DOW_NAME[d]}</option>`).join('')}</select>
+      </label>
+    </div>
+    <div class="two">
+      <label class="rf-weeks-wrap">Which weeks
+        <select class="rf-weeks"><option value="0" ${r.weeks?'':'selected'}>Weeks 1 &amp; 3</option><option value="1" ${r.weeks?'selected':''}>Weeks 2 &amp; 4</option></select>
+      </label>
+      <label class="rf-altdays-wrap">Which days
+        <select class="rf-altdays"><option value="0" ${r.weeks?'':'selected'}>Mon, Wed, Fri, Sun in week 1</option><option value="1" ${r.weeks?'selected':''}>Tue, Thu, Sat in week 1</option></select>
+      </label>
+      <label class="rf-first-wrap">First turn
+        <select class="rf-first"><option value="J" ${sel('J',r.first||'J')}>Joshua</option><option value="A" ${sel('A',r.first)}>Amrit</option></select>
+      </label>
+    </div>
+    <label>Notes<input type="text" class="rf-notes" value="${escapeAttr(r.notes||'')}" placeholder="Optional"></label>
+    <div class="formbtns">
+      <button type="button" class="btn-text rf-cancel">Cancel</button>
+      <button type="button" class="btn-primary rf-save">${isNew?'Add chore':'Save'}</button>
+    </div>
+  </div></div>`;
+}
 function renderRules(){
+  const view = document.getElementById('rulesView');
   const groups = {};
-  MASTER_ALLOC.forEach(r=>{
-    const area = r['Area'] || 'Other';
-    (groups[area] = groups[area]||[]).push(r);
-  });
-  const html = Object.keys(groups).sort().map(area=>{
-    const rows = groups[area].map(r=>{
-      const owner=r['Owner / Rotation']||'', freq=r['Frequency']||'', day=r['Preferred Day']||'', notes=r['Notes']||'';
-      return `<div class="rule-card">
-        <div class="rule-top"><div class="rule-name">${escapeHTML(r['Chore']||'')}</div><div class="rule-min mono">${r['Minutes']||''}m</div></div>
-        <div class="rule-sub">${escapeHTML(owner)} · ${escapeHTML(freq)}${day?' · '+escapeHTML(day):''}</div>
-        ${notes?`<div class="rule-note">${escapeHTML(notes)}</div>`:''}
-      </div>`;
-    }).join('');
+  RULES.forEach(r=>{ const area = r.area || 'Other'; (groups[area] = groups[area]||[]).push(r); });
+  const cards = Object.keys(groups).sort().map(area=>{
+    const rows = groups[area].map(r=> editingRuleId===r.id ? ruleFormHTML(r) : `<div class="rule-card">
+        <div class="rule-top">
+          <div class="rule-name">${escapeHTML(r.chore)}</div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div class="rule-min mono">${r.minutes}m</div>
+            <div class="rowactions">
+              <button class="iconbtn edit" data-rule="${r.id}" title="Edit">✎</button>
+              <button class="iconbtn del" data-rule="${r.id}" title="Delete">✕</button>
+            </div>
+          </div>
+        </div>
+        <div class="rule-sub">${escapeHTML(ruleSummary(r))}</div>
+        ${r.notes?`<div class="rule-note">${escapeHTML(r.notes)}</div>`:''}
+      </div>`).join('');
     return `<div class="area-group"><h3>${escapeHTML(area)}</h3>${rows}</div>`;
   }).join('');
-  document.getElementById('rulesView').innerHTML = html;
+  view.innerHTML = `<p class="rules-intro">These rules build every new week. Changes apply from next week, so this week's ticks stay as they are.</p>
+    <div class="rules-add">${editingRuleId==='new' ? ruleFormHTML(null) : '<button type="button" class="addbtn" id="addRule">+ Add chore</button>'}</div>
+    ${cards}`;
+
+  const add = document.getElementById('addRule');
+  if (add) add.addEventListener('click', ()=>{ editingRuleId = 'new'; renderRules(); });
+  view.querySelectorAll('.iconbtn.edit').forEach(b=> b.addEventListener('click', ()=>{ editingRuleId = b.dataset.rule; renderRules(); }));
+  view.querySelectorAll('.iconbtn.del').forEach(b=> b.addEventListener('click', ()=> deleteRule(b.dataset.rule)));
+  const form = view.querySelector('.ruleform');
+  if (form) wireRuleForm(form);
+}
+function wireRuleForm(form){
+  let who = form.querySelector('.pbtn.sel')?.dataset.p || 'J';
+  const q = s => form.querySelector(s);
+  // Only show the fields that matter for the chosen frequency and person.
+  function sync(){
+    const f = q('.rf-freq').value;
+    q('.rf-day-wrap').hidden = !(f==='weekly' || f==='fortnightly');
+    q('.rf-weeks-wrap').hidden = f!=='fortnightly';
+    q('.rf-altdays-wrap').hidden = f!=='alt-days';
+    q('.rf-first-wrap').hidden = who!=='ALT';
+  }
+  form.querySelectorAll('.pbtn').forEach(btn=> btn.addEventListener('click', ()=>{
+    form.querySelectorAll('.pbtn').forEach(b=> b.classList.remove('sel','J','A','BOTH','ALT'));
+    btn.classList.add('sel', btn.dataset.p);
+    who = btn.dataset.p; sync();
+  }));
+  q('.rf-freq').addEventListener('change', sync);
+  sync();
+  q('.rf-cancel').addEventListener('click', ()=>{ editingRuleId = null; renderRules(); renderWeek(); });
+  q('.rf-save').addEventListener('click', ()=>{
+    const chore = q('.rf-chore').value.trim();
+    const minutes = parseInt(q('.rf-min').value, 10);
+    if (!chore){ q('.rf-chore').focus(); return; }
+    if (!minutes || minutes<=0){ q('.rf-min').focus(); return; }
+    const freq = q('.rf-freq').value;
+    const rule = { id: form.dataset.id==='new' ? 'r_' + uid().slice(2) : form.dataset.id,
+      chore, area: q('.rf-area').value.trim() || 'Other', minutes, who, freq };
+    if (freq==='weekly' || freq==='fortnightly') rule.day = q('.rf-day').value;
+    if (freq==='fortnightly') rule.weeks = parseInt(q('.rf-weeks').value, 10);
+    if (freq==='alt-days') rule.weeks = parseInt(q('.rf-altdays').value, 10);
+    if (who==='ALT') rule.first = q('.rf-first').value;
+    const notes = q('.rf-notes').value.trim();
+    if (notes) rule.notes = notes;
+    const next = form.dataset.id==='new' ? [...RULES, rule] : RULES.map(r => r.id===rule.id ? rule : r);
+    applyRules(next);
+  });
+}
+function deleteRule(id){
+  const r = RULES.find(x=>x.id===id);
+  if (!r || !confirm('Remove "'+r.chore+'" from the house rules? It stops appearing from next week.')) return;
+  applyRules(RULES.filter(x=>x.id!==id));
+}
+async function applyRules(next){
+  const old = RULES;
+  RULES = next;
+  editingRuleId = null;
+  regenerateFutureWeeks(old);
+  renderRules(); renderWeek();
+  setSyncNote('Saving…');
+  try{ await store.saveRules(RULES); await store.saveSchedule(SCHEDULE); setSyncNote(savedNote()); }
+  catch(e){ console.error(e); setSyncNote("Couldn't save. Check your connection."); }
 }
 
 /* ---------- tabs / theme ---------- */
@@ -860,9 +1601,23 @@ function setTab(tab){
 function setTheme(t){
   theme = t;
   document.documentElement.setAttribute('data-theme', t);
-  document.querySelectorAll('.swatch').forEach(s=> s.classList.toggle('active', s.dataset.t===t));
+  markActiveTheme();
   saveTheme();
 }
+function markActiveTheme(){
+  document.querySelectorAll('.themeopt').forEach(b=> b.classList.toggle('active', b.dataset.t===theme));
+}
+
+/* ---------- settings menu ---------- */
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsMenu = document.getElementById('settingsMenu');
+function setMenuOpen(open){
+  settingsMenu.hidden = !open;
+  settingsBtn.setAttribute('aria-expanded', String(open));
+}
+settingsBtn.addEventListener('click', e=>{ e.stopPropagation(); setMenuOpen(settingsMenu.hidden); });
+document.addEventListener('click', e=>{ if (!settingsMenu.hidden && !settingsMenu.contains(e.target)) setMenuOpen(false); });
+document.addEventListener('keydown', e=>{ if (e.key==='Escape' && !settingsMenu.hidden){ setMenuOpen(false); settingsBtn.focus(); } });
 
 function renderAll(){ renderWeek(); if (currentTab==='rules') renderRules(); }
 
@@ -871,16 +1626,16 @@ document.getElementById('jumpToday').addEventListener('click', ()=>{
   currentYear = yearOf(SCHEDULE.weeks[currentWeekIdx]);
   renderAll();
 });
-document.getElementById('tabWeek').addEventListener('click', ()=> setTab('week'));
+document.getElementById('tabWeek').addEventListener('click', ()=>{ setTab('week'); lastGlider = null; placeGlider(); });
 document.getElementById('tabRules').addEventListener('click', ()=>{ setTab('rules'); renderRules(); });
-document.querySelectorAll('.swatch').forEach(s=> s.addEventListener('click', ()=> setTheme(s.dataset.t)));
+document.querySelectorAll('.themeopt').forEach(b=> b.addEventListener('click', ()=> setTheme(b.dataset.t)));
 
 (async function init(){
   setSyncNote('Loading…');
   await loadAll();
   currentWeekIdx = findCurrentWeekIndex();
   currentYear = yearOf(SCHEDULE.weeks[currentWeekIdx]);
-  document.querySelectorAll('.swatch').forEach(s=> s.classList.toggle('active', s.dataset.t===theme));
+  markActiveTheme();
   setSyncNote('');
   renderWeek();
   store.subscribe(onRemoteChange);
