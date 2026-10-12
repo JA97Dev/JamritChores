@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Board — Joshua &amp; Amrit</title>
+<!-- Home-screen app: icon, name, full-screen launch and status bar -->
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-light.png">
+<link rel="apple-touch-icon" href="icons/touch-light.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-title" content="The Board">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#EDF1EC">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Audiowide&family=Exo+2:wght@600;700&family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -353,12 +362,31 @@
   .wrap{ max-width: 640px; margin: 0 auto; padding: 0 16px; }
 
   /* ---------- Header ---------- */
+  /* Fixed header; main is padded by its full height (--header-h, set from script) so shrinking it never moves the list */
   header.top{
-    position: sticky; top: 0; z-index: 20;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 20;
     background: var(--bg);
-    padding-top: 18px; padding-bottom: 10px;
+    padding-top: calc(18px + env(safe-area-inset-top, 0px)); padding-bottom: 10px;
     border-bottom: 1px solid var(--line);
+    transition: padding .28s ease;
   }
+  /* Compact header once you scroll down the list */
+  .brand, .brand h1, .brand .sub, .weeklabel .rot, .balance, .balance-labels, .balance-note, .balance-track, .weeknav .navbtn{
+    transition: margin .28s ease, font-size .28s ease, max-height .28s ease, opacity .2s ease, height .28s ease, width .28s ease;
+  }
+  .brand .sub, .weeklabel .rot, .balance-labels, .balance-note{ max-height: 20px; overflow: hidden; }
+  header.top.measuring, header.top.measuring *{ transition: none !important; }
+  header.top.compact{ padding-top: calc(8px + env(safe-area-inset-top, 0px)); padding-bottom: 8px; }
+  header.top.compact .brand{ margin-bottom: 8px; }
+  header.top.compact .brand h1{ font-size: 18px; }
+  header.top.compact .brand .sub,
+  header.top.compact .weeklabel .rot,
+  header.top.compact .balance-labels,
+  header.top.compact .balance-note{ max-height: 0; opacity: 0; margin-top: 0; margin-bottom: 0; }
+  header.top.compact .balance{ margin-top: 8px; }
+  header.top.compact .balance-track{ height: 4px; }
+  header.top.compact .weeknav .navbtn{ width: 30px; height: 30px; }
+  header.top.compact .weeknav .navbtn.addweek{ width: auto; }
   .brand{ display:flex; align-items:center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
   .brand > div:first-child{ flex-shrink: 0; }
   .tabs .short{ display:none; }
@@ -460,7 +488,7 @@
   .balance-note{ font-size: 11px; color: var(--ink-soft); margin-top: 5px; }
 
   /* ---------- Day cards ---------- */
-  main{ padding-top: 16px; }
+  main.wrap{ padding-top: calc(var(--header-h, 220px) + 16px); }
   .daycard{ background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden; }
   .daycard .dayhead{
     display:flex; align-items:center; justify-content: space-between; gap: 10px;
@@ -1590,6 +1618,9 @@ async function applyRules(next){
 /* ---------- tabs / theme ---------- */
 function setTab(tab){
   currentTab = tab;
+  window.scrollTo(0, 0);
+  headerCompact = false; headerAnimating = false;
+  headerEl.classList.remove('compact');
   document.getElementById('tabWeek').classList.toggle('active', tab==='week');
   document.getElementById('tabRules').classList.toggle('active', tab==='rules');
   document.getElementById('weekView').style.display = tab==='week' ? '' : 'none';
@@ -1597,12 +1628,23 @@ function setTab(tab){
   document.getElementById('weekNavRow').style.display = tab==='week' ? '' : 'none';
   document.getElementById('balanceRow').style.display = tab==='week' ? '' : 'none';
   document.getElementById('rulesView').style.display = tab==='rules' ? '' : 'none';
+  measureHeader();   // the rules tab has a shorter header
 }
 function setTheme(t){
   theme = t;
   document.documentElement.setAttribute('data-theme', t);
   markActiveTheme();
+  syncThemeColor();
   saveTheme();
+}
+// Tint the browser / status bar to match the theme's background, and offer that theme's icon.
+// iOS copies the home-screen icon when you tap "Add to Home Screen", so it shows whichever
+// theme was active at that moment; the browser tab icon follows the theme live.
+function syncThemeColor(){
+  const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  if (bg) document.querySelector('meta[name="theme-color"]').setAttribute('content', bg);
+  document.querySelector('link[rel="apple-touch-icon"]').setAttribute('href', `icons/touch-${theme}.png`);
+  document.querySelector('link[rel="icon"]').setAttribute('href', `icons/favicon-${theme}.png`);
 }
 function markActiveTheme(){
   document.querySelectorAll('.themeopt').forEach(b=> b.classList.toggle('active', b.dataset.t===theme));
@@ -1618,6 +1660,38 @@ function setMenuOpen(open){
 settingsBtn.addEventListener('click', e=>{ e.stopPropagation(); setMenuOpen(settingsMenu.hidden); });
 document.addEventListener('click', e=>{ if (!settingsMenu.hidden && !settingsMenu.contains(e.target)) setMenuOpen(false); });
 document.addEventListener('keydown', e=>{ if (e.key==='Escape' && !settingsMenu.hidden){ setMenuOpen(false); settingsBtn.focus(); } });
+
+/* ---------- shrinking header ---------- */
+const headerEl = document.querySelector('header.top');
+let headerCompact = false, headerAnimating = false;
+// Pad the page by the full-size header height, so shrinking it never shifts the list underneath.
+// If it's compact, briefly measure it full size with transitions off (no paint happens in between).
+function measureHeader(){
+  if (headerAnimating) return;
+  headerEl.classList.add('measuring');
+  if (headerCompact) headerEl.classList.remove('compact');
+  const h = headerEl.offsetHeight;
+  if (headerCompact) headerEl.classList.add('compact');
+  headerEl.offsetHeight;
+  headerEl.classList.remove('measuring');
+  document.documentElement.style.setProperty('--header-h', h + 'px');
+}
+function setHeaderCompact(on){
+  if (on === headerCompact) return;
+  headerCompact = on;
+  headerAnimating = true;
+  headerEl.classList.toggle('compact', on);
+  setTimeout(()=>{ headerAnimating = false; measureHeader(); }, 320);
+}
+// Two thresholds so it doesn't flicker when you stop near the top.
+window.addEventListener('scroll', ()=>{
+  const y = window.scrollY;
+  if (!headerCompact && y > 48) setHeaderCompact(true);
+  else if (headerCompact && y < 8) setHeaderCompact(false);
+}, { passive: true });
+if (window.ResizeObserver) new ResizeObserver(measureHeader).observe(headerEl, { box: 'border-box' });
+window.addEventListener('resize', measureHeader);
+measureHeader();
 
 function renderAll(){ renderWeek(); if (currentTab==='rules') renderRules(); }
 
@@ -1636,8 +1710,11 @@ document.querySelectorAll('.themeopt').forEach(b=> b.addEventListener('click', (
   currentWeekIdx = findCurrentWeekIndex();
   currentYear = yearOf(SCHEDULE.weeks[currentWeekIdx]);
   markActiveTheme();
+  syncThemeColor();
   setSyncNote('');
   renderWeek();
+  measureHeader();
+  document.fonts && document.fonts.ready.then(measureHeader);
   store.subscribe(onRemoteChange);
 })();
 </script>
