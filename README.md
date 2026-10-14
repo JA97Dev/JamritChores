@@ -22,14 +22,10 @@ One-time setup in the [Firebase console](https://console.firebase.google.com):
    (production mode, any nearby location).
 5. **Paste the rules**: in Firestore > Rules, replace everything with the
    contents of `firestore.rules` and publish.
-6. **Add the two of you**: in Firestore > Data, start a collection called
-   `members`. Add one document per person whose **Document ID is their Google
-   email address** (any field will do, e.g. `name: "Joshua"`). The first of
-   these accounts to sign in names your household and the board is copied
-   into it; the other joins it on their next sign-in.
 
-Anyone else who signs in is asked to create a household of their own or to
-join one with an invite link.
+Then open the site and sign in with Google. Anyone who isn't in a household
+yet is asked to create one (naming it, and giving their own name) or to join
+one with an invite link.
 
 ## Households
 
@@ -38,7 +34,11 @@ checked, rules, todos, meals). The household document lists its members by
 email with a role: `owner` (manages the household), `editor` (can change the
 board) or `viewer` (read-only). `firestore.rules` enforces this on the server.
 
-Owners manage people from the settings menu (tap "The Board", then People):
+Owners manage the household from the settings menu (tap "The Board", then People):
+- **Who shares the chores**: one to four people, each with a name and a colour
+  (tap the dot to change it). Link a person to someone's account so their phone
+  opens on their chores. Chores, the bottom switcher, the balance bar, stats and
+  "take turns" all follow this list.
 - **Invite with a link**: pick Can edit or View only, create a link and share
   it. Anyone who opens it can join with that role for 7 days, unless an owner
   cancels it first. Links are stored at `invites/{code}`; a code can be opened
@@ -46,11 +46,14 @@ Owners manage people from the settings menu (tap "The Board", then People):
 - **Add by email**: the person joins by signing in with that Google account.
 - Change anyone's role, or remove them.
 
-A household has up to 8 people and always keeps at least one owner. Anyone
+A household can be opened by up to 8 accounts and always keeps at least one owner. Anyone
 can leave, and anyone can start a new household from the settings menu. If
 you're in more than one household, the settings menu lets you switch between
 them.
 
-The original board at `board/*` is left untouched as a backup once it has been
-copied into `households/home`. Owners can rename the household from the
-settings menu. The colour theme stays per device.
+Owners can rename the household from the settings menu. The colour theme stays
+per device.
+
+Regent Square (`households/home`) was made from the board that came before
+households, which is still in the database at `board/*` as a backup. The app
+no longer opens it.

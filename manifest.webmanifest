@@ -1,7 +1,7 @@
 {
   "name": "The Board",
   "short_name": "The Board",
-  "description": "Chores for Joshua & Amrit",
+  "description": "Chores, meals and to-dos for your household",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

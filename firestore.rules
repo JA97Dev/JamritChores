@@ -3,22 +3,22 @@ rules_version = '2';
 // Households: each household has its own board, and only its members can open it.
 //
 //   households/{id}           name, members { email: 'owner' | 'editor' | 'viewer' }, memberEmails [email],
-//                             invites { code: { role, expiresAt } } (the links that are still open)
+//                             invites { code: { role, expiresAt } } (the links that are still open),
+//                             people [{ id, name, colour, email?, removed? }] (who shares the chores)
 //   households/{id}/board/*   schedule, checked, rules, todos, meals
 //   invites/{code}            hid, name, role, createdBy, expiresAt
 //
-// Owners manage the household (name, members, roles and invite links). Editors can change
-// the board. Viewers can only look. Anyone can leave. Emails are lower-case Google account
-// addresses.
+// Owners manage the household (name, people, members, roles and invite links). Editors can
+// change the board. Viewers can only look. Anyone can leave. Emails are lower-case Google
+// account addresses.
 //
 // Anyone signed in can create a household of their own. People join one in two ways:
 //   - an owner adds their email, and they sign in with that account;
 //   - they open an invite link: knowing the code lets them read that one invite and add
 //     themselves with its role, until it expires or an owner cancels it.
 //
-// The original two-person "members" list still works during the move to households:
-// those accounts can read the old board, create the "home" household from it, and add
-// themselves to it as owners.
+// The board from before households (board/*) is no longer used by the app, so nothing here
+// lets anyone open it; it stays in the database as a backup, visible in the Firebase console.
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() {
@@ -26,9 +26,6 @@ service cloud.firestore {
     }
     function email() {
       return request.auth.token.email.lower();
-    }
-    function legacyMember() {
-      return signedIn() && exists(/databases/$(database)/documents/members/$(request.auth.token.email));
     }
     function roleIn(hid) {
       return get(/databases/$(database)/documents/households/$(hid)).data.members.get(email(), null);
@@ -49,6 +46,12 @@ service cloud.firestore {
         && request.resource.data.members.values().hasAny(['owner'])
         && membersConsistent();
     }
+    // The people chores are shared between: a short list (up to 4 at a time, plus some who
+    // have been removed but keep their name on old chores).
+    function validPeople() {
+      return !('people' in request.resource.data)
+        || (request.resource.data.people is list && request.resource.data.people.size() <= 12);
+    }
     // The change only touches the signed-in person's own entry in members
     // (plus, when joining with a link, which code they used).
     function onlyMyEntry(extra) {
@@ -65,19 +68,18 @@ service cloud.firestore {
     }
 
     match /households/{hid} {
-      allow read: if signedIn() && (email() in resource.data.memberEmails
-                                    || (legacyMember() && hid == 'home'));
+      allow read: if signedIn() && email() in resource.data.memberEmails;
 
       // Anyone can start a household, with only themselves in it, as its owner.
       allow create: if signedIn()
                     && request.resource.data.members.keys().hasOnly([email()])
                     && request.resource.data.members[email()] == 'owner'
-                    && validMembers() && validName();
+                    && validMembers() && validName() && validPeople();
 
-      // Owners can rename the household, add, remove or change anyone's role, and open or
-      // cancel invite links.
+      // Owners can rename the household, set who the chores are shared between, add, remove
+      // or change anyone's role, and open or cancel invite links.
       allow update: if signedIn() && resource.data.members.get(email(), null) == 'owner'
-                    && validMembers() && validName();
+                    && validMembers() && validName() && validPeople();
 
       // Join with an invite link: add only yourself, with the role the link gives.
       allow update: if signedIn() && !(email() in resource.data.members)
@@ -87,11 +89,6 @@ service cloud.firestore {
       // Anyone can leave a household they're in (as long as an owner is left).
       allow update: if signedIn() && resource.data.members.get(email(), null) != null
                     && onlyMyEntry([]) && !(email() in request.resource.data.members)
-                    && validMembers();
-
-      // One-time join for the original two members: add yourself to home as an owner.
-      allow update: if legacyMember() && hid == 'home' && onlyMyEntry([])
-                    && request.resource.data.members[email()] == 'owner'
                     && validMembers();
 
       allow delete: if signedIn() && resource.data.members.get(email(), null) == 'owner';
@@ -115,12 +112,8 @@ service cloud.firestore {
       allow delete: if signedIn() && roleIn(resource.data.hid) == 'owner';
     }
 
-    // The original shared board, from before households. Kept working until everyone's
-    // phone has picked up the household version; the app copies it into home.
-    match /board/{docId} {
-      allow read, write: if legacyMember();
-    }
-
+    // Older versions of the app read your own entry in the old "members" list (now deleted)
+    // when they open. This keeps them working until every phone has the current version.
     match /members/{email} {
       allow read: if request.auth != null && request.auth.token.email == email;
     }
