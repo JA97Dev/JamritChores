@@ -25,7 +25,9 @@ One-time setup in the [Firebase console](https://console.firebase.google.com):
    these accounts to sign in names your household and the board is copied
    into it; the other joins it on their next sign-in.
 7. **Let someone create households** (optional): add a document to a
-   `creators` collection whose Document ID is their Google email.
+   `creators` collection whose Document ID is their Google email. They get
+   "+ New household" in the settings menu, and if they aren't in a household
+   yet they're asked to name one when they first sign in.
 
 ## Households
 
@@ -33,6 +35,13 @@ Each household has its own board at `households/{id}/board/*` (schedule,
 checked, rules, todos, meals). The household document lists its members by
 email with a role: `owner` (manages the household), `editor` (can change the
 board) or `viewer` (read-only). `firestore.rules` enforces this on the server.
+
+Owners manage people from the settings menu (tap "The Board", then People):
+add someone by their Google email with a role, change roles, or remove them.
+Adding the email is the invite: the person joins by signing in with that
+account. A household has up to 8 people and always keeps at least one owner.
+Anyone can leave. If you're in more than one household, the settings menu
+lets you switch between them.
 
 The original board at `board/*` is left untouched as a backup once it has been
 copied into `households/home`. Owners can rename the household from the

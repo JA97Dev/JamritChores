@@ -5,8 +5,9 @@ rules_version = '2';
 //   households/{id}           name, members { email: 'owner' | 'editor' | 'viewer' }, memberEmails [email]
 //   households/{id}/board/*   schedule, checked, rules, todos, meals
 //
-// Owners manage the household (members and roles). Editors can change the board.
-// Viewers can only look. Emails are lower-case Google account addresses.
+// Owners manage the household (name, members and roles). Editors can change the board.
+// Viewers can only look. Anyone can leave. Emails are lower-case Google account addresses;
+// adding someone's email is the invite: they join by signing in with that account.
 //
 // Creating a new household is limited to accounts listed in "creators" (add a document
 // whose ID is their email). The original two-person "members" list still works during
@@ -38,6 +39,18 @@ service cloud.firestore {
       return request.resource.data.name is string
         && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 40;
     }
+    // Up to 8 people, every role is a real one, and someone is always left to manage it.
+    function validMembers() {
+      return request.resource.data.members.size() <= 8
+        && request.resource.data.members.values().hasOnly(['owner', 'editor', 'viewer'])
+        && request.resource.data.members.values().hasAny(['owner'])
+        && membersConsistent();
+    }
+    // The change only touches the signed-in person's own entry in members.
+    function onlyMyEntry() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'memberEmails'])
+        && request.resource.data.members.diff(resource.data.members).affectedKeys().hasOnly([email()]);
+    }
 
     match /households/{hid} {
       allow read: if signedIn() && (email() in resource.data.memberEmails
@@ -45,18 +58,21 @@ service cloud.firestore {
 
       allow create: if (creator() || (legacyMember() && hid == 'home'))
                     && request.resource.data.members[email()] == 'owner'
-                    && membersConsistent() && validName();
+                    && validMembers() && validName();
 
-      // Owners can change anything about their household.
+      // Owners can rename the household and add, remove or change anyone's role.
       allow update: if signedIn() && resource.data.members.get(email(), null) == 'owner'
-                    && membersConsistent() && validName();
+                    && validMembers() && validName();
+
+      // Anyone can leave a household they're in (as long as an owner is left).
+      allow update: if signedIn() && resource.data.members.get(email(), null) != null
+                    && onlyMyEntry() && !(email() in request.resource.data.members)
+                    && validMembers();
 
       // One-time join for the original two members: add yourself to home as an owner.
-      allow update: if legacyMember() && hid == 'home'
-                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'memberEmails'])
-                    && request.resource.data.members.diff(resource.data.members).affectedKeys().hasOnly([email()])
+      allow update: if legacyMember() && hid == 'home' && onlyMyEntry()
                     && request.resource.data.members[email()] == 'owner'
-                    && membersConsistent();
+                    && validMembers();
 
       allow delete: if signedIn() && resource.data.members.get(email(), null) == 'owner';
 
