@@ -158,6 +158,7 @@ erDiagram
     string week_start "a Monday"
     number rotation_week "1 to 4"
     boolean edited "changed by hand"
+    boolean startedToday "first week, filled from the day it began"
   }
   DAY {
     string date "YYYY-MM-DD"
@@ -283,9 +284,12 @@ The **house rules** are the template, and the **schedule** is what they produce.
 - **Changing a house rule, or adding or removing a person.** This rebuilds every
   **future** week that nobody has edited by hand (`regenerateFutureWeeks()`).
   Adding, editing or deleting a task in a week marks that week `edited: true`, so
-  hand changes are never overwritten. This week and past weeks are never
-  regenerated. A person can't be removed while house rules are theirs alone;
-  those rules need someone else first.
+  hand changes are never overwritten. Past weeks are never regenerated, and
+  neither is this week, so its ticks stay as they are. The exception is a week
+  that's still being set up, as in a new household: if it's empty, it fills in
+  from today (marked `startedToday`). It keeps filling in as rules are added, until
+  something in it is ticked or edited by hand. A person can't be removed while house
+  rules are theirs alone; those rules need someone else first.
 - **Where the weeks started.** Regent Square's early weeks came from the original
   spreadsheet (`SEED_WEEKS` in `index.html`). A household created in the app
   starts with no rules and no weeks, and its weeks are generated from the day it

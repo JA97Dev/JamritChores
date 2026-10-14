@@ -1153,6 +1153,15 @@
   .pill-bar[data-n="5"] .ptab{ width: 56px; font-size: 10.5px; }
   @media (max-width: 359px){ .pill-bar[data-n="4"] .ptab{ width: 58px; } .pill-bar[data-n="5"] .ptab{ width: 50px; } }
 
+  .balance.nothing{ display: none; }
+
+  /* Get started: a new household's empty week */
+  .getstarted{ margin-bottom: 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .getstarted .gs-title{ font-family: 'Fraunces', Georgia, serif; font-size: 20px; font-weight: 600; }
+  .getstarted p{ margin: 0; font-size: 13.5px; color: var(--ink-soft); line-height: 1.45; }
+  .getstarted .btn-primary{ font-size: 14px; padding: 9px 16px; margin-top: 2px; }
+  .getstarted .gs-hint{ font-size: 12px; }
+
   /* People sheet: who the chores are shared between */
   .pp-list{ list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
   .pp-row{ padding: 8px 10px; border-radius: var(--radius-sm); background: var(--glass); border: 1px solid var(--glass-edge); }
@@ -1295,7 +1304,7 @@
 <div class="authgate" id="authGate" style="display:none;">
   <div class="authcard">
     <h2>The Board</h2>
-    <p id="authMsg">Sign in so your ticks and edits sync between both phones.</p>
+    <p id="authMsg">Sign in to see your household's chores, meals and to-dos.</p>
     <button class="btn-primary" id="signInBtn">Sign in with Google</button>
     <div class="name-step" id="nameStep" style="display:none;">
       <input type="text" id="hhName" maxlength="40" placeholder="e.g. Regent Square" autocomplete="off" aria-label="Household name">
@@ -1565,7 +1574,7 @@ async function cloudStore(){
   // Wait until someone is signed in and allowed to read the board.
   for (;;){
     const user = await new Promise(resolve => {
-      const stop = au.onAuthStateChanged(auth, u => { if (u){ stop(); resolve(u); } else showGate('Sign in so your ticks and edits sync between both phones.', false); });
+      const stop = au.onAuthStateChanged(auth, u => { if (u){ stop(); resolve(u); } else showGate("Sign in to see your household's chores, meals and to-dos.", false); });
     });
     try{
       // "Use a different account" during onboarding starts over with the new account.
@@ -1924,10 +1933,19 @@ function weekSignature(w){
 // After the rules or the people change, rebuild every week after this one that nobody has
 // edited by hand. A week counts as untouched if it still matches what the old rules and people
 // would have produced. Returns true if any week changed.
+// This week is left alone (its ticks stay as they are), unless it's just being set up, as in a
+// new household: see thisWeekFillsIn().
 function regenerateFutureWeeks(oldRules, oldPeople = people()){
-  const thisWeek = mondayOf(todayStr());
+  const thisWeek = mondayOf(todayStr()), today = todayStr();
   let changed = false;
   SCHEDULE.weeks = SCHEDULE.weeks.map(w => {
+    if (w.week_start === thisWeek && weekFillsIn(w)){
+      const next = generateWeek(w.week_start, RULES);
+      next.days.forEach(d => { if (d.date < today) d.tasks = []; });   // no catching up on days already gone
+      next.startedToday = true;
+      if (weekSignature(next) !== weekSignature(w)) changed = true;
+      return next;
+    }
     if (w.week_start <= thisWeek || w.edited) return w;
     if (weekSignature(w) !== weekSignature(generateWeek(w.week_start, oldRules, oldPeople))) return w;
     const next = generateWeek(w.week_start, RULES);
@@ -2516,7 +2534,10 @@ function renderBalance(){
   const week = SCHEDULE.weeks[currentWeekIdx];
   if (!week) return;
   const { rows, together } = computeWeekProgress(week);
-  const total = rows.reduce((a, r) => a + r.own.planned, together.planned) || 1;
+  const planned = rows.reduce((a, r) => a + r.own.planned, together.planned);
+  // Nothing planned this week (a new household, say): the bar would say nothing, so it hides.
+  document.getElementById('balanceRow').classList.toggle('nothing', !planned);
+  const total = planned || 1;
   const seg = (minutes, colour) => `<div class="seg" style="width:${100 * minutes / total}%;background:${colour}"></div>`;
   const label = (r, dotLast) => {
     const dot = `<span class="dot" style="background:${personColour(r.person.id)}"></span>`;
@@ -3061,6 +3082,28 @@ function wireTaskForm(container){
   attachPickers('week', container);
 }
 
+// Whether this week is still being set up, so house rules added now fill it in from today:
+// it was empty, or was filled that way and nothing in it has been ticked or edited by hand yet.
+function weekFillsIn(w){
+  if (!w || w.edited) return false;
+  if (!w.days.some(d => d.tasks.length)) return true;
+  return !!w.startedToday && !w.days.some(d => d.tasks.some(t => checked[t.id]));
+}
+function thisWeekFillsIn(){ return weekFillsIn(SCHEDULE.weeks.find(w => w.week_start === mondayOf(todayStr()))); }
+// A new household's first look: no house rules and nothing in the week yet. Points to where
+// regular chores go (House rules is otherwise tucked at the bottom of the list) and, for an
+// owner sharing with nobody yet, to adding people.
+function getStartedHTML(week){
+  if (RULES.length || !canEdit() || week.days.some(d => d.tasks.length)) return '';
+  const owner = store && store.household && store.household.role === 'owner';
+  return `<div class="rule-card getstarted">
+    <div class="gs-title">Get started</div>
+    <p>Add the chores that come round regularly, like bins, laundry or hoovering. They fill in every week for you, starting today.</p>
+    <button type="button" class="btn-primary" id="gsRules">Add your regular chores</button>
+    ${owner && people().length < 2 ? '<button type="button" class="btn-text hh-link" id="gsPeople">Add the people you share with ›</button>' : ''}
+    <p class="gs-hint">Or add a one-off task to any day below.</p>
+  </div>`;
+}
 function renderWeek(){
   renderYearChips();
   renderWeekNav();
@@ -3080,7 +3123,7 @@ function renderWeek(){
   const days = showToday ? todays : week.days;
   const totalTasks = days.reduce((a,d)=>a+visibleTasks(d).length,0);
   updateDock();
-  container.innerHTML = dinnerBannerHTML(week) + days.map(d=>dayCardHTML(week,d)).join('') +
+  container.innerHTML = dinnerBannerHTML(week) + getStartedHTML(week) + days.map(d=>dayCardHTML(week,d)).join('') +
     `<div class="weekfoot"><span>${totalTasks} tasks ${showToday ? 'today' : 'this week'}</span>
      ${showToday
        ? '<button class="resetlink" id="showWeek">Show the whole week</button>'
@@ -3091,6 +3134,10 @@ function renderWeek(){
     </button>`;
 
   document.getElementById('openRules').addEventListener('click', () => { setTab('rules'); renderRules(); });
+  const gsRules = document.getElementById('gsRules');
+  if (gsRules) gsRules.addEventListener('click', () => { editingRuleId = 'new'; setTab('rules'); renderRules(); });
+  const gsPeople = document.getElementById('gsPeople');
+  if (gsPeople) gsPeople.addEventListener('click', () => setHouseholdOpen(true));
   const banner = document.getElementById('dinnerBanner');
   if (banner) banner.addEventListener('click', () => headerTabs.select(1));
   const showWeek = document.getElementById('showWeek');
@@ -3194,7 +3241,9 @@ function renderRules(){
     return `<div class="area-group"><h3>${escapeHTML(area)}</h3>${rows}</div>`;
   }).join('');
   view.innerHTML = `<button type="button" class="btn-text rules-back" id="rulesBack">‹ This week</button>
-    <p class="rules-intro">These rules build every new week. Changes apply from next week, so this week's ticks stay as they are.</p>
+    <p class="rules-intro">${thisWeekFillsIn()
+      ? "These are the chores that come round regularly. Add one and it fills in your weeks, starting today."
+      : "These rules build every new week. Changes apply from next week, so this week's ticks stay as they are."}</p>
     <div class="rules-add">${editingRuleId==='new' ? ruleFormHTML(null) : '<button type="button" class="addbtn" id="addRule">+ Add chore</button>'}</div>
     ${cards}`;
 
