@@ -998,13 +998,74 @@
   .db-meal{ font-weight: 600; font-size: 14px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .db-cook{ font-size: 11.5px; color: var(--ink-soft); white-space: nowrap; }
   .dinner-banner .chev{ color: var(--ink-soft); }
-  .menu-link{
-    display: flex; justify-content: space-between; align-items: center; width: 100%;
-    padding: 9px 12px; border-radius: var(--radius-sm); font: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink);
-    background: color-mix(in srgb, var(--surface) 35%, transparent); border: 1px solid var(--glass-edge); box-shadow: inset 0 1px 0 var(--glass-edge);
-    cursor: pointer; transition: transform .35s var(--spring);
+  /* House rules: tucked away at the bottom of the Chores list */
+  .rules-link{
+    display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 14px; padding: 12px 14px;
+    border-radius: var(--radius-sm); border: 1px solid var(--glass-edge); background: color-mix(in srgb, var(--surface) 30%, transparent);
+    box-shadow: inset 0 1px 0 var(--glass-edge); color: var(--ink); font: inherit; text-align: left; cursor: pointer;
+    transition: transform .35s var(--spring), background .2s ease;
   }
-  .menu-link:active{ transform: scale(.97); }
+  .rules-link:hover{ background: var(--glass); }
+  .rules-link:active{ transform: scale(.98); }
+  .rules-link .rl-text{ flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .rules-link .rl-title{ font-weight: 600; font-size: 14px; }
+  .rules-link .rl-sub{ font-size: 12px; color: var(--ink-soft); }
+  .rules-link .chev{ color: var(--ink-soft); font-size: 18px; }
+  .rules-back{ margin: 0 0 6px -4px; font-weight: 700; color: var(--joshua); font-size: 14px; }
+
+  /* ---------- Liquid hover on single buttons ----------
+     The pill bars' best bit, on its own: a soft light that follows the pointer across the
+     glass (and appears where you press on a phone). Script sets --hx / --hy. */
+  :is(.rules-link, .addbtn, .btn-primary, .weeknav .navbtn, .todayonly, .iconbtn, .dinner-banner,
+      .meal-row, .themeopt, .daycard .dayhead, .menu .signout, .yearchip, .balance, #weekLabel, .stat-card, .bars .col){ position: relative; isolation: isolate; }
+  :is(.rules-link, .addbtn, .btn-primary, .weeknav .navbtn, .todayonly, .iconbtn, .dinner-banner,
+      .meal-row, .themeopt, .daycard .dayhead, .menu .signout, .yearchip, .balance, #weekLabel, .stat-card, .bars .col)::before{
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1;
+    background: radial-gradient(130px circle at var(--hx, 50%) var(--hy, 50%), color-mix(in srgb, var(--joshua) 30%, var(--liquid-edge)), transparent 65%);
+    opacity: 0; transition: opacity .3s ease;
+  }
+  @media (hover: hover){
+    :is(.rules-link, .addbtn, .btn-primary, .weeknav .navbtn, .todayonly, .iconbtn, .dinner-banner,
+        .meal-row, .themeopt, .daycard .dayhead, .menu .signout, .yearchip, .balance, #weekLabel, .stat-card, .bars .col):hover::before{ opacity: .7; }
+  }
+  :is(.rules-link, .addbtn, .btn-primary, .weeknav .navbtn, .todayonly, .iconbtn, .dinner-banner,
+      .meal-row, .themeopt, .daycard .dayhead, .menu .signout, .yearchip, .balance, #weekLabel, .stat-card, .bars .col):active::before{ opacity: .85; transition-duration: .05s; }
+
+  /* Stats: the week's dates open them too; chart columns show their minutes on hover / tap */
+  #weekLabel{ cursor: pointer; border-radius: var(--radius-sm); padding: 2px 6px; -webkit-tap-highlight-color: transparent; }
+  #weekLabel:focus-visible{ outline: 2px solid var(--joshua); outline-offset: 2px; }
+  .bars .col{ border-radius: 8px; padding-top: 2px; }
+  .bars .col .val{ font-size: 10px; color: var(--ink); opacity: 0; transition: opacity .2s ease; }
+  .bars .col:hover .val, .bars .col:active .val{ opacity: 1; }
+  .stat-card{ transition: transform .35s var(--spring); }
+  .stat-card:active{ transform: scale(.98); }
+
+  /* iOS Dark: the iOS theme's dark mode, whatever the phone is set to */
+  html[data-theme="ios"][data-ios="dark"]{
+    --bg: #000000;
+    --bg-alt: rgba(118,118,128,.24);
+    --surface: #1C1C1E;
+    --ink: #FFFFFF;
+    --ink-soft: rgba(235,235,245,.6);
+    --line: rgba(84,84,88,.6);
+    --line-soft: rgba(84,84,88,.35);
+    --danger: #FF453A;
+    --joshua: #0A84FF;
+    --joshua-soft: rgba(10,132,255,.2);
+    --amrit: #FF375F;
+    --amrit-soft: rgba(255,55,95,.2);
+    --both: #FF9F0A;
+    --both-soft: rgba(255,159,10,.2);
+    --shadow: 0 8px 32px rgba(0,0,0,.4);
+    --glass: rgba(44,44,46,.55);
+    --glass-strong: rgba(36,36,38,.86);
+    --glass-edge: rgba(255,255,255,.14);
+    --mesh-1: rgba(10,132,255,.28); --mesh-2: rgba(255,55,95,.2); --mesh-3: rgba(255,159,10,.14);
+    --liquid-fill: rgba(255,255,255,.14); --liquid-edge: rgba(255,255,255,.4);
+    --hover-fill: rgba(255,255,255,.07); --bar-top: rgba(255,255,255,.1); --bar-shadow: rgba(0,0,0,.55);
+    color-scheme: dark;
+  }
+  .swatch[data-t="ios-dark"]{ background: conic-gradient(from 200deg, #0A84FF, #FF375F, #FF9F0A, #0A84FF); box-shadow: inset 0 0 0 4px #000; }
 
   /* Small icon buttons (edit / delete) get a glass bubble on hover and press */
   .iconbtn{ border-radius: 50%; transition: background .2s ease, transform .35s var(--spring), box-shadow .2s ease; }
@@ -1036,14 +1097,11 @@
               <button class="themeopt" data-t="spotify"><span class="swatch" data-t="spotify"></span>Spotify</button>
               <button class="themeopt" data-t="kitty"><span class="swatch" data-t="kitty"></span>Hello Kitty</button>
               <button class="themeopt" data-t="ios"><span class="swatch" data-t="ios"></span>iOS</button>
+              <button class="themeopt" data-t="ios-dark"><span class="swatch" data-t="ios-dark"></span>iOS Dark</button>
               <button class="themeopt" data-t="chief"><span class="swatch" data-t="chief"></span>Master Chief</button>
               <button class="themeopt" data-t="covenant"><span class="swatch" data-t="covenant"></span>Covenant</button>
               <button class="themeopt" data-t="cortana"><span class="swatch" data-t="cortana"></span>Cortana</button>
             </div>
-          </div>
-          <div class="section">
-            <h4>Household</h4>
-            <button type="button" class="menu-link" id="openRules"><span>House rules</span><span aria-hidden="true">›</span></button>
           </div>
           <div class="section" id="accountNote"></div>
         </div>
@@ -1059,7 +1117,7 @@
 
     <div id="weekNavRow" class="weeknav">
       <button class="navbtn" id="prevWeek" aria-label="Previous week">‹</button>
-      <div class="weeklabel">
+      <div class="weeklabel" id="weekLabel" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Show stats for this week">
         <div class="range" id="weekRange">—</div>
         <div class="rot" id="weekRot">—</div>
       </div>
@@ -1516,7 +1574,7 @@ async function loadAll(){
   const me = { joshua:'J', amrit:'A' }[String(store.memberName||'').trim().toLowerCase()];
   personFilter = saved || me || 'ALL';
   try{ todayOnly = localStorage.getItem('jamrit_today') === '1'; } catch(e){}
-  document.documentElement.setAttribute('data-theme', theme);
+  applyThemeAttr(theme);
   renderAccount();
 }
 function savedNote(){ return store.mode==='cloud' ? 'Synced' : 'Saved on this device only'; }
@@ -1727,6 +1785,7 @@ function statCardHTML(name, colour, s){
 function barsHTML(groups){
   const max = Math.max(1, ...groups.map(g => g.t.J.done + g.t.A.done));
   return `<div class="bars">${groups.map(g => `<div class="col ${g.now?'now':''}">
+      <span class="val mono">${g.t.J.done + g.t.A.done}m</span>
       <div class="stack" title="Joshua ${g.t.J.done}m, Amrit ${g.t.A.done}m">
         <span style="height:${100*g.t.A.done/max}%;background:var(--amrit)"></span>
         <span style="height:${100*g.t.J.done/max}%;background:var(--joshua)"></span>
@@ -1779,6 +1838,9 @@ function setStatsOpen(open){
   else document.getElementById('balanceRow').focus();
 }
 document.getElementById('balanceRow').addEventListener('click', ()=> setStatsOpen(true));
+// Tapping the week's dates opens the same stats.
+document.getElementById('weekLabel').addEventListener('click', ()=> setStatsOpen(true));
+document.getElementById('weekLabel').addEventListener('keydown', e=>{ if (e.key==='Enter' || e.key===' '){ e.preventDefault(); setStatsOpen(true); } });
 document.getElementById('balanceRow').addEventListener('keydown', e=>{ if (e.key==='Enter' || e.key===' '){ e.preventDefault(); setStatsOpen(true); } });
 document.getElementById('statsClose').addEventListener('click', ()=> setStatsOpen(false));
 document.getElementById('statsBackdrop').addEventListener('click', ()=> setStatsOpen(false));
@@ -2122,6 +2184,20 @@ const headerTabs = createLiquid(document.querySelector('.brand .tabs'), {
     else { setTab('todo'); renderTodos(); pillBar.snap(); todoPicker.snap(); }
   },
 });
+// Liquid hover: track the pointer over any single glass button so its light follows it.
+const LIQUID_HOVER = '.rules-link, .addbtn, .btn-primary, .weeknav .navbtn, .todayonly, .iconbtn, .dinner-banner, .meal-row, .themeopt, .daycard .dayhead, .menu .signout, .yearchip, .balance, #weekLabel, .stat-card, .bars .col';
+function trackLiquidHover(e){
+  const el = e.target.closest && e.target.closest(LIQUID_HOVER);
+  if (!el) return;
+  const r = el.getBoundingClientRect();
+  el.style.setProperty('--hx', (e.clientX - r.left) + 'px');
+  el.style.setProperty('--hy', (e.clientY - r.top) + 'px');
+}
+document.addEventListener('pointermove', trackLiquidHover, { passive: true });
+document.addEventListener('pointerdown', trackLiquidHover, { passive: true });
+
+// House rules sits under Chores, so the header keeps Chores selected there; tapping it goes back to the week.
+document.getElementById('tabWeek').addEventListener('click', () => { if (currentTab === 'rules'){ setTab('week'); pillBar.snap(); } });
 // Stats sheet: Week / Month.
 const statsTabs = createLiquid(document.querySelector('.sheet-tabs'), {
   tabs: [document.getElementById('statsWeek'), document.getElementById('statsMonth')],
@@ -2186,8 +2262,13 @@ function renderWeek(){
     `<div class="weekfoot"><span>${totalTasks} tasks ${showToday ? 'today' : 'this week'}</span>
      ${showToday
        ? '<button class="resetlink" id="showWeek">Show the whole week</button>'
-       : '<button class="resetlink" id="resetWeek">Uncheck this week</button>'}</div>`;
+       : '<button class="resetlink" id="resetWeek">Uncheck this week</button>'}</div>
+    <button type="button" class="rules-link" id="openRules">
+      <span class="rl-text"><span class="rl-title">House rules</span><span class="rl-sub">The chores that build each week</span></span>
+      <span class="chev" aria-hidden="true">›</span>
+    </button>`;
 
+  document.getElementById('openRules').addEventListener('click', () => { setTab('rules'); renderRules(); });
   const banner = document.getElementById('dinnerBanner');
   if (banner) banner.addEventListener('click', () => headerTabs.select(1));
   const showWeek = document.getElementById('showWeek');
@@ -2287,12 +2368,14 @@ function renderRules(){
       </div>`).join('');
     return `<div class="area-group"><h3>${escapeHTML(area)}</h3>${rows}</div>`;
   }).join('');
-  view.innerHTML = `<p class="rules-intro">These rules build every new week. Changes apply from next week, so this week's ticks stay as they are.</p>
+  view.innerHTML = `<button type="button" class="btn-text rules-back" id="rulesBack">‹ This week</button>
+    <p class="rules-intro">These rules build every new week. Changes apply from next week, so this week's ticks stay as they are.</p>
     <div class="rules-add">${editingRuleId==='new' ? ruleFormHTML(null) : '<button type="button" class="addbtn" id="addRule">+ Add chore</button>'}</div>
     ${cards}`;
 
   const add = document.getElementById('addRule');
   if (add) add.addEventListener('click', ()=>{ editingRuleId = 'new'; renderRules(); });
+  view.querySelector('#rulesBack').addEventListener('click', ()=>{ editingRuleId = null; setTab('week'); renderWeek(); pillBar.snap(); });
   view.querySelectorAll('.iconbtn.edit').forEach(b=> b.addEventListener('click', ()=>{ editingRuleId = b.dataset.rule; renderRules(); }));
   view.querySelectorAll('.iconbtn.del').forEach(b=> b.addEventListener('click', ()=> deleteRule(b.dataset.rule)));
   const form = view.querySelector('.ruleform');
@@ -2660,7 +2743,6 @@ function dinnerBannerHTML(week){
   return `<button type="button" class="dinner-banner" id="dinnerBanner"><span class="db-label">Tonight</span>
     <span class="db-meal">${escapeHTML(m.name)}</span>${COOK_TEXT[m.cook] ? `<span class="db-cook">${COOK_TEXT[m.cook]}</span>` : ''}<span class="chev" aria-hidden="true">›</span></button>`;
 }
-document.getElementById('openRules').addEventListener('click', () => { setMenuOpen(false); setTab('rules'); renderRules(); });
 
 /* ---------- tabs / theme ---------- */
 function setTab(tab){
@@ -2678,12 +2760,18 @@ function setTab(tab){
   show('rulesView', tab==='rules');
   show('dock', tab==='week' || tab==='todo');  // the person switcher also filters the to-do list
   show('todayOnlyBtn', tab==='week');
-  headerTabs.select({ week:0, meals:1, todo:2, rules:-1 }[tab], { quiet: true });   // House rules opens from settings
+  headerTabs.select({ week:0, meals:1, todo:2, rules:0 }[tab], { quiet: true });   // House rules lives under Chores
   measureHeader();   // the other tabs have a shorter header
+}
+// "iOS Dark" is the iOS theme locked to dark mode; plain "iOS" follows the phone's setting.
+function applyThemeAttr(t){
+  document.documentElement.setAttribute('data-theme', t === 'ios-dark' ? 'ios' : t);
+  if (t === 'ios-dark') document.documentElement.setAttribute('data-ios', 'dark');
+  else document.documentElement.removeAttribute('data-ios');
 }
 function setTheme(t){
   theme = t;
-  document.documentElement.setAttribute('data-theme', t);
+  applyThemeAttr(t);
   markActiveTheme();
   syncThemeColor();
   saveTheme();
@@ -2694,8 +2782,9 @@ function setTheme(t){
 function syncThemeColor(){
   const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
   if (bg) document.querySelector('meta[name="theme-color"]').setAttribute('content', bg);
-  document.querySelector('link[rel="apple-touch-icon"]').setAttribute('href', `icons/touch-${theme}.png`);
-  document.querySelector('link[rel="icon"]').setAttribute('href', `icons/favicon-${theme}.png`);
+  const icon = theme === 'ios-dark' ? 'ios' : theme;
+  document.querySelector('link[rel="apple-touch-icon"]').setAttribute('href', `icons/touch-${icon}.png`);
+  document.querySelector('link[rel="icon"]').setAttribute('href', `icons/favicon-${icon}.png`);
 }
 function markActiveTheme(){
   document.querySelectorAll('.themeopt').forEach(b=> b.classList.toggle('active', b.dataset.t===theme));
