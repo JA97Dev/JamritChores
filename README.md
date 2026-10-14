@@ -21,10 +21,19 @@ One-time setup in the [Firebase console](https://console.firebase.google.com):
    contents of `firestore.rules` and publish.
 6. **Add the two of you**: in Firestore > Data, start a collection called
    `members`. Add one document per person whose **Document ID is their Google
-   email address** (any field will do, e.g. `name: "Joshua"`).
+   email address** (any field will do, e.g. `name: "Joshua"`). The first of
+   these accounts to sign in names your household and the board is copied
+   into it; the other joins it on their next sign-in.
+7. **Let someone create households** (optional): add a document to a
+   `creators` collection whose Document ID is their Google email.
 
-The first person to sign in uploads the starting schedule; after that both
-phones read and write the same board.
+## Households
 
-Data lives in two Firestore documents: `board/schedule` (the weeks and tasks)
-and `board/checked` (which tasks are ticked). The colour theme stays per device.
+Each household has its own board at `households/{id}/board/*` (schedule,
+checked, rules, todos, meals). The household document lists its members by
+email with a role: `owner` (manages the household), `editor` (can change the
+board) or `viewer` (read-only). `firestore.rules` enforces this on the server.
+
+The original board at `board/*` is left untouched as a backup once it has been
+copied into `households/home`. Owners can rename the household from the
+settings menu. The colour theme stays per device.

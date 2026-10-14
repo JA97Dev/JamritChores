@@ -598,6 +598,15 @@
   .authcard p{ color: var(--ink-soft); font-size: 13.5px; margin: 0 0 18px; line-height: 1.45; }
   .authcard .btn-primary{ font-size: 14px; padding: 10px 18px; }
   .authcard .btn-text{ display:block; margin: 10px auto 0; }
+  .name-step{ display: flex; flex-direction: column; gap: 10px; }
+  .name-step input, .hh-row input{
+    border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px 12px; font: inherit; font-size: 15px;
+    background: var(--surface); color: var(--ink); width: 100%;
+  }
+  .hh-row{ display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .hh-row input{ flex: 1; min-width: 0; padding: 7px 10px; font-size: 14px; }
+  .hh-rename{ font-weight: 700; color: var(--joshua); padding: 4px 2px; }
+  .menu .acct-h{ margin-top: 14px; }
 
   /* ---------- Liquid glass, for every theme ----------
      Surfaces are frosted and tinted by the theme; a soft wash of the theme's
@@ -1086,7 +1095,7 @@
       <!-- Settings live behind the title: tap "The Board" to open them -->
       <div class="settings">
         <h1 class="display"><button class="titlebtn" id="settingsBtn" aria-haspopup="true" aria-expanded="false" aria-controls="settingsMenu" title="Settings">The Board<span class="caret" aria-hidden="true">▾</span></button></h1>
-        <div class="sub">Joshua &amp; Amrit</div>
+        <div class="sub" id="brandSub">Joshua &amp; Amrit</div>
         <div class="menu" id="settingsMenu" hidden>
           <div class="section">
             <h4>Theme</h4>
@@ -1205,6 +1214,10 @@
     <h2>The Board</h2>
     <p id="authMsg">Sign in so your ticks and edits sync between both phones.</p>
     <button class="btn-primary" id="signInBtn">Sign in with Google</button>
+    <div class="name-step" id="nameStep" style="display:none;">
+      <input type="text" id="hhName" maxlength="40" placeholder="e.g. Regent Square" autocomplete="off">
+      <button class="btn-primary" id="hhNameBtn">Create household</button>
+    </div>
     <button class="btn-text" id="authSignOut" style="display:none;">Use a different account</button>
   </div>
 </div>
@@ -1277,11 +1290,62 @@ async function cloudStore(){
   const app = initializeApp(cfg);
   const auth = au.getAuth(app);
   const db = fs.getFirestore(app);
-  const scheduleRef = fs.doc(db, 'board', 'schedule');
-  const checkedRef = fs.doc(db, 'board', 'checked');
-  const rulesRef = fs.doc(db, 'board', 'rules');
-  const todosRef = fs.doc(db, 'board', 'todos');
-  const mealsRef = fs.doc(db, 'board', 'meals');
+  // The board lives under the chosen household: households/{id}/board/*.
+  let scheduleRef, checkedRef, rulesRef, todosRef, mealsRef;
+  function pointAt(hid){
+    const at = name => fs.doc(db, 'households', hid, 'board', name);
+    scheduleRef = at('schedule'); checkedRef = at('checked'); rulesRef = at('rules'); todosRef = at('todos'); mealsRef = at('meals');
+  }
+  const BOARD_DOCS = ['schedule', 'checked', 'rules', 'todos', 'meals'];
+
+  // Ask whoever sets up the household what to call it. Owners can rename it later in settings.
+  function askHouseholdName(){
+    return new Promise(resolve => {
+      authMsg.textContent = 'Name your household. Everyone in it will see this name, and owners can change it later.';
+      signInBtn.style.display = 'none';
+      authSignOut.style.display = 'none';
+      document.getElementById('nameStep').style.display = '';
+      gate.style.display = '';
+      const input = document.getElementById('hhName'), btn = document.getElementById('hhNameBtn');
+      input.focus();
+      const done = () => {
+        const name = input.value.trim().slice(0, 40);
+        if (!name){ input.focus(); return; }
+        document.getElementById('nameStep').style.display = 'none';
+        resolve(name);
+      };
+      btn.onclick = done;
+      input.onkeydown = e => { if (e.key === 'Enter') done(); };
+    });
+  }
+
+  // Find the households this account belongs to. The original two members are moved into
+  // one shared household the first time they open the app: the first one names it, creates it and copies the
+  // old board across (the old board is left as it was, as a backup); the other one joins it.
+  async function findHouseholds(user, isLegacy){
+    const email = user.email.toLowerCase();
+    const q = fs.query(fs.collection(db, 'households'), fs.where('memberEmails', 'array-contains', email));
+    let list = (await fs.getDocs(q)).docs.map(d => ({ id: d.id, ...d.data() }));
+    if (!list.length && isLegacy){
+      const ref = fs.doc(db, 'households', 'home');
+      const snap = await fs.getDoc(ref);
+      if (!snap.exists()){
+        const name = await askHouseholdName();
+        await fs.setDoc(ref, { name, members: { [email]: 'owner' }, memberEmails: [email], createdBy: email, createdAt: fs.serverTimestamp() });
+        const batch = fs.writeBatch(db);
+        for (const name of BOARD_DOCS){
+          const old = await fs.getDoc(fs.doc(db, 'board', name));
+          if (old.exists()) batch.set(fs.doc(db, 'households', 'home', 'board', name), old.data());
+        }
+        await batch.commit();
+      } else {
+        await fs.updateDoc(ref, new fs.FieldPath('members', email), 'owner', 'memberEmails', fs.arrayUnion(email));
+      }
+      const joined = await fs.getDoc(ref);
+      list = [{ id: joined.id, ...joined.data() }];
+    }
+    return list;
+  }
 
   signInBtn.onclick = async () => {
     const provider = new au.GoogleAuthProvider();
@@ -1300,12 +1364,30 @@ async function cloudStore(){
     });
     try{
       const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Timed out reaching Firebase')), 15000));
-      const [sSnap, cSnap, rSnap, mSnap, tSnap, mealSnap] = await Promise.race([Promise.all([
-        fs.getDoc(scheduleRef), fs.getDoc(checkedRef), fs.getDoc(rulesRef), fs.getDoc(fs.doc(db, 'members', user.email)), fs.getDoc(todosRef), fs.getDoc(mealsRef),
+      const mSnap = await Promise.race([fs.getDoc(fs.doc(db, 'members', user.email)), timeout]);
+      const households = await Promise.race([findHouseholds(user, mSnap.exists()), timeout]);
+      if (!households.length){
+        showGate(user.email + " isn't part of a household yet. Ask the household's owner to add this email, or switch account.", true);
+        await new Promise(resolve => { const stop = au.onAuthStateChanged(auth, u => { if (!u){ stop(); resolve(); } }); });
+        continue;
+      }
+      // Open the household this phone used last, otherwise the first one.
+      let savedId = null;
+      try{ savedId = localStorage.getItem('jamrit_household'); } catch(e){}
+      const household = households.find(h => h.id === savedId) || households[0];
+      try{ localStorage.setItem('jamrit_household', household.id); } catch(e){}
+      const role = household.members[user.email.toLowerCase()];
+      pointAt(household.id);
+
+      const [sSnap, cSnap, rSnap, tSnap, mealSnap] = await Promise.race([Promise.all([
+        fs.getDoc(scheduleRef), fs.getDoc(checkedRef), fs.getDoc(rulesRef), fs.getDoc(todosRef), fs.getDoc(mealsRef),
       ]), timeout]);
-      if (!cSnap.exists()) await fs.setDoc(checkedRef, { ids: {} }, { merge: true });
-      if (!tSnap.exists()) await fs.setDoc(todosRef, { items: {} }, { merge: true });
-      if (!mealSnap.exists()) await fs.setDoc(mealsRef, { days: {} }, { merge: true });
+      const canEdit = role === 'owner' || role === 'editor';
+      if (canEdit){   // viewers can't write, so only editors set up empty documents
+        if (!cSnap.exists()) await fs.setDoc(checkedRef, { ids: {} }, { merge: true });
+        if (!tSnap.exists()) await fs.setDoc(todosRef, { items: {} }, { merge: true });
+        if (!mealSnap.exists()) await fs.setDoc(mealsRef, { days: {} }, { merge: true });
+      }
       gate.style.display = 'none';
       let schedule = null, rules = null;
       if (sSnap.exists()){ try{ schedule = JSON.parse(sSnap.data().json); } catch(e){} }
@@ -1313,6 +1395,7 @@ async function cloudStore(){
       return {
         mode: 'cloud',
         user, schedule, rules,
+        household: { id: household.id, name: household.name, role }, households: households.map(h => ({ id: h.id, name: h.name })),
         memberName: mSnap.exists() ? (mSnap.data().name || null) : null,
         checked: cSnap.exists() ? { ...(cSnap.data().ids || {}) } : {},
         todos: tSnap.exists() ? { ...(tSnap.data().items || {}) } : {},
@@ -1338,7 +1421,15 @@ async function cloudStore(){
           // One field per to-do, so you can both add and tick at the same time.
           await fs.updateDoc(todosRef, new fs.FieldPath('items', id), item || fs.deleteField());
         },
+        async renameHousehold(name){
+          await fs.updateDoc(fs.doc(db, 'households', household.id), { name });
+        },
         subscribe(onChange){
+          fs.onSnapshot(fs.doc(db, 'households', household.id), snap => {
+            if (snap.metadata.hasPendingWrites || !snap.exists()) return;
+            const h = snap.data();
+            onChange('household', { id: household.id, name: h.name, role: (h.members || {})[user.email.toLowerCase()] });
+          });
           fs.onSnapshot(scheduleRef, snap => {
             if (snap.metadata.hasPendingWrites || !snap.exists()) return;
             try{ onChange('schedule', JSON.parse(snap.data().json)); } catch(e){}
@@ -1576,6 +1667,7 @@ async function loadAll(){
   try{ todayOnly = localStorage.getItem('jamrit_today') === '1'; } catch(e){}
   applyThemeAttr(theme);
   renderAccount();
+  renderHouseholdName();
 }
 function savedNote(){ return store.mode==='cloud' ? 'Synced' : 'Saved on this device only'; }
 async function saveSchedule(){
@@ -1599,16 +1691,53 @@ function setSyncNote(msg){
 function renderAccount(){
   const el = document.getElementById('accountNote');
   if (store.mode==='cloud'){
-    el.innerHTML = `<h4>Account</h4><div class="account">Signed in as <strong>${escapeHTML(store.user.email)}</strong></div>
+    const h = store.household;
+    const isOwner = h.role === 'owner';
+    el.innerHTML = `<h4>Household</h4>
+      <div class="hh-row" id="hhRow">
+        <span class="account"><strong>${escapeHTML(h.name)}</strong> · ${{ owner:'Owner', editor:'Can edit', viewer:'View only' }[h.role] || ''}</span>
+        ${isOwner ? '<button class="btn-text hh-rename" id="hhRename">Rename</button>' : ''}
+      </div>
+      <h4 class="acct-h">Account</h4><div class="account">Signed in as <strong>${escapeHTML(store.user.email)}</strong></div>
       <button class="signout" id="signOutBtn">Sign out</button>`;
     document.getElementById('signOutBtn').addEventListener('click', ()=> store.signOut());
+    const rn = document.getElementById('hhRename');
+    if (rn) rn.addEventListener('click', e => {
+      e.stopPropagation();
+      const row = document.getElementById('hhRow');
+      row.innerHTML = `<input type="text" id="hhRenameInput" maxlength="40" value="${escapeAttr(h.name)}">
+        <button class="btn-primary" id="hhRenameSave">Save</button>`;
+      const input = document.getElementById('hhRenameInput');
+      input.focus(); input.select();
+      const save = async () => {
+        const name = input.value.trim().slice(0, 40);
+        if (!name){ input.focus(); return; }
+        h.name = name; renderHouseholdName(); renderAccount();
+        setSyncNote('Saving…');
+        try{ await store.renameHousehold(name); setSyncNote(savedNote()); }
+        catch(err){ console.error(err); setSyncNote("Couldn't rename. Check your connection."); }
+      };
+      document.getElementById('hhRenameSave').addEventListener('click', ev => { ev.stopPropagation(); save(); });
+      input.addEventListener('keydown', ev => { if (ev.key === 'Enter') save(); });
+    });
   } else {
     el.innerHTML = `<h4>Saving</h4><div class="account">${store.cloudError ? "Couldn't reach Firebase, so changes are saved on this device only." : 'Changes are saved on this device only.'}</div>`;
   }
 }
 
+// The household's name sits under the title (local-only mode keeps "Joshua & Amrit").
+function renderHouseholdName(){
+  if (store && store.household) document.getElementById('brandSub').textContent = store.household.name;
+}
+
 /* ---------- live updates from the other phone ---------- */
 function onRemoteChange(kind, value){
+  if (kind==='household'){
+    store.household = value;
+    renderHouseholdName();
+    if (settingsMenu.hidden) renderAccount();   // don't disturb a rename in progress
+    return;
+  }
   if (kind==='schedule'){
     SCHEDULE = value;
     if (currentWeekIdx >= SCHEDULE.weeks.length) currentWeekIdx = SCHEDULE.weeks.length-1;
