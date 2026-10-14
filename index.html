@@ -605,8 +605,39 @@
   }
   .hh-row{ display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .hh-row input{ flex: 1; min-width: 0; padding: 7px 10px; font-size: 14px; }
-  .hh-rename{ font-weight: 700; color: var(--joshua); padding: 4px 2px; }
+  .hh-link{ font-weight: 700; color: var(--joshua); padding: 4px 2px; white-space: nowrap; }
   .menu .acct-h{ margin-top: 14px; }
+  #hhNewRow{ margin-top: 6px; }
+  .hh-switch-h{ font-size: 11px; color: var(--ink-soft); margin: 10px 0 4px; }
+  .hh-switch{
+    display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 8px 10px; margin-top: 4px; border-radius: var(--radius-sm); font: inherit; font-size: 13px; font-weight: 600;
+    color: var(--ink); background: var(--glass); border: 1px solid var(--glass-edge); text-align: left;
+  }
+  .hh-role{ font-size: 12px; font-weight: 500; color: var(--ink-soft); }
+
+  /* Household sheet */
+  #hhTop .sheet-head{ margin-bottom: 4px; }
+  #hhTop .sheet-head.hh-row input{ font-size: 16px; }
+  .hh-intro{ font-size: 13px; color: var(--ink-soft); margin: 0 0 14px; line-height: 1.45; }
+  .hh-h{ font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-soft); font-weight: 600; margin: 16px 0 8px; }
+  .hh-people{ list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .hh-person{ padding: 10px 12px; border-radius: var(--radius-sm); background: var(--glass); border: 1px solid var(--glass-edge); }
+  .hh-who{ display: flex; align-items: center; gap: 8px; min-height: 24px; }
+  .hh-email{ font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .hh-you{ font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 99px; background: var(--joshua-soft); color: var(--joshua); flex: none; }
+  .hh-x{ margin-left: auto; flex: none; width: 28px; height: 28px; border-radius: 50%; border: none; background: none; color: var(--ink-soft); font-size: 13px; }
+  .hh-x:hover{ background: var(--hover-fill); color: var(--danger); }
+  .hh-person .hh-role{ margin-top: 4px; }
+  .hh-roles{ margin-top: 8px; }
+  #hhAdd .todo-input-row input{ font-size: 16px; }   /* 16px stops iPhone zooming in */
+  #hhAdd .hh-roles{ margin-top: 10px; }
+  .hh-err{ font-size: 12.5px; color: var(--danger); margin-top: 6px; min-height: 1em; }
+  .hh-leave{ display: block; margin: 16px auto 0; color: var(--danger); }
+
+  /* View only: hide the controls that change the board */
+  .readonly :is(.iconbtn, .addrow .addbtn, .rules-add, .paste-open, .todo-add, [data-plan], #resetWeek, #todoClear, #addFirstWeek, .meal-row .chev){ display: none !important; }
+  .readonly :is(.check, .meal-row){ pointer-events: none; }
 
   /* ---------- Liquid glass, for every theme ----------
      Surfaces are frosted and tinted by the theme; a soft wash of the theme's
@@ -1209,6 +1240,18 @@
   <button type="button" class="btn-text sheet-close" id="statsClose">Done</button>
 </div>
 
+<!-- Household sheet (settings › People): members, roles and invites -->
+<div class="sheet-backdrop" id="hhBackdrop" hidden></div>
+<div class="sheet" id="hhSheet" role="dialog" aria-modal="true" aria-labelledby="hhTitle" hidden>
+  <div class="sheet-grab" aria-hidden="true"></div>
+  <div id="hhTop"></div>
+  <div class="hh-h">People</div>
+  <ul class="hh-people" id="hhPeople"></ul>
+  <div id="hhAdd"></div>
+  <div id="hhFoot"></div>
+  <button type="button" class="btn-text sheet-close" id="hhClose">Done</button>
+</div>
+
 <div class="authgate" id="authGate" style="display:none;">
   <div class="authcard">
     <h2>The Board</h2>
@@ -1347,6 +1390,20 @@ async function cloudStore(){
     return list;
   }
 
+  // A new household starts with an empty board: no house rules and no weeks yet.
+  // The household has to exist first, since the board's rules look up who's in it.
+  async function createHousehold(user, name){
+    const email = user.email.toLowerCase();
+    const ref = fs.doc(fs.collection(db, 'households'));
+    await fs.setDoc(ref, { name, members: { [email]: 'owner' }, memberEmails: [email], createdBy: email, createdAt: fs.serverTimestamp() });
+    const batch = fs.writeBatch(db);
+    const stamp = { updatedBy: user.email, updatedAt: fs.serverTimestamp() };
+    batch.set(fs.doc(db, 'households', ref.id, 'board', 'rules'), { json: '[]', ...stamp });
+    batch.set(fs.doc(db, 'households', ref.id, 'board', 'schedule'), { json: JSON.stringify({ weeks: [] }), ...stamp });
+    await batch.commit();
+    return ref.id;
+  }
+
   signInBtn.onclick = async () => {
     const provider = new au.GoogleAuthProvider();
     try{ await au.signInWithPopup(auth, provider); }
@@ -1364,8 +1421,17 @@ async function cloudStore(){
     });
     try{
       const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Timed out reaching Firebase')), 15000));
-      const mSnap = await Promise.race([fs.getDoc(fs.doc(db, 'members', user.email)), timeout]);
-      const households = await Promise.race([findHouseholds(user, mSnap.exists()), timeout]);
+      const [mSnap, crSnap] = await Promise.race([Promise.all([
+        fs.getDoc(fs.doc(db, 'members', user.email)), fs.getDoc(fs.doc(db, 'creators', user.email)),
+      ]), timeout]);
+      const isCreator = crSnap.exists();
+      let households = await Promise.race([findHouseholds(user, mSnap.exists()), timeout]);
+      // Someone allowed to create households who isn't in one yet sets up their own.
+      if (!households.length && isCreator){
+        const id = await createHousehold(user, await askHouseholdName());
+        try{ localStorage.setItem('jamrit_household', id); } catch(e){}
+        households = await findHouseholds(user, false);
+      }
       if (!households.length){
         showGate(user.email + " isn't part of a household yet. Ask the household's owner to add this email, or switch account.", true);
         await new Promise(resolve => { const stop = au.onAuthStateChanged(auth, u => { if (!u){ stop(); resolve(); } }); });
@@ -1376,7 +1442,9 @@ async function cloudStore(){
       try{ savedId = localStorage.getItem('jamrit_household'); } catch(e){}
       const household = households.find(h => h.id === savedId) || households[0];
       try{ localStorage.setItem('jamrit_household', household.id); } catch(e){}
-      const role = household.members[user.email.toLowerCase()];
+      const me = user.email.toLowerCase();
+      const role = household.members[me];
+      const hhRef = fs.doc(db, 'households', household.id);
       pointAt(household.id);
 
       const [sSnap, cSnap, rSnap, tSnap, mealSnap] = await Promise.race([Promise.all([
@@ -1395,7 +1463,9 @@ async function cloudStore(){
       return {
         mode: 'cloud',
         user, schedule, rules,
-        household: { id: household.id, name: household.name, role }, households: households.map(h => ({ id: h.id, name: h.name })),
+        household: { id: household.id, name: household.name, role, members: { ...household.members } },
+        households: households.map(h => ({ id: h.id, name: h.name, role: h.members[me] })),
+        isCreator,
         memberName: mSnap.exists() ? (mSnap.data().name || null) : null,
         checked: cSnap.exists() ? { ...(cSnap.data().ids || {}) } : {},
         todos: tSnap.exists() ? { ...(tSnap.data().items || {}) } : {},
@@ -1422,13 +1492,24 @@ async function cloudStore(){
           await fs.updateDoc(todosRef, new fs.FieldPath('items', id), item || fs.deleteField());
         },
         async renameHousehold(name){
-          await fs.updateDoc(fs.doc(db, 'households', household.id), { name });
+          await fs.updateDoc(hhRef, { name });
+        },
+        // Add someone (by their Google email), change their role, or remove them (role null).
+        // Adding an email is the invite: they join by signing in with that account.
+        async setMember(email, role){
+          await fs.updateDoc(hhRef, new fs.FieldPath('members', email), role || fs.deleteField(),
+            'memberEmails', role ? fs.arrayUnion(email) : fs.arrayRemove(email));
+        },
+        async createHousehold(name){
+          return createHousehold(user, name);
         },
         subscribe(onChange){
-          fs.onSnapshot(fs.doc(db, 'households', household.id), snap => {
-            if (snap.metadata.hasPendingWrites || !snap.exists()) return;
-            const h = snap.data();
-            onChange('household', { id: household.id, name: h.name, role: (h.members || {})[user.email.toLowerCase()] });
+          fs.onSnapshot(hhRef, snap => {
+            if (snap.metadata.hasPendingWrites) return;
+            const h = snap.exists() ? snap.data() : { members: {} };
+            onChange('household', { id: household.id, name: h.name, role: (h.members || {})[me], members: { ...(h.members || {}) } });
+          }, err => {   // removed by an owner, so it can't be read any more
+            if (err.code === 'permission-denied') onChange('household', { id: household.id, role: undefined, members: {} });
           });
           fs.onSnapshot(scheduleRef, snap => {
             if (snap.metadata.hasPendingWrites || !snap.exists()) return;
@@ -1455,7 +1536,7 @@ async function cloudStore(){
       };
     } catch(e){
       if (e.code === 'permission-denied'){
-        showGate(user.email + " isn't on the board. Ask Joshua to add it, or switch account.", true);
+        showGate(user.email + " isn't on the board. Ask the household's owner to add it, or switch account.", true);
         await new Promise(resolve => { const stop = au.onAuthStateChanged(auth, u => { if (!u){ stop(); resolve(); } }); });
       } else {
         throw e;
@@ -1650,11 +1731,14 @@ let store = null;           // set in init(): Firebase-backed when configured, o
 
 async function loadAll(){
   store = await window.storeReady;
-  SCHEDULE = store.schedule && store.schedule.weeks && store.schedule.weeks.length ? store.schedule : { weeks: SEED_WEEKS };
+  // A household created in the app starts with no rules and no weeks; the original board
+  // (and this-device-only mode) start from the spreadsheet weeks and the default rules.
+  SCHEDULE = store.schedule && store.schedule.weeks ? store.schedule : { weeks: SEED_WEEKS };
   checked = store.checked || {};
-  RULES = store.rules && store.rules.length ? store.rules : DEFAULT_RULES;
+  RULES = Array.isArray(store.rules) ? store.rules : DEFAULT_RULES;
   TODOS = store.todos || {};
   MEALS = store.meals || {};
+  applyReadOnly();
   // Save on first run, or when the schedule needed extending past its last week.
   if (ensureWeeksAhead() || !store.schedule) saveSchedule();
 
@@ -1671,6 +1755,7 @@ async function loadAll(){
 }
 function savedNote(){ return store.mode==='cloud' ? 'Synced' : 'Saved on this device only'; }
 async function saveSchedule(){
+  if (!canEdit()) return;   // a viewer's phone still fills in upcoming weeks, just without saving them
   setSyncNote('Saving…');
   try{ await store.saveSchedule(SCHEDULE); setSyncNote(savedNote()); }
   catch(e){ console.error(e); setSyncNote("Couldn't save. Check your connection."); }
@@ -1688,54 +1773,222 @@ function setSyncNote(msg){
   el.textContent = msg;
   if (msg==='Synced') setTimeout(()=>{ if(el.textContent==='Synced') el.textContent=''; }, 1200);
 }
+const ROLE_LABEL = { owner: 'Owner', editor: 'Can edit', viewer: 'View only' };
+// Viewers can look at a household's board but not change it.
+function canEdit(){ return !store || !store.household || store.household.role !== 'viewer'; }
+function applyReadOnly(){ document.documentElement.classList.toggle('readonly', !canEdit()); }
+
 function renderAccount(){
   const el = document.getElementById('accountNote');
   if (store.mode==='cloud'){
     const h = store.household;
-    const isOwner = h.role === 'owner';
+    const others = (store.households || []).filter(o => o.id !== h.id);
     el.innerHTML = `<h4>Household</h4>
-      <div class="hh-row" id="hhRow">
-        <span class="account"><strong>${escapeHTML(h.name)}</strong> · ${{ owner:'Owner', editor:'Can edit', viewer:'View only' }[h.role] || ''}</span>
-        ${isOwner ? '<button class="btn-text hh-rename" id="hhRename">Rename</button>' : ''}
+      <div class="hh-row">
+        <span class="account"><strong>${escapeHTML(h.name)}</strong> · ${ROLE_LABEL[h.role] || ''}</span>
+        <button class="btn-text hh-link" id="hhManage">People ›</button>
       </div>
+      ${others.length ? `<div class="hh-switch-h">Switch to</div>${others.map(o =>
+        `<button class="hh-switch" data-hh="${escapeAttr(o.id)}"><span>${escapeHTML(o.name)}</span><span class="hh-role">${ROLE_LABEL[o.role] || ''}</span></button>`).join('')}` : ''}
+      ${store.isCreator ? '<div class="hh-row" id="hhNewRow"><button class="btn-text hh-link" id="hhNew">+ New household</button></div>' : ''}
       <h4 class="acct-h">Account</h4><div class="account">Signed in as <strong>${escapeHTML(store.user.email)}</strong></div>
       <button class="signout" id="signOutBtn">Sign out</button>`;
     document.getElementById('signOutBtn').addEventListener('click', ()=> store.signOut());
-    const rn = document.getElementById('hhRename');
-    if (rn) rn.addEventListener('click', e => {
+    document.getElementById('hhManage').addEventListener('click', ()=> { setMenuOpen(false); setHouseholdOpen(true); });
+    el.querySelectorAll('[data-hh]').forEach(b => b.addEventListener('click', ()=> switchHousehold(b.dataset.hh)));
+    const nb = document.getElementById('hhNew');
+    if (nb) nb.addEventListener('click', e => {
       e.stopPropagation();
-      const row = document.getElementById('hhRow');
-      row.innerHTML = `<input type="text" id="hhRenameInput" maxlength="40" value="${escapeAttr(h.name)}">
-        <button class="btn-primary" id="hhRenameSave">Save</button>`;
-      const input = document.getElementById('hhRenameInput');
-      input.focus(); input.select();
-      const save = async () => {
-        const name = input.value.trim().slice(0, 40);
-        if (!name){ input.focus(); return; }
-        h.name = name; renderHouseholdName(); renderAccount();
-        setSyncNote('Saving…');
-        try{ await store.renameHousehold(name); setSyncNote(savedNote()); }
-        catch(err){ console.error(err); setSyncNote("Couldn't rename. Check your connection."); }
-      };
-      document.getElementById('hhRenameSave').addEventListener('click', ev => { ev.stopPropagation(); save(); });
-      input.addEventListener('keydown', ev => { if (ev.key === 'Enter') save(); });
+      inlineNameInput(document.getElementById('hhNewRow'), '', 'Create', async name => {
+        setSyncNote('Creating…');
+        try{ switchHousehold(await store.createHousehold(name)); }
+        catch(err){ console.error(err); setSyncNote("Couldn't create it. Check your connection."); renderAccount(); }
+      }, 'Name the new household');
     });
   } else {
     el.innerHTML = `<h4>Saving</h4><div class="account">${store.cloudError ? "Couldn't reach Firebase, so changes are saved on this device only." : 'Changes are saved on this device only.'}</div>`;
   }
 }
 
+// Swap a row for a name box and a button (renaming or creating a household).
+function inlineNameInput(row, value, label, onSave, placeholder){
+  row.innerHTML = `<input type="text" maxlength="40" value="${escapeAttr(value)}" placeholder="${escapeAttr(placeholder || '')}">
+    <button class="btn-primary">${label}</button>`;
+  const input = row.querySelector('input');
+  input.focus(); input.select();
+  const save = () => {
+    const name = input.value.trim().slice(0, 40);
+    if (!name){ input.focus(); return; }
+    onSave(name);
+  };
+  row.querySelector('button').addEventListener('click', ev => { ev.stopPropagation(); save(); });
+  input.addEventListener('keydown', ev => { if (ev.key === 'Enter') save(); });
+}
+
+// Each phone remembers which household it last opened; switching reloads into the other one.
+function switchHousehold(id){
+  try{ localStorage.setItem('jamrit_household', id); } catch(e){}
+  location.reload();
+}
+
 // The household's name sits under the title (local-only mode keeps "Joshua & Amrit").
 function renderHouseholdName(){
-  if (store && store.household) document.getElementById('brandSub').textContent = store.household.name;
+  if (store && store.household) document.getElementById('brandSub').textContent =
+    store.household.name + (canEdit() ? '' : ' · View only');
+}
+
+/* ---------- household sheet: who's in it and what they can do ---------- */
+let rolePickers = [], addRolePicker = null;
+function setHouseholdOpen(open){
+  document.getElementById('hhSheet').hidden = !open;
+  document.getElementById('hhBackdrop').hidden = !open;
+  if (open){
+    renderHouseholdSheet(true);
+    document.getElementById('hhClose').focus();
+  } else {
+    rolePickers.forEach(p => p.destroy()); rolePickers = [];
+    if (addRolePicker){ addRolePicker.destroy(); addRolePicker = null; }
+    settingsBtn.focus();
+  }
+}
+function householdOpen(){ return !document.getElementById('hhSheet').hidden; }
+function ownerCount(members){ return Object.values(members).filter(r => r === 'owner').length; }
+
+// fresh: also rebuild the title and the add-someone form (left alone on live updates, so typing isn't lost).
+function renderHouseholdSheet(fresh){
+  const h = store.household, me = store.user.email.toLowerCase();
+  const isOwner = h.role === 'owner';
+  const members = h.members || {};
+  if (fresh){
+    const top = document.getElementById('hhTop');
+    top.innerHTML = `<div class="sheet-head"><h2 id="hhTitle">${escapeHTML(h.name)}</h2>
+        ${isOwner ? '<button class="btn-text hh-link" id="hhRename">Rename</button>' : ''}</div>
+      <p class="hh-intro">${isOwner
+        ? 'Add people by their Google email. They join when they sign in with it.'
+        : `You ${h.role === 'viewer' ? 'can view' : 'can edit'} this household. Its owners add people and choose what they can do.`}</p>`;
+    const rn = document.getElementById('hhRename');
+    if (rn) rn.addEventListener('click', () => {
+      const head = top.querySelector('.sheet-head');
+      head.classList.add('hh-row');
+      inlineNameInput(head, h.name, 'Save', async name => {
+        h.name = name; renderHouseholdName(); renderAccount(); renderHouseholdSheet(true);
+        setSyncNote('Saving…');
+        try{ await store.renameHousehold(name); setSyncNote(savedNote()); }
+        catch(err){ console.error(err); setSyncNote("Couldn't rename. Check your connection."); }
+      });
+    });
+    if (addRolePicker){ addRolePicker.destroy(); addRolePicker = null; }
+    const add = document.getElementById('hhAdd');
+    add.innerHTML = isOwner ? `<div class="hh-h">Add someone</div>
+      <div class="todo-input-row"><input type="email" id="hhEmail" placeholder="their.name@gmail.com" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <button type="button" class="btn-primary" id="hhAddBtn">Add</button></div>
+      <div class="persongroup hh-roles" id="hhAddRole">${roleButtons('editor')}</div>
+      <div class="hh-err" id="hhErr" role="alert"></div>` : '';
+    if (isOwner){
+      addRolePicker = liquidPicker(document.getElementById('hhAddRole'));
+      // Read the selected button when adding, so a drag along the picker counts too.
+      const submit = () => addMember(document.getElementById('hhEmail'), document.querySelector('#hhAddRole .pbtn.sel')?.dataset.p || 'editor');
+      document.getElementById('hhAddBtn').addEventListener('click', submit);
+      document.getElementById('hhEmail').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); submit(); } });
+    }
+  }
+  // People, you first: owners pick each person's role; everyone else just sees them.
+  const emails = Object.keys(members).sort((a, b) => (a === me ? -1 : b === me ? 1 : a.localeCompare(b)));
+  const onlyOwner = e => members[e] === 'owner' && ownerCount(members) === 1;
+  rolePickers.forEach(p => p.destroy()); rolePickers = [];
+  const ul = document.getElementById('hhPeople');
+  ul.innerHTML = emails.map(e => `<li class="hh-person">
+      <div class="hh-who"><span class="hh-email">${escapeHTML(e)}</span>${e === me ? '<span class="hh-you">You</span>' : ''}
+        ${isOwner && e !== me ? `<button type="button" class="hh-x" data-remove="${escapeAttr(e)}" aria-label="Remove ${escapeAttr(e)}">✕</button>` : ''}</div>
+      ${isOwner && !onlyOwner(e)
+        ? `<div class="persongroup hh-roles" data-email="${escapeAttr(e)}">${roleButtons(members[e])}</div>`
+        : `<div class="hh-role">${ROLE_LABEL[members[e]] || ''}${isOwner ? ' · the only owner' : ''}</div>`}
+    </li>`).join('');
+  ul.querySelectorAll('.hh-roles').forEach(g => rolePickers.push(liquidPicker(g, r => changeRole(g.dataset.email, r))));
+  ul.querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => removeMember(b.dataset.remove)));
+  // Anyone can leave, as long as the household keeps an owner.
+  document.getElementById('hhFoot').innerHTML = onlyOwner(me) ? ''
+    : '<button type="button" class="resetlink hh-leave" id="hhLeave">Leave this household</button>';
+  const lv = document.getElementById('hhLeave');
+  if (lv) lv.addEventListener('click', leaveHousehold);
+  rolePickers.forEach(p => p.snap());
+  if (addRolePicker) addRolePicker.snap();
+}
+function roleButtons(sel){
+  return ['owner', 'editor', 'viewer'].map(r =>
+    `<button type="button" class="pbtn ${r === sel ? 'sel' : ''}" data-p="${r}">${ROLE_LABEL[r]}</button>`).join('');
+}
+// Shows the change straight away, and puts it back if it couldn't be saved.
+async function saveMember(email, role){
+  const h = store.household, isMe = email === store.user.email.toLowerCase();
+  const apply = r => {
+    if (r) h.members[email] = r; else delete h.members[email];
+    if (isMe){ h.role = r; applyReadOnly(); renderHouseholdName(); renderAll(); }
+  };
+  const before = h.members[email];
+  apply(role);
+  setSyncNote('Saving…');
+  try{ await store.setMember(email, role); setSyncNote(savedNote()); return true; }
+  catch(err){
+    console.error(err); apply(before);
+    setSyncNote("Couldn't save. Check your connection.");
+    if (householdOpen()) renderHouseholdSheet(isMe);
+    return false;
+  }
+}
+async function addMember(input, role){
+  const email = input.value.trim().toLowerCase();
+  const err = document.getElementById('hhErr');
+  const members = store.household.members;
+  err.textContent = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? "That doesn't look like an email address."
+    : members[email] ? "They're already in this household."
+    : Object.keys(members).length >= 8 ? 'A household can have up to 8 people.' : '';
+  if (err.textContent){ input.focus(); return; }
+  input.value = '';
+  const saving = saveMember(email, role);
+  renderHouseholdSheet(false);
+  if (!(await saving)) err.textContent = "Couldn't add them. Check your connection.";
+}
+async function changeRole(email, role){
+  const me = store.user.email.toLowerCase();
+  if (store.household.members[email] === role) return;
+  if (email === me && !confirm(`Change your own role to "${ROLE_LABEL[role]}"? Only owners can add people and change roles.`)){
+    renderHouseholdSheet(false); return;
+  }
+  await saveMember(email, role);
+  renderHouseholdSheet(email === me);
+  renderAccount();
+}
+async function removeMember(email){
+  if (!confirm(`Remove ${email} from ${store.household.name}?`)) return;
+  const saving = saveMember(email, null);
+  renderHouseholdSheet(false);
+  await saving;
+}
+async function leaveHousehold(){
+  if (!confirm(`Leave ${store.household.name}? An owner would need to add you again.`)) return;
+  setSyncNote('Saving…');
+  try{
+    await store.setMember(store.user.email.toLowerCase(), null);
+    try{ localStorage.removeItem('jamrit_household'); } catch(e){}
+    location.reload();
+  } catch(err){ console.error(err); setSyncNote("Couldn't leave. Check your connection."); }
 }
 
 /* ---------- live updates from the other phone ---------- */
 function onRemoteChange(kind, value){
   if (kind==='household'){
+    // Removed from the household by an owner: start again, which finds any others.
+    if (!value.role){ try{ localStorage.removeItem('jamrit_household'); } catch(e){} location.reload(); return; }
+    const roleChanged = value.role !== store.household.role;
     store.household = value;
+    const mine = (store.households || []).find(o => o.id === value.id);
+    if (mine){ mine.name = value.name; mine.role = value.role; }
+    applyReadOnly();
     renderHouseholdName();
     if (settingsMenu.hidden) renderAccount();   // don't disturb a rename in progress
+    if (householdOpen()) renderHouseholdSheet(roleChanged);
+    if (roleChanged) renderAll();
     return;
   }
   if (kind==='schedule'){
@@ -1973,6 +2226,20 @@ document.getElementById('weekLabel').addEventListener('keydown', e=>{ if (e.key=
 document.getElementById('balanceRow').addEventListener('keydown', e=>{ if (e.key==='Enter' || e.key===' '){ e.preventDefault(); setStatsOpen(true); } });
 document.getElementById('statsClose').addEventListener('click', ()=> setStatsOpen(false));
 document.getElementById('statsBackdrop').addEventListener('click', ()=> setStatsOpen(false));
+document.getElementById('hhClose').addEventListener('click', ()=> setHouseholdOpen(false));
+document.getElementById('hhBackdrop').addEventListener('click', ()=> setHouseholdOpen(false));
+document.addEventListener('keydown', e=>{ if (e.key==='Escape' && householdOpen()) setHouseholdOpen(false); });
+
+// View only: the edit buttons are hidden (see .readonly in the styles), and this catches
+// anything left, like ticking a box or opening a meal, before it reaches the board.
+const EDITS = '.check, .iconbtn, .addbtn, .meal-row, [data-plan], .paste-open, #todoAddBtn, #todoClear, #resetWeek, #addFirstWeek, #addRule';
+for (const type of ['click', 'change']){
+  document.addEventListener(type, e=>{
+    if (canEdit() || !e.target.closest || !e.target.closest(EDITS)) return;
+    e.preventDefault(); e.stopPropagation();
+    setSyncNote('View only: ask an owner if you need to make changes.');
+  }, true);
+}
 document.addEventListener('keydown', e=>{ if (e.key==='Escape' && !document.getElementById('statsSheet').hidden) setStatsOpen(false); });
 
 /* ---------- render: task form ---------- */
