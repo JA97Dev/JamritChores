@@ -74,19 +74,32 @@ jumps between them.
 
 ## 3. Entities and how they relate
 
-### People codes
+### People, and who things are for
 
-Chores, to-dos and meals refer to people by a short code rather than an account.
-For now the two people are fixed as Joshua and Amrit. Making them configurable per
-household is the planned step 3.
+Each household lists its **people**: the one to four people its chores are shared
+between, each with a name and one of four colours. Owners set them up in **People**.
+This is different from its **members**, the Google accounts that can open the
+household. A person can be **linked** to a member's account, and that phone then
+opens on that person's chores.
 
-| Code | Meaning | Used by |
+Chores, to-dos and meals say who they're for with a person's **id**, or one of these
+special values:
+
+| Value | Meaning | Used by |
 |---|---|---|
-| `J` | Joshua | tasks, rules, to-dos, meals |
-| `A` | Amrit | tasks, rules, to-dos, meals |
-| `BOTH` | Both of you | tasks, rules, to-dos, meals |
-| `ALT` | Take turns, one occurrence each | house rules only (becomes `J` or `A` in each week) |
-| `ANY` | Anyone | to-dos and meals |
+| a person's id | that person | tasks, rules, to-dos, meals |
+| `BOTH` | everyone together ("Both", or "Everyone" with three or more) | tasks, rules, to-dos, meals |
+| `ALT` | take turns, one occurrence each, through everyone in order | house rules only (becomes a person's id in each week) |
+| `ANY` | anyone | to-dos and meals |
+
+Some details:
+- **Regent Square's ids.** Its people have the ids `J` (Joshua) and `A` (Amrit),
+  the codes its chores have used since before people could be configured. A
+  household that hasn't saved its people yet gets those two by default.
+- **New households.** A household created in the app starts with one person, its
+  creator, linked to their account.
+- **Removed people.** They stay in the list, marked `removed`, so chores already in
+  the weeks keep their name.
 
 ### Entity diagram
 
@@ -96,6 +109,8 @@ some are fields nested inside one; section 4 shows exactly how they're stored.
 ```mermaid
 erDiagram
   HOUSEHOLD ||--|{ MEMBER : "has 1 to 8"
+  HOUSEHOLD ||--|{ PERSON : "shares chores between 1 to 4"
+  PERSON |o--o| MEMBER : "linked to"
   HOUSEHOLD ||--o{ INVITE : "has open"
   HOUSEHOLD ||--|| BOARD : "has one"
   BOARD ||--o{ HOUSE_RULE : "rules"
@@ -118,6 +133,13 @@ erDiagram
     string email "Google account, lower case"
     string role "owner, editor or viewer"
   }
+  PERSON {
+    string id "J and A in Regent Square"
+    string name
+    number colour "1 to 4"
+    string email "linked account, optional"
+    boolean removed
+  }
   INVITE {
     string code "12 random characters"
     string role "editor or viewer"
@@ -128,7 +150,7 @@ erDiagram
     string chore
     string area
     number minutes
-    string who "J, A, BOTH or ALT"
+    string who "person id, BOTH or ALT"
     string freq "daily, alt-days, weekly, fortnightly"
     string day "MON to SUN"
   }
@@ -144,7 +166,7 @@ erDiagram
   TASK {
     string id
     string task "name"
-    string person "J, A or BOTH"
+    string person "person id or BOTH"
     number minutes
     string rule "house rule id, if generated"
   }
@@ -154,13 +176,13 @@ erDiagram
   TODO {
     string id
     string text
-    string who "ANY, J, A or BOTH"
+    string who "ANY, person id or BOTH"
     boolean done
   }
   MEAL {
     string date "YYYY-MM-DD"
     string name
-    string cook "ANY, J, A or BOTH"
+    string cook "ANY, person id or BOTH"
     string notes
   }
   INGREDIENT {
@@ -173,6 +195,9 @@ erDiagram
 - **Households.** A household has one to eight **members**, each a Google account
   with a role. One account can belong to several households, with a different role
   in each.
+- **People.** A household shares its chores between one to four **people**. A
+  person can be linked to one member; members don't have to be people (for
+  example, someone with View only who's just looking).
 - **The board.** Each household has exactly one **board**: its house rules,
   schedule, ticks, to-dos and meals.
 - **Weeks and tasks.** The **schedule** is a list of **weeks**. Each week has
@@ -196,6 +221,7 @@ households/{householdId}
 │   members         { "someone@gmail.com": "owner", "other@gmail.com": "viewer" }
 │   memberEmails    ["someone@gmail.com", "other@gmail.com"]   ← same emails, so the app can search by email
 │   invites         { "<code>": { role, expiresAt } }          ← links still open
+│   people          [{ id, name, colour, email?, removed? }]   ← who shares the chores (missing: Joshua and Amrit)
 │   createdBy, createdAt, joinedWith
 │
 └── board/                          (one document per kind of data)
@@ -207,8 +233,7 @@ households/{householdId}
 
 invites/{code}      { hid, name, role, createdBy, expiresAt }   ← readable by anyone who knows the code
 
-members/{email}     { name }     ← from before households (see section 9)
-board/*                          ← the original board, kept as a backup (see section 9)
+board/*                          ← the board from before households, kept as a backup (see section 9)
 ```
 
 Some notes on these choices:
@@ -245,19 +270,22 @@ The **house rules** are the template, and the **schedule** is what they produce.
 **Rotation and turns:**
 - **Rotation weeks.** These count from Monday **24 Aug 2026** (rotation week 1)
   and cycle 1 to 4.
-- **Taking turns.** A rule with `who: 'ALT'` alternates between Joshua and Amrit
-  each time it comes round, starting with `first`.
-- **Same result on every phone.** The calculation only depends on the date, so
-  every phone produces exactly the same tasks with the same ids.
+- **Taking turns.** A rule with `who: 'ALT'` goes through the household's people in
+  order, one each time it comes round, starting with `first`. With Joshua and
+  Amrit that's simply alternating.
+- **Same result on every phone.** The calculation only depends on the date and the
+  people, so every phone produces exactly the same tasks with the same ids.
 
 **Keeping the schedule topped up:**
 - **Weeks ahead.** The schedule always reaches **4 weeks past the current one**.
   When a phone opens the app, or passes midnight with it open, it adds any missing
   weeks and saves them (`ensureWeeksAhead()`).
-- **Changing a house rule.** This rebuilds every **future** week that nobody has
-  edited by hand (`regenerateFutureWeeks()`). Adding, editing or deleting a task in
-  a week marks that week `edited: true`, so hand changes are never overwritten.
-  This week and past weeks are never regenerated.
+- **Changing a house rule, or adding or removing a person.** This rebuilds every
+  **future** week that nobody has edited by hand (`regenerateFutureWeeks()`).
+  Adding, editing or deleting a task in a week marks that week `edited: true`, so
+  hand changes are never overwritten. This week and past weeks are never
+  regenerated. A person can't be removed while house rules are theirs alone;
+  those rules need someone else first.
 - **Where the weeks started.** Regent Square's early weeks came from the original
   spreadsheet (`SEED_WEEKS` in `index.html`). A household created in the app
   starts with no rules and no weeks, and its weeks are generated from the day it
@@ -287,8 +315,8 @@ The store provides:
   changes from other phones and redraws.
 - **Cloud only:**
   - `household` and `households`
-  - `renameHousehold`, `setMember`, `createHousehold`, `createInvite`,
-    `cancelInvite`
+  - `renameHousehold`, `setMember`, `setPeople`, `createHousehold`,
+    `createInvite`, `cancelInvite`
   - `signOut`
 
 Changes show on screen straight away and save in the background. The small note
@@ -311,7 +339,7 @@ flowchart TD
   D -- no --> F{In any<br/>household?}
   F -- yes --> G[Open the one this phone used last, or the first]
   F -- no --> H["Create a household, or paste an invite link"]
-  H -- Create --> H1[Name it] --> H2[Create it, with me as owner and an empty board] --> G
+  H -- Create --> H1[Name it, and give my name] --> H2[Create it: me as owner and its first person, and an empty board] --> G
   H -- Paste link --> E
   G --> I[Read the board, show it, start live updates]
 ```
@@ -335,7 +363,8 @@ Some details of this flow:
 | See the board (chores, meals, to-dos, house rules, stats) | ✓ | ✓ | ✓ |
 | Tick, add, edit, delete; plan meals; to-dos; house rules | ✓ | ✓ | – |
 | Rename the household | ✓ | – | – |
-| Add, remove or change the role of people | ✓ | – | – |
+| Set who shares the chores (people, colours, linked accounts) | ✓ | – | – |
+| Add, remove or change the role of members | ✓ | – | – |
 | Create or cancel invite links | ✓ | – | – |
 | Leave the household | ✓ (if another owner remains) | ✓ | ✓ |
 | Create a household of their own | anyone signed in with Google | | |
@@ -348,7 +377,8 @@ them.
 - **Households:**
   - Only members can read a household or its board.
   - Only owners and editors can write to the board.
-  - Only owners can change the household: name, members, roles and invites.
+  - Only owners can change the household: name, people, members, roles and
+    invites.
   - A household always has 1 to 8 members, at least one owner, and only valid
     roles. `memberEmails` must match `members`.
   - A new household can only contain its creator, as owner.
@@ -365,19 +395,19 @@ edit action before it reaches Firestore. The rules would reject it anyway.
 
 ---
 
-## 9. Leftovers from before households
+## 9. Before households
 
-Until 14 Oct 2026 there was one shared board at `board/*`. Two accounts listed in
-`members/{email}` could use it. When households arrived:
+Until 14 Oct 2026 there was one shared board at `board/*`, which two accounts
+listed in a `members` collection could use. When households arrived:
 - **The move.** The first of those accounts to open the new version named the
-  household. The app created `households/home` and copied `board/*` into it. The
-  second account joined it automatically as an owner.
-- **The old data.** The old `board/*` was left untouched as a backup.
-- **The rules.** They still give the two `members` accounts some extra access, for
-  the move: they can read `home` and re-add themselves to it as owners, and read
-  and write the old `board/*`. Once both are in the household, the `members`
-  documents can be deleted (see the README). The app also reads the `name` field
-  there to start a new phone on that person's view.
+  household. The app created `households/home` (Regent Square) and copied
+  `board/*` into it. Other accounts were then added to it.
+- **The old data.** `board/*` was left untouched as a backup. Nothing in the app or
+  the rules opens it any more, so it's only visible in the Firebase console.
+- **Retired.** The `members` collection, and the rules and app code that moved
+  those accounts in, have since been removed. The rules still let you read your
+  own `members/{email}` entry, because older versions of the app look for it when
+  they open. That can go once every phone has updated.
 
 ---
 
@@ -390,10 +420,15 @@ Until 14 Oct 2026 there was one shared board at `board/*`. Two accounts listed i
     new household, account.
   - Tapping the week's dates or the balance bar opens **Stats** (week or month).
   - The header shrinks as you scroll.
-- **Bottom dock.** A liquid-glass switcher for *Everyone / Joshua / Amrit*, which
-  filters the week and the to-do list. Beside it, today's date shows only today.
-- **People sheet.** Members and roles, invite links, add by email, rename and
-  leave.
+- **Bottom dock.** A liquid-glass switcher for *Everyone* and each person, which
+  filters the week and the to-do list. It's hidden in a one-person household.
+  Beside it, today's date shows only today.
+- **People sheet.** Who shares the chores, members and roles, invite links, add by
+  email, rename and leave.
+- **People's colours.** Four per theme: `--c1` and `--c2` are the theme's original
+  Joshua and Amrit colours, and `--c3` and `--c4` are chosen to sit apart from them
+  and from `--both`. Badges, pickers and the dock receive a person's colour as
+  `--pc`.
 - **Themes.** Light, Dark, Pink, Spotify, Hello Kitty, iOS, iOS Dark, Master Chief,
   Covenant and Cortana. Each is a block of CSS variables selected by
   `data-theme` on `<html>` (iOS Dark is `data-theme="ios"` plus `data-ios="dark"`).
@@ -410,7 +445,7 @@ Until 14 Oct 2026 there was one shared board at `board/*`. Two accounts listed i
 | Key | What |
 |---|---|
 | `jamrit_theme` | chosen theme |
-| `jamrit_filter` | Everyone / Joshua / Amrit in the dock |
+| `jamrit_filter` | Everyone, or which person, in the dock |
 | `jamrit_today` | whether "today only" is on |
 | `jamrit_household` | the household this phone opens |
 | `jamrit_invite` | an invite code waiting for sign-in to finish |
@@ -436,9 +471,8 @@ Until 14 Oct 2026 there was one shared board at `board/*`. Two accounts listed i
 
 ### Planned next
 
-- **Flexible people (step 3).** Each household defines its own 1 to 4 people, with
-  names and colours, linked to member accounts. These would replace the fixed
-  `J` / `A` codes in tasks, rules, to-dos, meals, the dock, the balance bar and
-  stats. Taking turns would then work across any number of people.
-- **Tidying up.** Remove the extra rules for the original `members` accounts, and
-  in time delete the old `board/*` backup.
+- **Tidying up.** In time, delete the old `board/*` backup and the `members` read
+  rule.
+- **The default rules.** `DEFAULT_RULES` and `SEED_WEEKS` are Regent Square's and
+  refer to `J` and `A`. They're only used for Regent Square and the device-only
+  mode, never for a new household.
