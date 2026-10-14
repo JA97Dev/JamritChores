@@ -889,6 +889,29 @@
   .menu:not([hidden]){ transform-origin: 24px -8px; animation: menu-in .38s var(--spring); }
   @keyframes menu-in{ from{ opacity: 0; transform: scale(.9) translateY(-6px); } to{ opacity: 1; transform: none; } }
 
+  /* ---------- To-do list ---------- */
+  .todo-add{ display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; padding: 12px; }
+  .todo-input-row{ display: flex; gap: 8px; }
+  .todo-input-row input{
+    flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 9px 12px; font-size: 15px;
+    background: color-mix(in srgb, var(--surface) 70%, transparent); color: var(--ink);
+  }
+  .todo-input-row .btn-primary{ padding: 8px 18px; font-size: 13.5px; }
+  .todo-add .persongroup{ flex-wrap: wrap; }
+  .todo-add .persongroup button.sel.ANY{
+    --tint: color-mix(in srgb, var(--ink) 26%, transparent);
+    background: radial-gradient(120% 90% at 50% 0%, var(--liquid-edge) 0%, transparent 55%), linear-gradient(180deg, var(--liquid-fill), var(--tint));
+    border-color: var(--liquid-edge); color: var(--ink);
+    box-shadow: inset 0 1px 1px var(--liquid-edge), inset 0 -6px 12px -6px var(--tint), 0 4px 12px -6px var(--bar-shadow);
+  }
+  .todo-empty{ padding: 22px 16px; text-align: center; font-size: 13.5px; color: var(--ink-soft); }
+  @media (max-width: 359px){   /* three header tabs on very small phones */
+    .brand .tabs button{ padding: 6px 5px; font-size: 11.5px; }
+    html[data-theme="covenant"] .brand h1{ font-size: 16px; }
+    .brand .sub{ letter-spacing: .04em; }
+  }
+  .todo-done .dayhead .dname{ font-size: 14px; }
+
   @media (prefers-reduced-motion: reduce){
     *{ transition: none !important; }
     .ptab.pop svg, .sheet, .menu:not([hidden]){ animation: none; }
@@ -923,8 +946,9 @@
         </div>
       </div>
       <div class="tabs">
-        <button id="tabWeek" class="active">This week</button>
-        <button id="tabRules"><span class="long">House rules</span><span class="short">Rules</span></button>
+        <button id="tabWeek" class="active">Week</button>
+        <button id="tabTodo">To-do</button>
+        <button id="tabRules">Rules</button>
       </div>
     </div>
 
@@ -957,6 +981,21 @@
 
 <main class="wrap">
   <div id="weekView"></div>
+  <div id="todoView" style="display:none;">
+    <div class="rule-card todo-add">
+      <div class="todo-input-row">
+        <input type="text" id="todoText" placeholder="Add a to-do…" maxlength="140" autocomplete="off">
+        <button type="button" class="btn-primary" id="todoAddBtn">Add</button>
+      </div>
+      <div class="persongroup" id="todoWho">
+        <button type="button" class="pbtn sel ANY" data-p="ANY">Anyone</button>
+        <button type="button" class="pbtn" data-p="J">Joshua</button>
+        <button type="button" class="pbtn" data-p="A">Amrit</button>
+        <button type="button" class="pbtn" data-p="BOTH">Both</button>
+      </div>
+    </div>
+    <div id="todoList"></div>
+  </div>
   <div id="rulesView" style="display:none;"></div>
   <div class="loadnote" id="syncNote"></div>
 </main>
@@ -1018,7 +1057,7 @@
 /* ---------- store: Firebase when configured, otherwise this device only ---------- */
 const SDK = 'https://www.gstatic.com/firebasejs/10.12.2/';
 const cfg = window.FIREBASE_CONFIG;
-const LS = { schedule: 'jamrit_schedule', checked: 'jamrit_checked', rules: 'jamrit_rules' };
+const LS = { schedule: 'jamrit_schedule', checked: 'jamrit_checked', rules: 'jamrit_rules', todos: 'jamrit_todos' };
 
 function lsGet(k){ try{ return localStorage.getItem(k); } catch(e){ return null; } }
 function lsSet(k, v){ localStorage.setItem(k, v); }   // let failures surface as "Couldn't save"
@@ -1030,14 +1069,20 @@ function localStore(){
   try{ schedule = JSON.parse(lsGet(LS.schedule) || 'null'); } catch(e){}
   let rules = null;
   try{ rules = JSON.parse(lsGet(LS.rules) || 'null'); } catch(e){}
+  let todos = {};
+  try{ todos = JSON.parse(lsGet(LS.todos) || '{}') || {}; } catch(e){}
   return {
     mode: 'local',
-    schedule, checked, rules, user: null, memberName: null,
+    schedule, checked, rules, todos, user: null, memberName: null,
     async saveSchedule(s){ lsSet(LS.schedule, JSON.stringify(s)); },
     async saveRules(r){ lsSet(LS.rules, JSON.stringify(r)); },
     async setChecked(ids, on){
       ids.forEach(id => { if (on) checked[id] = true; else delete checked[id]; });
       lsSet(LS.checked, JSON.stringify(checked));
+    },
+    async setTodo(id, item){
+      if (item) todos[id] = item; else delete todos[id];
+      lsSet(LS.todos, JSON.stringify(todos));
     },
     subscribe(){},
     signOut: null,
@@ -1067,6 +1112,7 @@ async function cloudStore(){
   const scheduleRef = fs.doc(db, 'board', 'schedule');
   const checkedRef = fs.doc(db, 'board', 'checked');
   const rulesRef = fs.doc(db, 'board', 'rules');
+  const todosRef = fs.doc(db, 'board', 'todos');
 
   signInBtn.onclick = async () => {
     const provider = new au.GoogleAuthProvider();
@@ -1085,10 +1131,11 @@ async function cloudStore(){
     });
     try{
       const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Timed out reaching Firebase')), 15000));
-      const [sSnap, cSnap, rSnap, mSnap] = await Promise.race([Promise.all([
-        fs.getDoc(scheduleRef), fs.getDoc(checkedRef), fs.getDoc(rulesRef), fs.getDoc(fs.doc(db, 'members', user.email)),
+      const [sSnap, cSnap, rSnap, mSnap, tSnap] = await Promise.race([Promise.all([
+        fs.getDoc(scheduleRef), fs.getDoc(checkedRef), fs.getDoc(rulesRef), fs.getDoc(fs.doc(db, 'members', user.email)), fs.getDoc(todosRef),
       ]), timeout]);
       if (!cSnap.exists()) await fs.setDoc(checkedRef, { ids: {} }, { merge: true });
+      if (!tSnap.exists()) await fs.setDoc(todosRef, { items: {} }, { merge: true });
       gate.style.display = 'none';
       let schedule = null, rules = null;
       if (sSnap.exists()){ try{ schedule = JSON.parse(sSnap.data().json); } catch(e){} }
@@ -1098,6 +1145,7 @@ async function cloudStore(){
         user, schedule, rules,
         memberName: mSnap.exists() ? (mSnap.data().name || null) : null,
         checked: cSnap.exists() ? { ...(cSnap.data().ids || {}) } : {},
+        todos: tSnap.exists() ? { ...(tSnap.data().items || {}) } : {},
         async saveSchedule(s){
           await fs.setDoc(scheduleRef, { json: JSON.stringify(s), updatedBy: user.email, updatedAt: fs.serverTimestamp() });
         },
@@ -1111,6 +1159,10 @@ async function cloudStore(){
           ids.forEach(id => { args.push(new fs.FieldPath('ids', id), on ? true : fs.deleteField()); });
           await fs.updateDoc(checkedRef, ...args);
         },
+        async setTodo(id, item){
+          // One field per to-do, so you can both add and tick at the same time.
+          await fs.updateDoc(todosRef, new fs.FieldPath('items', id), item || fs.deleteField());
+        },
         subscribe(onChange){
           fs.onSnapshot(scheduleRef, snap => {
             if (snap.metadata.hasPendingWrites || !snap.exists()) return;
@@ -1123,6 +1175,10 @@ async function cloudStore(){
           fs.onSnapshot(rulesRef, snap => {
             if (snap.metadata.hasPendingWrites || !snap.exists()) return;
             try{ onChange('rules', JSON.parse(snap.data().json)); } catch(e){}
+          });
+          fs.onSnapshot(todosRef, snap => {
+            if (snap.metadata.hasPendingWrites || !snap.exists()) return;
+            onChange('todos', { ...(snap.data().items || {}) });
           });
         },
         signOut: () => au.signOut(auth).then(() => location.reload()),
@@ -1203,6 +1259,9 @@ let currentTab = 'week';
 let addingInDay = null;     // date string of the day currently showing the add-task form
 let editingTaskId = null;   // id of task currently being edited
 let RULES = DEFAULT_RULES;
+let TODOS = {};             // id -> { text, who: 'ANY'|'J'|'A'|'BOTH', done, at, doneAt }
+let todoWho = 'ANY';        // who the next to-do is for
+let showDoneTodos = false;
 let editingRuleId = null;   // rule id being edited in House rules, or 'new'
 let personFilter = 'ALL';   // 'ALL' | 'J' | 'A': whose chores the week shows
 let toggledDays = {};       // date -> true when the user opened a collapsed day or closed an open one
@@ -1319,6 +1378,7 @@ async function loadAll(){
   SCHEDULE = store.schedule && store.schedule.weeks && store.schedule.weeks.length ? store.schedule : { weeks: SEED_WEEKS };
   checked = store.checked || {};
   RULES = store.rules && store.rules.length ? store.rules : DEFAULT_RULES;
+  TODOS = store.todos || {};
   // Save on first run, or when the schedule needed extending past its last week.
   if (ensureWeeksAhead() || !store.schedule) saveSchedule();
 
@@ -1369,6 +1429,8 @@ function onRemoteChange(kind, value){
     if (currentWeekIdx >= SCHEDULE.weeks.length) currentWeekIdx = SCHEDULE.weeks.length-1;
   } else if (kind==='rules'){
     RULES = value;
+  } else if (kind==='todos'){
+    TODOS = value;
   } else {
     checked = value;
   }
@@ -1883,10 +1945,14 @@ const pillBar = createLiquid(document.getElementById('pillBar'), {
 });
 // Header: This week / House rules.
 const headerTabs = createLiquid(document.querySelector('.brand .tabs'), {
-  tabs: [document.getElementById('tabWeek'), document.getElementById('tabRules')],
+  tabs: [document.getElementById('tabWeek'), document.getElementById('tabTodo'), document.getElementById('tabRules')],
   mark: (t, on) => { t.classList.toggle('active', on); t.setAttribute('aria-selected', String(on)); },
   colourFor: () => 'var(--joshua)',
-  onSelect: i => { if (i === 0){ setTab('week'); pillBar.snap(); } else { setTab('rules'); renderRules(); } },
+  onSelect: i => {
+    if (i === 0){ setTab('week'); pillBar.snap(); }
+    else if (i === 1){ setTab('todo'); renderTodos(); pillBar.snap(); }
+    else { setTab('rules'); renderRules(); }
+  },
 });
 // Stats sheet: Week / Month.
 const statsTabs = createLiquid(document.querySelector('.sheet-tabs'), {
@@ -1899,7 +1965,7 @@ document.getElementById('todayOnlyBtn').addEventListener('click', onTodayTap);
 function setPersonFilter(f){
   personFilter = f;
   try{ localStorage.setItem('jamrit_filter', f); } catch(e){}
-  renderWeek();
+  renderAll();
 }
 
 function wireTaskForm(container){
@@ -2113,22 +2179,103 @@ async function applyRules(next){
   catch(e){ console.error(e); setSyncNote("Couldn't save. Check your connection."); }
 }
 
+/* ---------- ad-hoc to-do list ---------- */
+// Shared one-off jobs that aren't part of the weekly rota. Each item syncs on its own.
+async function saveTodo(id, item){
+  if (item) TODOS[id] = item; else delete TODOS[id];
+  renderTodos();
+  setSyncNote('Saving…');
+  try{ await store.setTodo(id, item); setSyncNote(savedNote()); }
+  catch(e){ console.error(e); setSyncNote("Couldn't save. Check your connection."); }
+}
+function addTodo(){
+  const input = document.getElementById('todoText');
+  const text = input.value.trim();
+  if (!text){ input.focus(); return; }
+  saveTodo(uid(), { text, who: todoWho, done: false, at: Date.now() });
+  input.value = '';
+  input.focus();
+}
+function toggleTodo(id){
+  const t = TODOS[id];
+  if (t) saveTodo(id, { ...t, done: !t.done, doneAt: t.done ? null : Date.now() });
+}
+function clearDoneTodos(){
+  Object.keys(TODOS).filter(id => TODOS[id].done).forEach(id => saveTodo(id, null));
+}
+function todoVisible(t){
+  // The bottom switcher filters to-dos too: yours, shared ones and ones for anyone.
+  return personFilter === 'ALL' || t.who === personFilter || t.who === 'BOTH' || t.who === 'ANY';
+}
+function todoAge(ms){
+  const days = Math.floor((Date.now() - ms) / 864e5);
+  if (days <= 0) return 'Added today';
+  if (days === 1) return 'Added yesterday';
+  if (days < 7) return `Added ${days} days ago`;
+  return 'Added ' + new Date(ms).toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+}
+function todoRowHTML(id, t){
+  const badge = t.who === 'ANY' ? '' : `<span class="who-badge ${t.who}">${PERSON_NAME[t.who]}</span>`;
+  return `<li class="taskrow ${t.done ? 'done' : ''}">
+    <input type="checkbox" class="check" data-todo="${id}" ${t.done ? 'checked' : ''} aria-label="Done: ${escapeAttr(t.text)}">
+    <div class="tasktext">
+      <div class="taskname">${escapeHTML(t.text)}</div>
+      <div class="taskmeta">${badge}<span class="taskmin">${t.done && t.doneAt ? 'Done ' + new Date(t.doneAt).toLocaleDateString('en-GB', { day:'numeric', month:'short' }) : todoAge(t.at)}</span></div>
+    </div>
+    <div class="rowactions"><button class="iconbtn del" data-todo-del="${id}" title="Delete">✕</button></div>
+  </li>`;
+}
+function renderTodos(){
+  const list = document.getElementById('todoList');
+  const all = Object.entries(TODOS).filter(([, t]) => todoVisible(t));
+  const open = all.filter(([, t]) => !t.done).sort((a, b) => b[1].at - a[1].at);           // newest first
+  const done = all.filter(([, t]) => t.done).sort((a, b) => (b[1].doneAt || 0) - (a[1].doneAt || 0));
+  const openHTML = open.length
+    ? `<ul class="tasks">${open.map(([id, t]) => todoRowHTML(id, t)).join('')}</ul>`
+    : `<div class="todo-empty">${all.length ? 'All done. Nice work!' : 'Nothing on the list. Add anything that needs doing above.'}</div>`;
+  const doneHTML = done.length ? `<div class="daycard todo-done ${showDoneTodos ? '' : 'collapsed'}">
+      <button type="button" class="dayhead" id="todoDoneToggle" aria-expanded="${showDoneTodos}">
+        <div><div class="dname">Done</div></div>
+        <div class="dmeta"><div class="pill mono">${done.length}</div></div>
+        <span class="chev" aria-hidden="true">›</span>
+      </button>
+      <ul class="tasks">${done.map(([id, t]) => todoRowHTML(id, t)).join('')}
+        <li class="addrow"><button type="button" class="resetlink" id="todoClear">Clear done items</button></li></ul>
+    </div>` : '';
+  list.innerHTML = `<div class="daycard todo-open">${openHTML}</div>${doneHTML}`;
+  list.querySelectorAll('[data-todo]').forEach(cb => cb.addEventListener('change', () => toggleTodo(cb.dataset.todo)));
+  list.querySelectorAll('[data-todo-del]').forEach(b => b.addEventListener('click', () => saveTodo(b.dataset.todoDel, null)));
+  const tg = document.getElementById('todoDoneToggle');
+  if (tg) tg.addEventListener('click', () => { showDoneTodos = !showDoneTodos; renderTodos(); });
+  const clr = document.getElementById('todoClear');
+  if (clr) clr.addEventListener('click', clearDoneTodos);
+  const n = Object.values(TODOS).filter(t => !t.done).length;
+  document.getElementById('tabTodo').textContent = n ? `To-do ${n}` : 'To-do';
+}
+document.getElementById('todoAddBtn').addEventListener('click', addTodo);
+document.getElementById('todoText').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); addTodo(); } });
+document.querySelectorAll('#todoWho .pbtn').forEach(b => b.addEventListener('click', () => {
+  todoWho = b.dataset.p;
+  document.querySelectorAll('#todoWho .pbtn').forEach(x => { x.classList.toggle('sel', x === b); ['ANY','J','A','BOTH'].forEach(p => x.classList.toggle(p, x === b && p === todoWho)); });
+}));
+
 /* ---------- tabs / theme ---------- */
 function setTab(tab){
   currentTab = tab;
   window.scrollTo(0, 0);
   headerCompact = false; headerAnimating = false;
   headerEl.classList.remove('compact');
-  document.getElementById('tabWeek').classList.toggle('active', tab==='week');
-  document.getElementById('tabRules').classList.toggle('active', tab==='rules');
-  document.getElementById('weekView').style.display = tab==='week' ? '' : 'none';
-  document.getElementById('yearRow').style.display = tab==='week' ? '' : 'none';
-  document.getElementById('weekNavRow').style.display = tab==='week' ? '' : 'none';
-  document.getElementById('balanceRow').style.display = tab==='week' ? '' : 'none';
-  document.getElementById('rulesView').style.display = tab==='rules' ? '' : 'none';
-  document.getElementById('dock').style.display = tab==='week' ? '' : 'none';
-  headerTabs.select(tab==='week' ? 0 : 1, { quiet: true });
-  measureHeader();   // the rules tab has a shorter header
+  const show = (id, on) => { document.getElementById(id).style.display = on ? '' : 'none'; };
+  show('weekView', tab==='week');
+  show('yearRow', tab==='week');
+  show('weekNavRow', tab==='week');
+  show('balanceRow', tab==='week');
+  show('todoView', tab==='todo');
+  show('rulesView', tab==='rules');
+  show('dock', tab!=='rules');               // the person switcher also filters the to-do list
+  show('todayOnlyBtn', tab==='week');
+  headerTabs.select({ week:0, todo:1, rules:2 }[tab], { quiet: true });
+  measureHeader();   // the to-do and rules tabs have a shorter header
 }
 function setTheme(t){
   theme = t;
@@ -2206,6 +2353,7 @@ measureHeader();
 function renderAll(){
   renderWeek();
   if (currentTab==='rules') renderRules();
+  renderTodos();   // cheap; also keeps the tab's open count current
   if (!document.getElementById('statsSheet').hidden) renderStats();
 }
 
@@ -2220,6 +2368,7 @@ document.querySelectorAll('.themeopt').forEach(b=> b.addEventListener('click', (
   syncThemeColor();
   setSyncNote('');
   renderWeek();
+  renderTodos();
   measureHeader();
   document.fonts && document.fonts.ready.then(measureHeader);
   store.subscribe(onRemoteChange);
