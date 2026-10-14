@@ -634,6 +634,28 @@
   #hhAdd .hh-roles{ margin-top: 10px; }
   .hh-err{ font-size: 12.5px; color: var(--danger); margin-top: 6px; min-height: 1em; }
   .hh-leave{ display: block; margin: 16px auto 0; color: var(--danger); }
+  .hh-linkrow{ display: flex; align-items: center; gap: 10px; }
+  .hh-linkrow .hh-roles{ margin-top: 0; flex: 1; min-width: 0; }
+  .hh-linkrow .btn-primary{ flex: none; padding: 8px 14px; font-size: 13px; }
+  .hh-invites{ list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .hh-invite{ display: flex; align-items: center; gap: 6px; padding: 6px 6px 6px 12px; border-radius: var(--radius-sm); background: var(--glass); border: 1px solid var(--glass-edge); }
+  .hh-invite-what{ flex: 1; min-width: 0; font-size: 13px; }
+  .hh-invite .hh-x{ margin-left: 0; }
+  .hh-hint{ font-size: 12px; color: var(--ink-soft); margin-top: 6px; }
+
+  /* First run: create or join */
+  .start-step{ display: flex; flex-direction: column; gap: 10px; }
+  .start-or{ display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--ink-soft); margin: 6px 0 2px; }
+  .start-or::before, .start-or::after{ content: ''; flex: 1; height: 1px; background: var(--line); }
+  .start-join{ display: flex; gap: 8px; }
+  .start-join input{
+    flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px 12px;
+    font: inherit; font-size: 16px; background: var(--surface); color: var(--ink);
+  }
+  .start-err{ font-size: 12.5px; color: var(--danger); min-height: 1em; }
+  .authcard .start-hint{ font-size: 12.5px; margin: 0; }
+  .join-step{ display: flex; flex-direction: column; align-items: center; }
+  .name-step .btn-text{ margin-top: 0; }
 
   /* View only: hide the controls that change the board */
   .readonly :is(.iconbtn, .addrow .addbtn, .rules-add, .paste-open, .todo-add, [data-plan], #resetWeek, #todoClear, #addFirstWeek, .meal-row .chev){ display: none !important; }
@@ -1260,6 +1282,22 @@
     <div class="name-step" id="nameStep" style="display:none;">
       <input type="text" id="hhName" maxlength="40" placeholder="e.g. Regent Square" autocomplete="off">
       <button class="btn-primary" id="hhNameBtn">Create household</button>
+      <button class="btn-text" id="hhNameBack" style="display:none;">‹ Back</button>
+    </div>
+    <!-- First run: start a household of your own, or join someone else's with an invite link -->
+    <div class="start-step" id="startStep" style="display:none;">
+      <button class="btn-primary" id="startCreate">Create a household</button>
+      <div class="start-or"><span>or join one</span></div>
+      <div class="start-join">
+        <input type="text" id="joinCode" placeholder="Paste an invite link" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <button class="btn-primary" id="joinCodeBtn">Join</button>
+      </div>
+      <div class="start-err" id="joinCodeErr" role="alert"></div>
+      <p class="start-hint" id="startHint"></p>
+    </div>
+    <div class="join-step" id="joinStep" style="display:none;">
+      <button class="btn-primary" id="joinYes">Join</button>
+      <button class="btn-text" id="joinNo">Not now</button>
     </div>
     <button class="btn-text" id="authSignOut" style="display:none;">Use a different account</button>
   </div>
@@ -1313,14 +1351,30 @@ function localStore(){
   };
 }
 
+// An invite link (…?join=CODE) is held on to while the person signs in, then offered to them.
+const INVITE_KEY = 'jamrit_invite';
+function inviteCodeIn(text){
+  const m = String(text || '').match(/[?&]join=([a-z0-9]+)/i) || String(text || '').match(/^\s*([a-z0-9]{10,})\s*$/i);
+  return m ? m[1].toLowerCase() : null;
+}
+{
+  const code = inviteCodeIn(location.search);
+  if (code){
+    try{ localStorage.setItem(INVITE_KEY, code); } catch(e){}
+    history.replaceState(null, '', location.pathname + location.hash);
+  }
+}
+
 const gate = document.getElementById('authGate');
 const authMsg = document.getElementById('authMsg');
 const signInBtn = document.getElementById('signInBtn');
 const authSignOut = document.getElementById('authSignOut');
-function showGate(msg, canSwitch){
+// step: which part of the card to show under the message (naming, first-run choice, joining).
+function showGate(msg, canSwitch, step){
   authMsg.textContent = msg;
   signInBtn.style.display = canSwitch ? 'none' : '';
   authSignOut.style.display = canSwitch ? '' : 'none';
+  ['nameStep', 'startStep', 'joinStep'].forEach(s => { document.getElementById(s).style.display = s === step ? '' : 'none'; });
   gate.style.display = '';
 }
 
@@ -1341,25 +1395,109 @@ async function cloudStore(){
   }
   const BOARD_DOCS = ['schedule', 'checked', 'rules', 'todos', 'meals'];
 
+  // A household's open invite links, as { code: { role, expires (ms) } }; expired ones are left out.
+  const openInvites = m => Object.fromEntries(Object.entries(m || {})
+    .map(([code, v]) => [code, { role: v.role, expires: v.expiresAt && v.expiresAt.toMillis ? v.expiresAt.toMillis() : 0 }])
+    .filter(([, v]) => v.expires > Date.now()));
+
+  // Firebase calls give up after 15 seconds, rather than leaving the page on "Loading…".
+  const within = p => Promise.race([p, new Promise((_, reject) => setTimeout(() => reject(new Error('Timed out reaching Firebase')), 15000))]);
+
   // Ask whoever sets up the household what to call it. Owners can rename it later in settings.
-  function askHouseholdName(){
+  // canGoBack: offer "‹ Back" to the first-run choice (resolves null).
+  function askHouseholdName(canGoBack){
     return new Promise(resolve => {
-      authMsg.textContent = 'Name your household. Everyone in it will see this name, and owners can change it later.';
-      signInBtn.style.display = 'none';
-      authSignOut.style.display = 'none';
-      document.getElementById('nameStep').style.display = '';
-      gate.style.display = '';
-      const input = document.getElementById('hhName'), btn = document.getElementById('hhNameBtn');
+      showGate('Name your household. Everyone in it will see this name, and owners can change it later.', canGoBack, 'nameStep');
+      const input = document.getElementById('hhName'), btn = document.getElementById('hhNameBtn'), back = document.getElementById('hhNameBack');
+      back.style.display = canGoBack ? '' : 'none';
       input.focus();
       const done = () => {
         const name = input.value.trim().slice(0, 40);
         if (!name){ input.focus(); return; }
-        document.getElementById('nameStep').style.display = 'none';
+        btn.disabled = true;
         resolve(name);
       };
+      btn.disabled = false;
       btn.onclick = done;
       input.onkeydown = e => { if (e.key === 'Enter') done(); };
+      back.onclick = () => resolve(null);
     });
+  }
+
+  // First run, for someone who isn't in a household: start one, or join one with an invite link.
+  function askStart(user){
+    return new Promise(resolve => {
+      showGate(`Welcome! You're signed in as ${user.email}. Start a household of your own, or join someone else's.`, true, 'startStep');
+      document.getElementById('startHint').textContent = 'To join, ask someone in the household to send you an invite link (owners find it under People). '
+        + `Or they can add ${user.email}, and you'll be in when you next open the app.`;
+      const input = document.getElementById('joinCode'), err = document.getElementById('joinCodeErr');
+      err.textContent = '';
+      document.getElementById('startCreate').onclick = () => resolve({ create: true });
+      const join = () => {
+        const code = inviteCodeIn(input.value);
+        if (!code){ err.textContent = "That doesn't look like an invite link."; input.focus(); return; }
+        input.value = '';
+        resolve({ code });
+      };
+      document.getElementById('joinCodeBtn').onclick = join;
+      input.onkeydown = e => { if (e.key === 'Enter') join(); };
+    });
+  }
+
+  // Offer to join the household an invite link is for. Resolves with its id once joined, or
+  // null if the link has expired or they'd rather not.
+  async function offerInvite(user, code, households){
+    const email = user.email.toLowerCase();
+    let inv = null;
+    try{
+      const snap = await within(fs.getDoc(fs.doc(db, 'invites', code)));
+      if (snap.exists() && snap.data().expiresAt.toMillis() > Date.now()) inv = snap.data();
+    } catch(e){ console.error(e); }
+    if (inv && households.some(h => h.id === inv.hid)) return inv.hid;   // already in it
+    const yes = document.getElementById('joinYes'), no = document.getElementById('joinNo');
+    return new Promise(resolve => {
+      const stop = msg => { authMsg.textContent = msg; yes.style.display = 'none'; no.textContent = 'Continue'; };
+      showGate(inv ? `Join ${inv.name}? You'll be able to ${inv.role === 'viewer' ? 'see its board, but not change anything' : 'see and change its board'}.` : '', true, 'joinStep');
+      yes.style.display = ''; yes.disabled = false; no.textContent = 'Not now';
+      if (!inv) stop('That invite link has expired or been cancelled. Ask for a new one.');
+      no.onclick = () => resolve(null);
+      yes.onclick = async () => {
+        yes.disabled = true;
+        try{
+          await within(fs.updateDoc(fs.doc(db, 'households', inv.hid),
+            new fs.FieldPath('members', email), inv.role, 'memberEmails', fs.arrayUnion(email), 'joinedWith', code));
+          resolve(inv.hid);
+        } catch(e){
+          console.error(e);
+          stop("Couldn't join. The link may have been cancelled, or the household already has 8 people.");
+        }
+      };
+    });
+  }
+
+  // Get someone into a household: an invite link they opened comes first; then, if they
+  // aren't in any household, they choose to create one or join one.
+  async function onboard(user, households){
+    let code = null;
+    try{ code = localStorage.getItem(INVITE_KEY); localStorage.removeItem(INVITE_KEY); } catch(e){}
+    for (;;){
+      if (code){
+        const hid = await offerInvite(user, code, households);
+        code = null;
+        if (hid){
+          try{ localStorage.setItem('jamrit_household', hid); } catch(e){}
+          return findHouseholds(user, false);
+        }
+      }
+      if (households.length) return households;
+      const choice = await askStart(user);
+      if (choice.code){ code = choice.code; continue; }
+      const name = await askHouseholdName(true);
+      if (!name) continue;
+      const id = await within(createHousehold(user, name));
+      try{ localStorage.setItem('jamrit_household', id); } catch(e){}
+      return findHouseholds(user, false);
+    }
   }
 
   // Find the households this account belongs to. The original two members are moved into
@@ -1368,12 +1506,12 @@ async function cloudStore(){
   async function findHouseholds(user, isLegacy){
     const email = user.email.toLowerCase();
     const q = fs.query(fs.collection(db, 'households'), fs.where('memberEmails', 'array-contains', email));
-    let list = (await fs.getDocs(q)).docs.map(d => ({ id: d.id, ...d.data() }));
+    let list = (await within(fs.getDocs(q))).docs.map(d => ({ id: d.id, ...d.data() }));
     if (!list.length && isLegacy){
       const ref = fs.doc(db, 'households', 'home');
-      const snap = await fs.getDoc(ref);
+      const snap = await within(fs.getDoc(ref));
       if (!snap.exists()){
-        const name = await askHouseholdName();
+        const name = await askHouseholdName(false);
         await fs.setDoc(ref, { name, members: { [email]: 'owner' }, memberEmails: [email], createdBy: email, createdAt: fs.serverTimestamp() });
         const batch = fs.writeBatch(db);
         for (const name of BOARD_DOCS){
@@ -1420,23 +1558,12 @@ async function cloudStore(){
       const stop = au.onAuthStateChanged(auth, u => { if (u){ stop(); resolve(u); } else showGate('Sign in so your ticks and edits sync between both phones.', false); });
     });
     try{
-      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Timed out reaching Firebase')), 15000));
-      const [mSnap, crSnap] = await Promise.race([Promise.all([
-        fs.getDoc(fs.doc(db, 'members', user.email)), fs.getDoc(fs.doc(db, 'creators', user.email)),
-      ]), timeout]);
-      const isCreator = crSnap.exists();
-      let households = await Promise.race([findHouseholds(user, mSnap.exists()), timeout]);
-      // Someone allowed to create households who isn't in one yet sets up their own.
-      if (!households.length && isCreator){
-        const id = await createHousehold(user, await askHouseholdName());
-        try{ localStorage.setItem('jamrit_household', id); } catch(e){}
-        households = await findHouseholds(user, false);
-      }
-      if (!households.length){
-        showGate(user.email + " isn't part of a household yet. Ask the household's owner to add this email, or switch account.", true);
-        await new Promise(resolve => { const stop = au.onAuthStateChanged(auth, u => { if (!u){ stop(); resolve(); } }); });
-        continue;
-      }
+      const mSnap = await within(fs.getDoc(fs.doc(db, 'members', user.email)));
+      // "Use a different account" during onboarding starts over with the new account.
+      const signedOut = new Promise(resolve => { const stop = au.onAuthStateChanged(auth, u => { if (!u){ stop(); resolve(null); } }); });
+      const households = await Promise.race([findHouseholds(user, mSnap.exists()).then(list => onboard(user, list)), signedOut]);
+      if (!households) continue;
+      if (!households.length) throw new Error('No household after onboarding');
       // Open the household this phone used last, otherwise the first one.
       let savedId = null;
       try{ savedId = localStorage.getItem('jamrit_household'); } catch(e){}
@@ -1447,9 +1574,9 @@ async function cloudStore(){
       const hhRef = fs.doc(db, 'households', household.id);
       pointAt(household.id);
 
-      const [sSnap, cSnap, rSnap, tSnap, mealSnap] = await Promise.race([Promise.all([
+      const [sSnap, cSnap, rSnap, tSnap, mealSnap] = await within(Promise.all([
         fs.getDoc(scheduleRef), fs.getDoc(checkedRef), fs.getDoc(rulesRef), fs.getDoc(todosRef), fs.getDoc(mealsRef),
-      ]), timeout]);
+      ]));
       const canEdit = role === 'owner' || role === 'editor';
       if (canEdit){   // viewers can't write, so only editors set up empty documents
         if (!cSnap.exists()) await fs.setDoc(checkedRef, { ids: {} }, { merge: true });
@@ -1463,9 +1590,8 @@ async function cloudStore(){
       return {
         mode: 'cloud',
         user, schedule, rules,
-        household: { id: household.id, name: household.name, role, members: { ...household.members } },
+        household: { id: household.id, name: household.name, role, members: { ...household.members }, invites: openInvites(household.invites) },
         households: households.map(h => ({ id: h.id, name: h.name, role: h.members[me] })),
-        isCreator,
         memberName: mSnap.exists() ? (mSnap.data().name || null) : null,
         checked: cSnap.exists() ? { ...(cSnap.data().ids || {}) } : {},
         todos: tSnap.exists() ? { ...(tSnap.data().items || {}) } : {},
@@ -1503,11 +1629,26 @@ async function cloudStore(){
         async createHousehold(name){
           return createHousehold(user, name);
         },
+        // An invite link: anyone who opens it can join with this role for the next 7 days.
+        // The invite is saved on its own (so the person joining can read it) and listed on the
+        // household (so owners see it, and can cancel it by taking it off).
+        async createInvite(role, name){
+          const ABC = 'abcdefghjkmnpqrstuvwxyz23456789';
+          const code = [...crypto.getRandomValues(new Uint8Array(12))].map(n => ABC[n % ABC.length]).join('');
+          const expiresAt = fs.Timestamp.fromMillis(Date.now() + 7 * 864e5);
+          await fs.setDoc(fs.doc(db, 'invites', code), { hid: household.id, name, role, createdBy: me, expiresAt });
+          await fs.updateDoc(hhRef, new fs.FieldPath('invites', code), { role, expiresAt });
+          return { code, role, expires: expiresAt.toMillis() };
+        },
+        async cancelInvite(code){
+          await fs.updateDoc(hhRef, new fs.FieldPath('invites', code), fs.deleteField());
+          try{ await fs.deleteDoc(fs.doc(db, 'invites', code)); } catch(e){}   // taking it off the household is what stops it working
+        },
         subscribe(onChange){
           fs.onSnapshot(hhRef, snap => {
             if (snap.metadata.hasPendingWrites) return;
             const h = snap.exists() ? snap.data() : { members: {} };
-            onChange('household', { id: household.id, name: h.name, role: (h.members || {})[me], members: { ...(h.members || {}) } });
+            onChange('household', { id: household.id, name: h.name, role: (h.members || {})[me], members: { ...(h.members || {}) }, invites: openInvites(h.invites) });
           }, err => {   // removed by an owner, so it can't be read any more
             if (err.code === 'permission-denied') onChange('household', { id: household.id, role: undefined, members: {} });
           });
@@ -1790,7 +1931,7 @@ function renderAccount(){
       </div>
       ${others.length ? `<div class="hh-switch-h">Switch to</div>${others.map(o =>
         `<button class="hh-switch" data-hh="${escapeAttr(o.id)}"><span>${escapeHTML(o.name)}</span><span class="hh-role">${ROLE_LABEL[o.role] || ''}</span></button>`).join('')}` : ''}
-      ${store.isCreator ? '<div class="hh-row" id="hhNewRow"><button class="btn-text hh-link" id="hhNew">+ New household</button></div>' : ''}
+      <div class="hh-row" id="hhNewRow"><button class="btn-text hh-link" id="hhNew">+ New household</button></div>
       <h4 class="acct-h">Account</h4><div class="account">Signed in as <strong>${escapeHTML(store.user.email)}</strong></div>
       <button class="signout" id="signOutBtn">Sign out</button>`;
     document.getElementById('signOutBtn').addEventListener('click', ()=> store.signOut());
@@ -1838,7 +1979,7 @@ function renderHouseholdName(){
 }
 
 /* ---------- household sheet: who's in it and what they can do ---------- */
-let rolePickers = [], addRolePicker = null;
+let rolePickers = [], addRolePicker = null, linkRolePicker = null;
 function setHouseholdOpen(open){
   document.getElementById('hhSheet').hidden = !open;
   document.getElementById('hhBackdrop').hidden = !open;
@@ -1848,6 +1989,7 @@ function setHouseholdOpen(open){
   } else {
     rolePickers.forEach(p => p.destroy()); rolePickers = [];
     if (addRolePicker){ addRolePicker.destroy(); addRolePicker = null; }
+    if (linkRolePicker){ linkRolePicker.destroy(); linkRolePicker = null; }
     settingsBtn.focus();
   }
 }
@@ -1864,7 +2006,7 @@ function renderHouseholdSheet(fresh){
     top.innerHTML = `<div class="sheet-head"><h2 id="hhTitle">${escapeHTML(h.name)}</h2>
         ${isOwner ? '<button class="btn-text hh-link" id="hhRename">Rename</button>' : ''}</div>
       <p class="hh-intro">${isOwner
-        ? 'Add people by their Google email. They join when they sign in with it.'
+        ? 'Invite people with a link, or add them by their Google email.'
         : `You ${h.role === 'viewer' ? 'can view' : 'can edit'} this household. Its owners add people and choose what they can do.`}</p>`;
     const rn = document.getElementById('hhRename');
     if (rn) rn.addEventListener('click', () => {
@@ -1878,13 +2020,24 @@ function renderHouseholdSheet(fresh){
       });
     });
     if (addRolePicker){ addRolePicker.destroy(); addRolePicker = null; }
+    if (linkRolePicker){ linkRolePicker.destroy(); linkRolePicker = null; }
     const add = document.getElementById('hhAdd');
-    add.innerHTML = isOwner ? `<div class="hh-h">Add someone</div>
+    add.innerHTML = isOwner ? `<div class="hh-h">Invite with a link</div>
+      <div class="hh-linkrow">
+        <div class="persongroup hh-roles" id="hhLinkRole">${roleButtons('editor', ['editor', 'viewer'])}</div>
+        <button type="button" class="btn-primary" id="hhLinkBtn">Create link</button>
+      </div>
+      <ul class="hh-invites" id="hhInvites"></ul>
+      <div class="hh-hint">Anyone with the link can join until it expires in 7 days.</div>
+      <div class="hh-h">Add by email</div>
       <div class="todo-input-row"><input type="email" id="hhEmail" placeholder="their.name@gmail.com" autocomplete="off" autocapitalize="off" spellcheck="false">
         <button type="button" class="btn-primary" id="hhAddBtn">Add</button></div>
       <div class="persongroup hh-roles" id="hhAddRole">${roleButtons('editor')}</div>
       <div class="hh-err" id="hhErr" role="alert"></div>` : '';
     if (isOwner){
+      linkRolePicker = liquidPicker(document.getElementById('hhLinkRole'));
+      document.getElementById('hhLinkBtn').addEventListener('click', () =>
+        createInviteLink(document.querySelector('#hhLinkRole .pbtn.sel')?.dataset.p || 'editor'));
       addRolePicker = liquidPicker(document.getElementById('hhAddRole'));
       // Read the selected button when adding, so a drag along the picker counts too.
       const submit = () => addMember(document.getElementById('hhEmail'), document.querySelector('#hhAddRole .pbtn.sel')?.dataset.p || 'editor');
@@ -1911,12 +2064,61 @@ function renderHouseholdSheet(fresh){
     : '<button type="button" class="resetlink hh-leave" id="hhLeave">Leave this household</button>';
   const lv = document.getElementById('hhLeave');
   if (lv) lv.addEventListener('click', leaveHousehold);
+  // Open invite links, newest first.
+  const inv = document.getElementById('hhInvites');
+  if (inv){
+    const open = Object.entries(h.invites || {}).filter(([, v]) => v.expires > Date.now()).sort((a, b) => b[1].expires - a[1].expires);
+    inv.innerHTML = open.map(([code, v]) => `<li class="hh-invite">
+        <span class="hh-invite-what"><strong>${ROLE_LABEL[v.role]}</strong> link
+          <span class="hh-role">· expires ${new Date(v.expires).toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' })}</span></span>
+        <button type="button" class="btn-text hh-link" data-share="${code}">Share</button>
+        <button type="button" class="hh-x" data-cancel="${code}" aria-label="Cancel this link">✕</button>
+      </li>`).join('');
+    inv.querySelectorAll('[data-share]').forEach(b => b.addEventListener('click', () => shareInvite(b.dataset.share)));
+    inv.querySelectorAll('[data-cancel]').forEach(b => b.addEventListener('click', () => cancelInviteLink(b.dataset.cancel)));
+  }
   rolePickers.forEach(p => p.snap());
   if (addRolePicker) addRolePicker.snap();
+  if (linkRolePicker) linkRolePicker.snap();
 }
-function roleButtons(sel){
-  return ['owner', 'editor', 'viewer'].map(r =>
+function roleButtons(sel, roles){
+  return (roles || ['owner', 'editor', 'viewer']).map(r =>
     `<button type="button" class="pbtn ${r === sel ? 'sel' : ''}" data-p="${r}">${ROLE_LABEL[r]}</button>`).join('');
+}
+
+/* ---------- invite links ---------- */
+function inviteURL(code){ return location.origin + location.pathname + '?join=' + code; }
+async function createInviteLink(role){
+  const btn = document.getElementById('hhLinkBtn');
+  btn.disabled = true;
+  setSyncNote('Creating link…');
+  try{
+    const inv = await store.createInvite(role, store.household.name);
+    store.household.invites = { ...(store.household.invites || {}), [inv.code]: { role: inv.role, expires: inv.expires } };
+    setSyncNote(savedNote());
+    renderHouseholdSheet(false);
+  } catch(err){ console.error(err); setSyncNote("Couldn't create a link. Check your connection."); }
+  btn.disabled = false;
+}
+// Share through the phone's share sheet (Messages, WhatsApp…), or copy the link where there isn't one.
+async function shareInvite(code){
+  const h = store.household, inv = (h.invites || {})[code];
+  const text = `Join ${h.name} on The Board${inv && inv.role === 'viewer' ? ' (view only)' : ''}:`;
+  if (navigator.share){
+    try{ await navigator.share({ title: 'The Board', text, url: inviteURL(code) }); return; }
+    catch(e){ if (e.name === 'AbortError') return; }
+  }
+  try{ await navigator.clipboard.writeText(text + ' ' + inviteURL(code)); setSyncNote('Invite link copied'); }
+  catch(e){ prompt('Copy this invite link:', inviteURL(code)); }
+}
+async function cancelInviteLink(code){
+  if (!confirm("Cancel this invite link? Anyone who hasn't used it yet won't be able to join with it.")) return;
+  const h = store.household, before = h.invites[code];
+  delete h.invites[code];
+  renderHouseholdSheet(false);
+  setSyncNote('Saving…');
+  try{ await store.cancelInvite(code); setSyncNote(savedNote()); }
+  catch(err){ console.error(err); h.invites[code] = before; renderHouseholdSheet(false); setSyncNote("Couldn't cancel it. Check your connection."); }
 }
 // Shows the change straight away, and puts it back if it couldn't be saved.
 async function saveMember(email, role){
