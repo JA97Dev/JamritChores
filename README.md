@@ -2,6 +2,9 @@
 A small AI project to create a chore application for the JAMRIT!
 www.chores.joshuawilde.me
 
+How the app is put together (files, data model, households, security) is
+explained in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
 ## Syncing between phones (Firebase)
 
 The Board saves to Firebase so ticks and edits show up on both phones. Until
