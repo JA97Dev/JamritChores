@@ -908,9 +908,169 @@
   @media (max-width: 359px){   /* three header tabs on very small phones */
     .brand .tabs button{ padding: 6px 5px; font-size: 11.5px; }
     html[data-theme="covenant"] .brand h1{ font-size: 16px; }
+    html[data-theme="chief"] .brand h1{ font-size: 16px; letter-spacing: .02em; }
+    html[data-theme="cortana"] .brand h1{ font-size: 18px; }
     .brand .sub{ letter-spacing: .04em; }
   }
   .todo-done .dayhead .dname{ font-size: 14px; }
+
+  /* ---------- Person pickers as liquid glass (task form, rule form, to-do) ---------- */
+  .persongroup.lq{
+    --pad: 3px;
+    position: relative; isolation: isolate; display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px;
+    background: linear-gradient(180deg, var(--bar-top), var(--glass) 60%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-edge);
+    box-shadow: inset 0 1px 0 var(--liquid-edge), inset 0 -8px 18px -12px var(--liquid-fill), 0 6px 18px -10px var(--bar-shadow);
+    touch-action: pan-y; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .ruleform .persongroup.lq{ display: flex; }
+  .persongroup.lq::after{
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: radial-gradient(120px 60px at var(--mx, 30%) -10%, var(--liquid-edge), transparent 70%);
+    opacity: .45; mix-blend-mode: soft-light;
+  }
+  .persongroup.lq button.pbtn,
+  .persongroup.lq button.pbtn.sel{
+    position: relative; z-index: 2;
+    background: transparent; border-color: transparent; box-shadow: none;
+    border-radius: 999px; color: var(--ink-soft);
+    transition: color .25s ease, transform .35s var(--spring);
+  }
+  .persongroup.lq button.pbtn:hover{ color: var(--ink); }
+  .persongroup.lq button.pbtn.sel{ color: var(--ink); }
+  .persongroup.lq button.pbtn:active{ transform: scale(.94); }
+  html[data-theme="chief"] .persongroup.lq,
+  html[data-theme="chief"] .persongroup.lq .liquid,
+  html[data-theme="chief"] .persongroup.lq .hover-glow{ border-radius: 3px; }
+
+  /* ---------- Meals ---------- */
+  .tonight{ padding: 16px; margin-bottom: 14px; }
+  .tonight-label{ font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--joshua); }
+  .tonight-meal{ font-family: 'Fraunces', Georgia, serif; font-size: 24px; font-weight: 600; line-height: 1.2; margin: 6px 0 8px; }
+  .tonight-meal.muted{ color: var(--ink-soft); font-size: 18px; }
+  .tonight-meta{ display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-soft); }
+  .tonight-next{ margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line-soft); font-size: 13px; color: var(--ink-soft); }
+  .tonight-next strong{ color: var(--ink); font-weight: 600; }
+  .tonight .btn-primary{ margin-top: 2px; }
+  .meal-weekbar{ margin: 0 0 12px; }
+  ul.tasks li:has(> .meal-row){ border-bottom: 1px solid var(--line-soft); }
+  ul.tasks li:has(> .meal-row):last-child{ border-bottom: none; }
+  .meal-row{
+    display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 16px;
+    background: none; border: 0; color: inherit; font: inherit; text-align: left; cursor: pointer;
+    transition: background .2s ease;
+  }
+  .meal-row:hover{ background: color-mix(in srgb, var(--ink) 4%, transparent); }
+  .meal-row.is-today{ box-shadow: inset 3px 0 0 var(--joshua); }
+  .meal-day{ display: flex; flex-direction: column; align-items: center; width: 34px; flex-shrink: 0; }
+  .md-name{ font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-soft); }
+  .meal-row.is-today .md-name{ color: var(--joshua); }
+  .md-date{ font-size: 17px; font-weight: 600; margin-top: 1px; }
+  .meal-main{ flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .meal-name{ font-size: 15px; font-weight: 500; overflow-wrap: anywhere; }
+  .meal-name.muted{ color: var(--ink-soft); font-weight: 400; }
+  .meal-row .chev{ color: var(--ink-soft); font-size: 18px; }
+  .meal-edit{ display: flex; flex-direction: column; gap: 9px; padding: 14px 16px; border-bottom: 1px solid var(--line-soft); }
+  .meal-edit-day{ font-weight: 700; font-size: 13px; color: var(--joshua); }
+  .meal-edit .lbl{ display: flex; flex-direction: column; gap: 4px; font-size: 11px; font-weight: 600; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .05em; }
+  .meal-edit .lbl .hint{ text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .meal-edit input, .meal-edit textarea, .paste-card textarea{
+    border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 9px 11px; font: inherit; font-size: 15px;
+    background: color-mix(in srgb, var(--surface) 70%, transparent); color: var(--ink); width: 100%; resize: vertical;
+    text-transform: none; letter-spacing: 0; font-weight: 400;
+  }
+  .meal-edit .formbtns, .paste-card .formbtns{ margin-left: 0; justify-content: flex-end; }
+  .paste-open{ margin-bottom: 14px; }
+  .paste-card{ display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; padding: 14px; }
+  .paste-card .dname{ font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 16px; }
+  .paste-card .rules-intro{ margin: 0; }
+  .plan-preview ul{ list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13px; }
+  .shop .shop-head{ align-items: center; }
+  .shop-copy{ font-weight: 700; color: var(--joshua); }
+  .dinner-banner{
+    display: flex; align-items: center; gap: 8px; width: 100%; margin-bottom: 12px; padding: 10px 14px;
+    border-radius: var(--radius); border: 1px solid var(--glass-edge); background: var(--glass); color: var(--ink);
+    -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 var(--glass-edge), var(--shadow); font: inherit; text-align: left; cursor: pointer;
+  }
+  .db-label{ font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--joshua); }
+  .db-meal{ font-weight: 600; font-size: 14px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .db-cook{ font-size: 11.5px; color: var(--ink-soft); white-space: nowrap; }
+  .dinner-banner .chev{ color: var(--ink-soft); }
+  /* House rules: tucked away at the bottom of the Chores list */
+  .rules-link{
+    display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 14px; padding: 12px 14px;
+    border-radius: var(--radius-sm); border: 1px solid var(--glass-edge); background: color-mix(in srgb, var(--surface) 30%, transparent);
+    box-shadow: inset 0 1px 0 var(--glass-edge); color: var(--ink); font: inherit; text-align: left; cursor: pointer;
+    transition: transform .35s var(--spring), background .2s ease;
+  }
+  .rules-link:hover{ background: var(--glass); }
+  .rules-link:active{ transform: scale(.98); }
+  .rules-link .rl-text{ flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .rules-link .rl-title{ font-weight: 600; font-size: 14px; }
+  .rules-link .rl-sub{ font-size: 12px; color: var(--ink-soft); }
+  .rules-link .chev{ color: var(--ink-soft); font-size: 18px; }
+  .rules-back{ margin: 0 0 6px -4px; font-weight: 700; color: var(--joshua); font-size: 14px; }
+
+  /* ---------- Liquid hover on single buttons ----------
+     The pill bars' best bit, on its own: a soft light that follows the pointer across the
+     glass (and appears where you press on a phone). Script sets --hx / --hy. */
+  :is(.rules-link, .addbtn, .btn-primary, .weeknav .navbtn, .todayonly, .iconbtn, .dinner-banner,
+      .meal-row, .themeopt, .daycard .dayhead, .menu .signout, .yearchip, .balance, #weekLabel, .stat-card, .bars .col){ position: relative; isolation: isolate; }
+  :is(.rules-link, .addbtn, .btn-primary, .weeknav .navbtn, .todayonly, .iconbtn, .dinner-banner,
+      .meal-row, .themeopt, .daycard .dayhead, .menu .signout, .yearchip, .balance, #weekLabel, .stat-card, .bars .col)::before{
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1;
+    background: radial-gradient(130px circle at var(--hx, 50%) var(--hy, 50%), color-mix(in srgb, var(--joshua) 30%, var(--liquid-edge)), transparent 65%);
+    opacity: 0; transition: opacity .3s ease;
+  }
+  @media (hover: hover){
+    :is(.rules-link, .addbtn, .btn-primary, .weeknav .navbtn, .todayonly, .iconbtn, .dinner-banner,
+        .meal-row, .themeopt, .daycard .dayhead, .menu .signout, .yearchip, .balance, #weekLabel, .stat-card, .bars .col):hover::before{ opacity: .7; }
+  }
+  :is(.rules-link, .addbtn, .btn-primary, .weeknav .navbtn, .todayonly, .iconbtn, .dinner-banner,
+      .meal-row, .themeopt, .daycard .dayhead, .menu .signout, .yearchip, .balance, #weekLabel, .stat-card, .bars .col):active::before{ opacity: .85; transition-duration: .05s; }
+
+  /* Stats: the week's dates open them too; chart columns show their minutes on hover / tap */
+  #weekLabel{ cursor: pointer; border-radius: var(--radius-sm); padding: 2px 6px; -webkit-tap-highlight-color: transparent; }
+  #weekLabel:focus-visible{ outline: 2px solid var(--joshua); outline-offset: 2px; }
+  .bars .col{ border-radius: 8px; padding-top: 2px; }
+  .bars .col .val{ font-size: 10px; color: var(--ink); opacity: 0; transition: opacity .2s ease; }
+  .bars .col:hover .val, .bars .col:active .val{ opacity: 1; }
+  .stat-card{ transition: transform .35s var(--spring); }
+  .stat-card:active{ transform: scale(.98); }
+
+  /* iOS Dark: the iOS theme's dark mode, whatever the phone is set to */
+  html[data-theme="ios"][data-ios="dark"]{
+    --bg: #000000;
+    --bg-alt: rgba(118,118,128,.24);
+    --surface: #1C1C1E;
+    --ink: #FFFFFF;
+    --ink-soft: rgba(235,235,245,.6);
+    --line: rgba(84,84,88,.6);
+    --line-soft: rgba(84,84,88,.35);
+    --danger: #FF453A;
+    --joshua: #0A84FF;
+    --joshua-soft: rgba(10,132,255,.2);
+    --amrit: #FF375F;
+    --amrit-soft: rgba(255,55,95,.2);
+    --both: #FF9F0A;
+    --both-soft: rgba(255,159,10,.2);
+    --shadow: 0 8px 32px rgba(0,0,0,.4);
+    --glass: rgba(44,44,46,.55);
+    --glass-strong: rgba(36,36,38,.86);
+    --glass-edge: rgba(255,255,255,.14);
+    --mesh-1: rgba(10,132,255,.28); --mesh-2: rgba(255,55,95,.2); --mesh-3: rgba(255,159,10,.14);
+    --liquid-fill: rgba(255,255,255,.14); --liquid-edge: rgba(255,255,255,.4);
+    --hover-fill: rgba(255,255,255,.07); --bar-top: rgba(255,255,255,.1); --bar-shadow: rgba(0,0,0,.55);
+    color-scheme: dark;
+  }
+  .swatch[data-t="ios-dark"]{ background: conic-gradient(from 200deg, #0A84FF, #FF375F, #FF9F0A, #0A84FF); box-shadow: inset 0 0 0 4px #000; }
+
+  /* Small icon buttons (edit / delete) get a glass bubble on hover and press */
+  .iconbtn{ border-radius: 50%; transition: background .2s ease, transform .35s var(--spring), box-shadow .2s ease; }
+  .iconbtn:hover{ background: var(--glass); box-shadow: inset 0 1px 0 var(--glass-edge), 0 2px 8px -4px var(--bar-shadow); }
+  .iconbtn:active{ transform: scale(.88); }
 
   @media (prefers-reduced-motion: reduce){
     *{ transition: none !important; }
@@ -937,6 +1097,7 @@
               <button class="themeopt" data-t="spotify"><span class="swatch" data-t="spotify"></span>Spotify</button>
               <button class="themeopt" data-t="kitty"><span class="swatch" data-t="kitty"></span>Hello Kitty</button>
               <button class="themeopt" data-t="ios"><span class="swatch" data-t="ios"></span>iOS</button>
+              <button class="themeopt" data-t="ios-dark"><span class="swatch" data-t="ios-dark"></span>iOS Dark</button>
               <button class="themeopt" data-t="chief"><span class="swatch" data-t="chief"></span>Master Chief</button>
               <button class="themeopt" data-t="covenant"><span class="swatch" data-t="covenant"></span>Covenant</button>
               <button class="themeopt" data-t="cortana"><span class="swatch" data-t="cortana"></span>Cortana</button>
@@ -946,9 +1107,9 @@
         </div>
       </div>
       <div class="tabs">
-        <button id="tabWeek" class="active">Week</button>
+        <button id="tabWeek" class="active">Chores</button>
+        <button id="tabMeals">Meals</button>
         <button id="tabTodo">To-do</button>
-        <button id="tabRules">Rules</button>
       </div>
     </div>
 
@@ -956,7 +1117,7 @@
 
     <div id="weekNavRow" class="weeknav">
       <button class="navbtn" id="prevWeek" aria-label="Previous week">‹</button>
-      <div class="weeklabel">
+      <div class="weeklabel" id="weekLabel" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Show stats for this week">
         <div class="range" id="weekRange">—</div>
         <div class="rot" id="weekRot">—</div>
       </div>
@@ -996,6 +1157,7 @@
     </div>
     <div id="todoList"></div>
   </div>
+  <div id="mealsView" style="display:none;"></div>
   <div id="rulesView" style="display:none;"></div>
   <div class="loadnote" id="syncNote"></div>
 </main>
@@ -1057,7 +1219,7 @@
 /* ---------- store: Firebase when configured, otherwise this device only ---------- */
 const SDK = 'https://www.gstatic.com/firebasejs/10.12.2/';
 const cfg = window.FIREBASE_CONFIG;
-const LS = { schedule: 'jamrit_schedule', checked: 'jamrit_checked', rules: 'jamrit_rules', todos: 'jamrit_todos' };
+const LS = { schedule: 'jamrit_schedule', checked: 'jamrit_checked', rules: 'jamrit_rules', todos: 'jamrit_todos', meals: 'jamrit_meals' };
 
 function lsGet(k){ try{ return localStorage.getItem(k); } catch(e){ return null; } }
 function lsSet(k, v){ localStorage.setItem(k, v); }   // let failures surface as "Couldn't save"
@@ -1071,9 +1233,15 @@ function localStore(){
   try{ rules = JSON.parse(lsGet(LS.rules) || 'null'); } catch(e){}
   let todos = {};
   try{ todos = JSON.parse(lsGet(LS.todos) || '{}') || {}; } catch(e){}
+  let meals = {};
+  try{ meals = JSON.parse(lsGet(LS.meals) || '{}') || {}; } catch(e){}
   return {
     mode: 'local',
-    schedule, checked, rules, todos, user: null, memberName: null,
+    schedule, checked, rules, todos, meals, user: null, memberName: null,
+    async setMeal(date, meal){
+      if (meal) meals[date] = meal; else delete meals[date];
+      lsSet(LS.meals, JSON.stringify(meals));
+    },
     async saveSchedule(s){ lsSet(LS.schedule, JSON.stringify(s)); },
     async saveRules(r){ lsSet(LS.rules, JSON.stringify(r)); },
     async setChecked(ids, on){
@@ -1113,6 +1281,7 @@ async function cloudStore(){
   const checkedRef = fs.doc(db, 'board', 'checked');
   const rulesRef = fs.doc(db, 'board', 'rules');
   const todosRef = fs.doc(db, 'board', 'todos');
+  const mealsRef = fs.doc(db, 'board', 'meals');
 
   signInBtn.onclick = async () => {
     const provider = new au.GoogleAuthProvider();
@@ -1131,11 +1300,12 @@ async function cloudStore(){
     });
     try{
       const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Timed out reaching Firebase')), 15000));
-      const [sSnap, cSnap, rSnap, mSnap, tSnap] = await Promise.race([Promise.all([
-        fs.getDoc(scheduleRef), fs.getDoc(checkedRef), fs.getDoc(rulesRef), fs.getDoc(fs.doc(db, 'members', user.email)), fs.getDoc(todosRef),
+      const [sSnap, cSnap, rSnap, mSnap, tSnap, mealSnap] = await Promise.race([Promise.all([
+        fs.getDoc(scheduleRef), fs.getDoc(checkedRef), fs.getDoc(rulesRef), fs.getDoc(fs.doc(db, 'members', user.email)), fs.getDoc(todosRef), fs.getDoc(mealsRef),
       ]), timeout]);
       if (!cSnap.exists()) await fs.setDoc(checkedRef, { ids: {} }, { merge: true });
       if (!tSnap.exists()) await fs.setDoc(todosRef, { items: {} }, { merge: true });
+      if (!mealSnap.exists()) await fs.setDoc(mealsRef, { days: {} }, { merge: true });
       gate.style.display = 'none';
       let schedule = null, rules = null;
       if (sSnap.exists()){ try{ schedule = JSON.parse(sSnap.data().json); } catch(e){} }
@@ -1146,6 +1316,11 @@ async function cloudStore(){
         memberName: mSnap.exists() ? (mSnap.data().name || null) : null,
         checked: cSnap.exists() ? { ...(cSnap.data().ids || {}) } : {},
         todos: tSnap.exists() ? { ...(tSnap.data().items || {}) } : {},
+        meals: mealSnap.exists() ? { ...(mealSnap.data().days || {}) } : {},
+        async setMeal(date, meal){
+          // One field per day, so you can both plan different days at once.
+          await fs.updateDoc(mealsRef, new fs.FieldPath('days', date), meal || fs.deleteField());
+        },
         async saveSchedule(s){
           await fs.setDoc(scheduleRef, { json: JSON.stringify(s), updatedBy: user.email, updatedAt: fs.serverTimestamp() });
         },
@@ -1179,6 +1354,10 @@ async function cloudStore(){
           fs.onSnapshot(todosRef, snap => {
             if (snap.metadata.hasPendingWrites || !snap.exists()) return;
             onChange('todos', { ...(snap.data().items || {}) });
+          });
+          fs.onSnapshot(mealsRef, snap => {
+            if (snap.metadata.hasPendingWrites || !snap.exists()) return;
+            onChange('meals', { ...(snap.data().days || {}) });
           });
         },
         signOut: () => au.signOut(auth).then(() => location.reload()),
@@ -1262,6 +1441,11 @@ let RULES = DEFAULT_RULES;
 let TODOS = {};             // id -> { text, who: 'ANY'|'J'|'A'|'BOTH', done, at, doneAt }
 let todoWho = 'ANY';        // who the next to-do is for
 let showDoneTodos = false;
+let MEALS = {};             // 'YYYY-MM-DD' -> { name, cook: 'ANY'|'J'|'A'|'BOTH', ingredients: [{ text, got }], notes }
+let mealWeekStart = null;   // Monday of the week shown on the Meals tab
+let editingMealDate = null; // day whose dinner is being edited
+let pastingPlan = false;    // the "paste a plan" box is open
+let showBought = false;
 let editingRuleId = null;   // rule id being edited in House rules, or 'new'
 let personFilter = 'ALL';   // 'ALL' | 'J' | 'A': whose chores the week shows
 let toggledDays = {};       // date -> true when the user opened a collapsed day or closed an open one
@@ -1379,6 +1563,7 @@ async function loadAll(){
   checked = store.checked || {};
   RULES = store.rules && store.rules.length ? store.rules : DEFAULT_RULES;
   TODOS = store.todos || {};
+  MEALS = store.meals || {};
   // Save on first run, or when the schedule needed extending past its last week.
   if (ensureWeeksAhead() || !store.schedule) saveSchedule();
 
@@ -1389,7 +1574,7 @@ async function loadAll(){
   const me = { joshua:'J', amrit:'A' }[String(store.memberName||'').trim().toLowerCase()];
   personFilter = saved || me || 'ALL';
   try{ todayOnly = localStorage.getItem('jamrit_today') === '1'; } catch(e){}
-  document.documentElement.setAttribute('data-theme', theme);
+  applyThemeAttr(theme);
   renderAccount();
 }
 function savedNote(){ return store.mode==='cloud' ? 'Synced' : 'Saved on this device only'; }
@@ -1429,13 +1614,15 @@ function onRemoteChange(kind, value){
     if (currentWeekIdx >= SCHEDULE.weeks.length) currentWeekIdx = SCHEDULE.weeks.length-1;
   } else if (kind==='rules'){
     RULES = value;
+  } else if (kind==='meals'){
+    MEALS = value;
   } else if (kind==='todos'){
     TODOS = value;
   } else {
     checked = value;
   }
   // Don't wipe out a half-typed task or rule; the form re-renders when it closes.
-  if (addingInDay || editingTaskId || editingRuleId) return;
+  if (addingInDay || editingTaskId || editingRuleId || editingMealDate || pastingPlan) return;
   renderAll();
 }
 
@@ -1598,6 +1785,7 @@ function statCardHTML(name, colour, s){
 function barsHTML(groups){
   const max = Math.max(1, ...groups.map(g => g.t.J.done + g.t.A.done));
   return `<div class="bars">${groups.map(g => `<div class="col ${g.now?'now':''}">
+      <span class="val mono">${g.t.J.done + g.t.A.done}m</span>
       <div class="stack" title="Joshua ${g.t.J.done}m, Amrit ${g.t.A.done}m">
         <span style="height:${100*g.t.A.done/max}%;background:var(--amrit)"></span>
         <span style="height:${100*g.t.J.done/max}%;background:var(--joshua)"></span>
@@ -1650,6 +1838,9 @@ function setStatsOpen(open){
   else document.getElementById('balanceRow').focus();
 }
 document.getElementById('balanceRow').addEventListener('click', ()=> setStatsOpen(true));
+// Tapping the week's dates opens the same stats.
+document.getElementById('weekLabel').addEventListener('click', ()=> setStatsOpen(true));
+document.getElementById('weekLabel').addEventListener('keydown', e=>{ if (e.key==='Enter' || e.key===' '){ e.preventDefault(); setStatsOpen(true); } });
 document.getElementById('balanceRow').addEventListener('keydown', e=>{ if (e.key==='Enter' || e.key===' '){ e.preventDefault(); setStatsOpen(true); } });
 document.getElementById('statsClose').addEventListener('click', ()=> setStatsOpen(false));
 document.getElementById('statsBackdrop').addEventListener('click', ()=> setStatsOpen(false));
@@ -1790,7 +1981,7 @@ function createLiquid(bar, { tabs, mark, colourFor = () => 'var(--ink)', onSelec
   const spring = x => ({ x, v: 0, t: x });
   let drop = { L: spring(0), R: spring(0), rest: 0 };
   let hov = { L: spring(0), R: spring(0) };
-  let active = Math.max(0, tabs.findIndex(t => t.classList.contains('active') || t.getAttribute('aria-checked') === 'true'));
+  let active = Math.max(0, tabs.findIndex(t => t.classList.contains('active') || t.classList.contains('sel') || t.getAttribute('aria-checked') === 'true'));
   let lean = 0, pressed = null, dragging = false, swallowClick = false, raf = 0, last = 0;
 
   const padOf = () => parseFloat(getComputedStyle(bar).getPropertyValue('--pad')) || 5;
@@ -1803,7 +1994,7 @@ function createLiquid(bar, { tabs, mark, colourFor = () => 'var(--ink)', onSelec
   const localX = e => e.clientX - bar.getBoundingClientRect().left;
 
   function aim(l, r){ drop.L.t = l; drop.R.t = r; drop.rest = r - l; kick(); }
-  function aimTab(i){ const s = span(i); aim(s.l + lean, s.r + lean); }
+  function aimTab(i){ if (i < 0) return; const s = span(i); aim(s.l + lean, s.r + lean); }
   function stepSpring(s, p, dt){ const a = p.k * (s.t - s.x) - p.c * s.v; s.v += a * dt; s.x += s.v * dt; }
   const settled = s => Math.abs(s.t - s.x) < 0.05 && Math.abs(s.v) < 0.05;
 
@@ -1846,20 +2037,29 @@ function createLiquid(bar, { tabs, mark, colourFor = () => 'var(--ink)', onSelec
   }
   // Put the drop straight onto the selected option (first show, resize, fonts loading).
   function snap(){
-    if (!bar.offsetWidth) return;
+    if (!bar.offsetWidth || active < 0) return;
     const s = span(active);
     drop = { L: spring(s.l), R: spring(s.r), rest: s.r - s.l };
     hov = { L: spring(s.l), R: spring(s.r) };
     render();
   }
 
+  // select(-1) clears the selection and hides the drop (e.g. no header tab while on House rules).
   function select(i, { focus = false, quiet = false } = {}){
-    i = Math.max(0, Math.min(tabs.length - 1, i));
+    if (i < 0){
+      tabs.forEach((t, n) => { mark(t, false); t.tabIndex = n === 0 ? 0 : -1; });
+      active = -1;
+      liquid.style.opacity = '0';
+      return;
+    }
+    i = Math.min(tabs.length - 1, i);
     const changed = i !== active;
+    const wasEmpty = active < 0;
     tabs.forEach((t, n) => { mark(t, n === i); t.tabIndex = n === i ? 0 : -1; });
     active = i;
     liquid.style.setProperty('--lc', colourFor(i));
-    if (bar.offsetWidth) aimTab(i);        // hidden (e.g. a closed sheet): placed by snap() when shown
+    if (wasEmpty){ liquid.style.opacity = ''; snap(); }   // appear in place rather than slide from a stale spot
+    else if (bar.offsetWidth) aimTab(i);   // hidden (e.g. a closed sheet): placed by snap() when shown
     if (focus) tabs[i].focus();
     if (changed && !quiet){
       const tab = tabs[i];
@@ -1895,10 +2095,13 @@ function createLiquid(bar, { tabs, mark, colourFor = () => 'var(--ink)', onSelec
     }
     if (e.pointerType === 'mouse'){
       bar.classList.add('is-hovering');
-      const s = span(nearest(x)), a = span(active);
+      const s = span(nearest(x));
       hov.L.t = s.l; hov.R.t = s.r;
-      lean = Math.max(-9, Math.min(9, (x - (a.l + a.r) / 2) * 0.07));   // surface tension pulls toward the cursor
-      aimTab(active);
+      if (active >= 0){
+        const a = span(active);
+        lean = Math.max(-9, Math.min(9, (x - (a.l + a.r) / 2) * 0.07));   // surface tension pulls toward the cursor
+        aimTab(active);
+      } else kick();
     }
   });
   bar.addEventListener('pointerdown', e => {
@@ -1928,12 +2131,39 @@ function createLiquid(bar, { tabs, mark, colourFor = () => 'var(--ink)', onSelec
     aimTab(active);
   });
 
-  if (window.ResizeObserver) new ResizeObserver(snap).observe(bar);
+  const ro = window.ResizeObserver ? new ResizeObserver(snap) : null;
+  if (ro) ro.observe(bar);
   window.addEventListener('resize', snap);   // e.g. rotating the phone
   document.fonts && document.fonts.ready.then(snap);
-  liquid.style.setProperty('--lc', colourFor(active));
+  liquid.style.setProperty('--lc', colourFor(Math.max(0, active)));
   snap();
-  return { select, snap };
+  // For pickers inside forms that get rebuilt: stop watching the old element.
+  function destroy(){ if (ro) ro.disconnect(); window.removeEventListener('resize', snap); if (raf) cancelAnimationFrame(raf); }
+  return { select, snap, destroy };
+}
+
+// Person pickers (task form, rule form, to-do) as liquid glass. Their buttons keep the
+// existing .sel + person classes, so the form code reading them is unchanged.
+const PICK_COLOUR = { J:'var(--joshua)', A:'var(--amrit)', BOTH:'var(--both)', ALT:'var(--ink)', ANY:'var(--ink)' };
+function liquidPicker(group, onPick){
+  const tabs = [...group.querySelectorAll('.pbtn')];
+  group.classList.add('lq');
+  return createLiquid(group, {
+    tabs,
+    mark: (t, on) => {
+      t.classList.remove('sel', 'J', 'A', 'BOTH', 'ALT', 'ANY');
+      if (on) t.classList.add('sel', t.dataset.p);
+      t.setAttribute('aria-pressed', String(on));
+    },
+    colourFor: i => PICK_COLOUR[tabs[i].dataset.p] || 'var(--ink)',
+    onSelect: i => onPick && onPick(tabs[i].dataset.p),
+  });
+}
+// Pickers inside the task and rule forms are rebuilt with each render; destroy the old ones first.
+const formPickers = { week: [], rules: [], meals: [] };
+function attachPickers(kind, root){
+  formPickers[kind].forEach(p => p.destroy());
+  formPickers[kind] = [...root.querySelectorAll('.persongroup')].map(g => liquidPicker(g));
 }
 
 // Bottom bar: whose chores to show.
@@ -1945,15 +2175,29 @@ const pillBar = createLiquid(document.getElementById('pillBar'), {
 });
 // Header: This week / House rules.
 const headerTabs = createLiquid(document.querySelector('.brand .tabs'), {
-  tabs: [document.getElementById('tabWeek'), document.getElementById('tabTodo'), document.getElementById('tabRules')],
+  tabs: [document.getElementById('tabWeek'), document.getElementById('tabMeals'), document.getElementById('tabTodo')],
   mark: (t, on) => { t.classList.toggle('active', on); t.setAttribute('aria-selected', String(on)); },
   colourFor: () => 'var(--joshua)',
   onSelect: i => {
     if (i === 0){ setTab('week'); pillBar.snap(); }
-    else if (i === 1){ setTab('todo'); renderTodos(); pillBar.snap(); }
-    else { setTab('rules'); renderRules(); }
+    else if (i === 1){ setTab('meals'); renderMeals(); }
+    else { setTab('todo'); renderTodos(); pillBar.snap(); todoPicker.snap(); }
   },
 });
+// Liquid hover: track the pointer over any single glass button so its light follows it.
+const LIQUID_HOVER = '.rules-link, .addbtn, .btn-primary, .weeknav .navbtn, .todayonly, .iconbtn, .dinner-banner, .meal-row, .themeopt, .daycard .dayhead, .menu .signout, .yearchip, .balance, #weekLabel, .stat-card, .bars .col';
+function trackLiquidHover(e){
+  const el = e.target.closest && e.target.closest(LIQUID_HOVER);
+  if (!el) return;
+  const r = el.getBoundingClientRect();
+  el.style.setProperty('--hx', (e.clientX - r.left) + 'px');
+  el.style.setProperty('--hy', (e.clientY - r.top) + 'px');
+}
+document.addEventListener('pointermove', trackLiquidHover, { passive: true });
+document.addEventListener('pointerdown', trackLiquidHover, { passive: true });
+
+// House rules sits under Chores, so the header keeps Chores selected there; tapping it goes back to the week.
+document.getElementById('tabWeek').addEventListener('click', () => { if (currentTab === 'rules'){ setTab('week'); pillBar.snap(); } });
 // Stats sheet: Week / Month.
 const statsTabs = createLiquid(document.querySelector('.sheet-tabs'), {
   tabs: [document.getElementById('statsWeek'), document.getElementById('statsMonth')],
@@ -1987,10 +2231,12 @@ function wireTaskForm(container){
       const name = form.querySelector('.fname').value.trim();
       const minutes = parseInt(form.querySelector('.fmin').value, 10);
       if (!name || !minutes || minutes<=0){ form.querySelector('.fname').focus(); return; }
+      selPerson = form.querySelector('.pbtn.sel')?.dataset.p || selPerson;   // also catches a drag along the picker
       if (editingId){ editTask(editingId, { task:name, person:selPerson, minutes }); }
       else { addTask(dayDate, { task:name, person:selPerson, minutes }); }
     });
   });
+  attachPickers('week', container);
 }
 
 function renderWeek(){
@@ -2012,12 +2258,19 @@ function renderWeek(){
   const days = showToday ? todays : week.days;
   const totalTasks = days.reduce((a,d)=>a+visibleTasks(d).length,0);
   updateDock();
-  container.innerHTML = days.map(d=>dayCardHTML(week,d)).join('') +
+  container.innerHTML = dinnerBannerHTML(week) + days.map(d=>dayCardHTML(week,d)).join('') +
     `<div class="weekfoot"><span>${totalTasks} tasks ${showToday ? 'today' : 'this week'}</span>
      ${showToday
        ? '<button class="resetlink" id="showWeek">Show the whole week</button>'
-       : '<button class="resetlink" id="resetWeek">Uncheck this week</button>'}</div>`;
+       : '<button class="resetlink" id="resetWeek">Uncheck this week</button>'}</div>
+    <button type="button" class="rules-link" id="openRules">
+      <span class="rl-text"><span class="rl-title">House rules</span><span class="rl-sub">The chores that build each week</span></span>
+      <span class="chev" aria-hidden="true">›</span>
+    </button>`;
 
+  document.getElementById('openRules').addEventListener('click', () => { setTab('rules'); renderRules(); });
+  const banner = document.getElementById('dinnerBanner');
+  if (banner) banner.addEventListener('click', () => headerTabs.select(1));
   const showWeek = document.getElementById('showWeek');
   if (showWeek) showWeek.addEventListener('click', ()=> setTodayOnly(false));
   container.querySelectorAll('.dayhead').forEach(h=> h.addEventListener('click', ()=>{
@@ -2115,12 +2368,14 @@ function renderRules(){
       </div>`).join('');
     return `<div class="area-group"><h3>${escapeHTML(area)}</h3>${rows}</div>`;
   }).join('');
-  view.innerHTML = `<p class="rules-intro">These rules build every new week. Changes apply from next week, so this week's ticks stay as they are.</p>
+  view.innerHTML = `<button type="button" class="btn-text rules-back" id="rulesBack">‹ This week</button>
+    <p class="rules-intro">These rules build every new week. Changes apply from next week, so this week's ticks stay as they are.</p>
     <div class="rules-add">${editingRuleId==='new' ? ruleFormHTML(null) : '<button type="button" class="addbtn" id="addRule">+ Add chore</button>'}</div>
     ${cards}`;
 
   const add = document.getElementById('addRule');
   if (add) add.addEventListener('click', ()=>{ editingRuleId = 'new'; renderRules(); });
+  view.querySelector('#rulesBack').addEventListener('click', ()=>{ editingRuleId = null; setTab('week'); renderWeek(); pillBar.snap(); });
   view.querySelectorAll('.iconbtn.edit').forEach(b=> b.addEventListener('click', ()=>{ editingRuleId = b.dataset.rule; renderRules(); }));
   view.querySelectorAll('.iconbtn.del').forEach(b=> b.addEventListener('click', ()=> deleteRule(b.dataset.rule)));
   const form = view.querySelector('.ruleform');
@@ -2137,11 +2392,8 @@ function wireRuleForm(form){
     q('.rf-altdays-wrap').hidden = f!=='alt-days';
     q('.rf-first-wrap').hidden = who!=='ALT';
   }
-  form.querySelectorAll('.pbtn').forEach(btn=> btn.addEventListener('click', ()=>{
-    form.querySelectorAll('.pbtn').forEach(b=> b.classList.remove('sel','J','A','BOTH','ALT'));
-    btn.classList.add('sel', btn.dataset.p);
-    who = btn.dataset.p; sync();
-  }));
+  formPickers.rules.forEach(p => p.destroy());
+  formPickers.rules = [liquidPicker(q('.persongroup'), p => { who = p; sync(); })];
   q('.rf-freq').addEventListener('change', sync);
   sync();
   q('.rf-cancel').addEventListener('click', ()=>{ editingRuleId = null; renderRules(); renderWeek(); });
@@ -2254,10 +2506,243 @@ function renderTodos(){
 }
 document.getElementById('todoAddBtn').addEventListener('click', addTodo);
 document.getElementById('todoText').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); addTodo(); } });
-document.querySelectorAll('#todoWho .pbtn').forEach(b => b.addEventListener('click', () => {
-  todoWho = b.dataset.p;
-  document.querySelectorAll('#todoWho .pbtn').forEach(x => { x.classList.toggle('sel', x === b); ['ANY','J','A','BOTH'].forEach(p => x.classList.toggle(p, x === b && p === todoWho)); });
-}));
+const todoPicker = liquidPicker(document.getElementById('todoWho'), p => { todoWho = p; });
+
+/* ---------- meals: what's for dinner, the week's plan and the shopping list ---------- */
+const COOK_TEXT = { J: "Joshua's cooking", A: "Amrit's cooking", BOTH: 'Cooking together', ANY: '' };
+function mealDates(){ return DOWS.map((_, i) => addDays(mealWeekStart, i)); }
+function shortDay(date, opts){ return new Date(date + 'T00:00:00').toLocaleDateString('en-GB', opts || { weekday:'short', day:'numeric', month:'short' }); }
+async function saveMeal(date, meal){
+  if (meal) MEALS[date] = meal; else delete MEALS[date];
+  setSyncNote('Saving…');
+  try{ await store.setMeal(date, meal); setSyncNote(savedNote()); }
+  catch(e){ console.error(e); setSyncNote("Couldn't save. Check your connection."); }
+}
+
+// Reads a week's plan pasted from ChatGPT (or typed). A line that starts with a day fills that
+// day ("Monday: Chicken fajitas", "**Tue** – Pasta (pasta, tomatoes, basil)"); the lines under
+// it are ingredients ("- 2 peppers", "Ingredients: rice, peas"). A "Shopping list" heading ends it.
+const PLAN_DAY = { mon:0, tue:1, tues:1, wed:2, weds:2, thu:3, thur:3, thurs:3, fri:4, sat:5, sun:6 };
+function parsePlan(text){
+  const out = {};
+  let cur = null;
+  const splitList = s => s.split(/[,;]/).map(x => x.trim()).filter(Boolean);
+  for (const raw of text.split(/\r?\n/)){
+    const line = raw.replace(/[*_#>`]/g, '').trim();
+    if (!line) continue;
+    if (/^(shopping|grocery|groceries)\b/i.test(line)){ cur = null; continue; }
+    const m = line.match(/^(?:[-•\d.)\s]*)(mon|tues?|weds?|wed|thurs?|thu|fri|sat|sun)[a-z]*\b\.?\s*(?:\(.*?\)\s*)?[:\-–—|]*\s*(.*)$/i);
+    if (m){
+      cur = PLAN_DAY[m[1].toLowerCase()];
+      let name = m[2].replace(/^(dinner|tea|supper|meal)\s*[:\-–—]\s*/i, '').trim();
+      let ingredients = [];
+      const withIng = name.match(/^(.*?)\s*(?:[(\[](.+)[)\]]\s*$|[-–—|]\s*ingredients?\s*[:\-–—]?\s*(.+)$|\bingredients?\s*[:\-–—]\s*(.+)$)/i);
+      if (withIng){ name = withIng[1].replace(/[\s\-–—:|]+$/, ''); ingredients = splitList(withIng[2] || withIng[3] || withIng[4]); }
+      out[cur] = { name, ingredients };
+      continue;
+    }
+    if (cur === null) continue;
+    const item = line.replace(/^(?:[-•*]\s*|\d+[.)]\s+)/, '').trim();   // drop bullets and "1." numbering, keep quantities like "4 chicken thighs"
+    let mm;
+    if ((mm = item.match(/^(dinner|meal|tea|supper)\s*[:\-–—]\s*(.+)$/i))) out[cur].name = mm[2].trim();
+    else if ((mm = item.match(/^ingredients?\s*[:\-–—]?\s*(.*)$/i))) out[cur].ingredients.push(...splitList(mm[1]));
+    else if (!out[cur].name) out[cur].name = item;
+    else out[cur].ingredients.push(item);
+  }
+  Object.keys(out).forEach(k => { if (!out[k].name && !out[k].ingredients.length) delete out[k]; });
+  return out;
+}
+
+function tonightHTML(){
+  const today = todayStr();
+  if (mealWeekStart !== mondayOf(today)) return '';
+  const m = MEALS[today], next = MEALS[addDays(today, 1)];
+  const cook = m && COOK_TEXT[m.cook] ? `<span class="who-badge ${m.cook === 'BOTH' ? 'BOTH' : m.cook}">${COOK_TEXT[m.cook]}</span>` : '';
+  return `<div class="rule-card tonight">
+    <div class="tonight-label">Tonight · ${shortDay(today, { weekday:'long', day:'numeric', month:'short' })}</div>
+    ${m && m.name
+      ? `<div class="tonight-meal">${escapeHTML(m.name)}</div><div class="tonight-meta">${cook}${m.ingredients && m.ingredients.length ? `<span>${m.ingredients.length} ingredients</span>` : ''}</div>`
+      : `<div class="tonight-meal muted">Nothing planned yet</div><button type="button" class="btn-primary" data-plan="${today}">Plan tonight's dinner</button>`}
+    ${next && next.name ? `<div class="tonight-next">Tomorrow: <strong>${escapeHTML(next.name)}</strong></div>` : ''}
+  </div>`;
+}
+function mealRowHTML(date){
+  const m = MEALS[date];
+  const isToday = date === todayStr();
+  if (editingMealDate === date){
+    const cook = (m && m.cook) || 'ANY';
+    const opt = (p, label) => `<button type="button" class="pbtn ${p === cook ? 'sel ' + p : ''}" data-p="${p}">${label}</button>`;
+    return `<li class="meal-edit" data-date="${date}">
+      <div class="meal-edit-day">${shortDay(date, { weekday:'long', day:'numeric', month:'short' })}</div>
+      <input type="text" class="me-name" placeholder="What's for dinner?" value="${escapeAttr((m && m.name) || '')}" maxlength="80">
+      <div class="lbl">Who's cooking</div>
+      <div class="persongroup">${opt('ANY','Anyone')}${opt('J','Joshua')}${opt('A','Amrit')}${opt('BOTH','Both')}</div>
+      <label class="lbl">Ingredients <span class="hint">one per line</span>
+        <textarea class="me-ing" rows="4" placeholder="Chicken thighs&#10;2 peppers&#10;Tortillas">${escapeHTML(((m && m.ingredients) || []).map(i => i.text).join('\n'))}</textarea></label>
+      <label class="lbl">Notes or recipe link<input type="text" class="me-notes" value="${escapeAttr((m && m.notes) || '')}" placeholder="Optional"></label>
+      <div class="formbtns">
+        ${m ? '<button type="button" class="btn-text me-clear">Remove</button>' : ''}
+        <button type="button" class="btn-text me-cancel">Cancel</button>
+        <button type="button" class="btn-primary me-save">Save</button>
+      </div>
+    </li>`;
+  }
+  const cook = m && COOK_TEXT[m.cook] ? `<span class="who-badge ${m.cook}">${PERSON_NAME[m.cook]}</span>` : '';
+  const count = m && m.ingredients && m.ingredients.length ? `<span class="taskmin">${m.ingredients.length} ingredients</span>` : '';
+  return `<li><button type="button" class="meal-row ${isToday ? 'is-today' : ''}" data-date="${date}">
+    <span class="meal-day"><span class="md-name">${shortDay(date, { weekday:'short' })}</span><span class="md-date mono">${shortDay(date, { day:'numeric' })}</span></span>
+    <span class="meal-main">
+      ${m && m.name ? `<span class="meal-name">${escapeHTML(m.name)}</span>` : '<span class="meal-name muted">Plan dinner</span>'}
+      ${cook || count ? `<span class="taskmeta">${cook}${count}</span>` : ''}
+    </span>
+    <span class="chev" aria-hidden="true">›</span>
+  </button></li>`;
+}
+// Ingredients still to buy for the rest of the week (the whole week when looking ahead),
+// merged across meals so "Onions" for two dinners shows once.
+function shoppingItems(){
+  const today = todayStr();
+  const dates = mealDates().filter(d => mealWeekStart !== mondayOf(today) || d >= today);
+  const map = new Map();
+  dates.forEach(date => {
+    const m = MEALS[date];
+    if (!m || !m.ingredients) return;
+    m.ingredients.forEach((ing, idx) => {
+      const key = ing.text.trim().toLowerCase();
+      if (!key) return;
+      if (!map.has(key)) map.set(key, { text: ing.text.trim(), meals: [], refs: [] });
+      const e = map.get(key);
+      if (m.name && !e.meals.includes(m.name)) e.meals.push(m.name);
+      e.refs.push({ date, idx, got: !!ing.got });
+    });
+  });
+  return [...map.values()].map(e => ({ ...e, got: e.refs.every(r => r.got) }));
+}
+function shoppingHTML(){
+  const items = shoppingItems();
+  const toBuy = items.filter(i => !i.got), bought = items.filter(i => i.got);
+  const row = (i, n) => `<li class="taskrow ${i.got ? 'done' : ''}">
+    <input type="checkbox" class="check" data-shop="${n}" ${i.got ? 'checked' : ''} aria-label="Bought ${escapeAttr(i.text)}">
+    <div class="tasktext"><div class="taskname">${escapeHTML(i.text)}</div>${i.meals.length ? `<div class="taskmeta"><span class="taskmin">For ${escapeHTML(i.meals.join(', '))}</span></div>` : ''}</div>
+  </li>`;
+  const ordered = [...toBuy, ...bought];
+  return `<div class="daycard shop">
+    <div class="dayhead shop-head">
+      <div><div class="dname">Shopping list</div><div class="ddate">${toBuy.length ? `${toBuy.length} to buy` : items.length ? 'All bought' : 'Add ingredients to meals and they show up here'}</div></div>
+      ${toBuy.length ? '<button type="button" class="btn-text shop-copy">Copy</button>' : ''}
+    </div>
+    ${ordered.length ? `<ul class="tasks">${toBuy.map(i => row(i, ordered.indexOf(i))).join('')}
+      ${bought.length ? `<li class="addrow"><button type="button" class="resetlink shop-bought">${showBought ? 'Hide' : 'Show'} ${bought.length} bought</button></li>` : ''}
+      ${showBought ? bought.map(i => row(i, ordered.indexOf(i))).join('') : ''}</ul>` : ''}
+  </div>`;
+}
+function pasteHTML(){
+  if (!pastingPlan) return `<button type="button" class="addbtn paste-open">Paste a plan from ChatGPT</button>`;
+  return `<div class="rule-card paste-card">
+    <div class="dname">Paste a plan</div>
+    <p class="rules-intro">Paste the week from ChatGPT. Each line starting with a day fills that day, and the bullet points under it become ingredients. It fills ${escapeHTML(fmtRange({ week_start: mealWeekStart, week_end: addDays(mealWeekStart, 6) }))}.</p>
+    <textarea id="planText" rows="8" placeholder="Monday: Chicken fajitas&#10;- chicken thighs&#10;- peppers&#10;Tuesday: Spaghetti bolognese (mince, spaghetti, passata)"></textarea>
+    <div class="plan-preview" id="planPreview"></div>
+    <div class="formbtns"><button type="button" class="btn-text paste-cancel">Cancel</button><button type="button" class="btn-primary paste-apply">Fill the week</button></div>
+  </div>`;
+}
+function renderMeals(){
+  if (!mealWeekStart) mealWeekStart = mondayOf(todayStr());
+  const view = document.getElementById('mealsView');
+  const isThisWeek = mealWeekStart === mondayOf(todayStr());
+  view.innerHTML = `${tonightHTML()}
+    <div class="weeknav meal-weekbar">
+      <button class="navbtn" id="mealPrev" aria-label="Previous week">‹</button>
+      <div class="weeklabel"><div class="range">${escapeHTML(fmtRange({ week_start: mealWeekStart, week_end: addDays(mealWeekStart, 6) }))}</div>
+        <div class="rot">${isThisWeek ? 'This week' : mealWeekStart > mondayOf(todayStr()) ? 'Coming up' : 'Past week'}</div></div>
+      <button class="navbtn" id="mealNext" aria-label="Next week">›</button>
+    </div>
+    <div class="daycard meal-days"><ul class="tasks">${mealDates().map(mealRowHTML).join('')}</ul></div>
+    ${pasteHTML()}
+    ${shoppingHTML()}`;
+
+  view.querySelector('#mealPrev').addEventListener('click', () => { mealWeekStart = addDays(mealWeekStart, -7); editingMealDate = null; renderMeals(); });
+  view.querySelector('#mealNext').addEventListener('click', () => { mealWeekStart = addDays(mealWeekStart, 7); editingMealDate = null; renderMeals(); });
+  view.querySelectorAll('.meal-row, [data-plan]').forEach(b => b.addEventListener('click', () => {
+    editingMealDate = b.dataset.date || b.dataset.plan; renderMeals();
+    const input = view.querySelector('.me-name'); if (input) input.focus();
+  }));
+
+  const ed = view.querySelector('.meal-edit');
+  formPickers.meals = (formPickers.meals || []).filter(p => { p.destroy(); return false; });
+  if (ed){
+    const date = ed.dataset.date;
+    formPickers.meals = [liquidPicker(ed.querySelector('.persongroup'))];
+    const q = s => ed.querySelector(s);
+    q('.me-cancel').addEventListener('click', () => { editingMealDate = null; renderMeals(); });
+    const clear = q('.me-clear');
+    if (clear) clear.addEventListener('click', () => { editingMealDate = null; saveMeal(date, null); renderMeals(); renderWeek(); });
+    q('.me-save').addEventListener('click', () => {
+      const name = q('.me-name').value.trim();
+      const before = (MEALS[date] && MEALS[date].ingredients) || [];
+      const ingredients = q('.me-ing').value.split('\n').map(s => s.replace(/^[-•*\s]+/, '').trim()).filter(Boolean)
+        .map(text => ({ text, got: !!(before.find(b => b.text.toLowerCase() === text.toLowerCase()) || {}).got }));
+      const cook = ed.querySelector('.pbtn.sel')?.dataset.p || 'ANY';
+      const notes = q('.me-notes').value.trim();
+      editingMealDate = null;
+      saveMeal(date, name || ingredients.length ? { name, cook, ingredients, notes } : null);
+      renderMeals(); renderWeek();
+    });
+    q('.me-name').addEventListener('keydown', e => { if (e.key === 'Enter') q('.me-save').click(); });
+  }
+
+  const open = view.querySelector('.paste-open');
+  if (open) open.addEventListener('click', () => { pastingPlan = true; renderMeals(); view.querySelector('#planText').focus(); });
+  const planText = view.querySelector('#planText');
+  if (planText){
+    const preview = () => {
+      const plan = parsePlan(planText.value);
+      const days = Object.keys(plan).sort().map(k => `<li><strong>${DOW_NAME[DOWS[k]].slice(0,3)}</strong> ${escapeHTML(plan[k].name || '—')}${plan[k].ingredients.length ? ` <span class="taskmin">· ${plan[k].ingredients.length} ingredients</span>` : ''}</li>`);
+      view.querySelector('#planPreview').innerHTML = days.length ? `<ul>${days.join('')}</ul>` : '';
+    };
+    planText.addEventListener('input', preview);
+    view.querySelector('.paste-cancel').addEventListener('click', () => { pastingPlan = false; renderMeals(); });
+    view.querySelector('.paste-apply').addEventListener('click', () => {
+      const plan = parsePlan(planText.value);
+      const keys = Object.keys(plan);
+      if (!keys.length){ planText.focus(); return; }
+      keys.forEach(k => {
+        const date = addDays(mealWeekStart, +k), old = MEALS[date] || {};
+        saveMeal(date, { name: plan[k].name, cook: old.cook || 'ANY', notes: old.notes || '', ingredients: plan[k].ingredients.map(text => ({ text, got: false })) });
+      });
+      pastingPlan = false; renderMeals(); renderWeek();
+    });
+  }
+
+  const items = [...shoppingItems().filter(i => !i.got), ...shoppingItems().filter(i => i.got)];
+  view.querySelectorAll('[data-shop]').forEach(cb => cb.addEventListener('change', () => {
+    const item = items[+cb.dataset.shop];
+    const got = !item.got;
+    [...new Set(item.refs.map(r => r.date))].forEach(date => {
+      const m = MEALS[date];
+      const ingredients = m.ingredients.map(ing => ing.text.trim().toLowerCase() === item.text.toLowerCase() ? { ...ing, got } : ing);
+      saveMeal(date, { ...m, ingredients });
+    });
+    renderMeals();
+  }));
+  const bought = view.querySelector('.shop-bought');
+  if (bought) bought.addEventListener('click', () => { showBought = !showBought; renderMeals(); });
+  const copy = view.querySelector('.shop-copy');
+  if (copy) copy.addEventListener('click', async () => {
+    const text = shoppingItems().filter(i => !i.got).map(i => i.text).join('\n');
+    try{ await navigator.clipboard.writeText(text); copy.textContent = 'Copied'; }
+    catch(e){ copy.textContent = "Couldn't copy"; }
+    setTimeout(() => { copy.textContent = 'Copy'; }, 1500);
+  });
+}
+// A one-line "what's for dinner" on the Chores tab, for a quick answer without switching tabs.
+function dinnerBannerHTML(week){
+  if (week.week_start !== mondayOf(todayStr())) return '';
+  const m = MEALS[todayStr()];
+  if (!m || !m.name) return '';
+  return `<button type="button" class="dinner-banner" id="dinnerBanner"><span class="db-label">Tonight</span>
+    <span class="db-meal">${escapeHTML(m.name)}</span>${COOK_TEXT[m.cook] ? `<span class="db-cook">${COOK_TEXT[m.cook]}</span>` : ''}<span class="chev" aria-hidden="true">›</span></button>`;
+}
 
 /* ---------- tabs / theme ---------- */
 function setTab(tab){
@@ -2270,16 +2755,23 @@ function setTab(tab){
   show('yearRow', tab==='week');
   show('weekNavRow', tab==='week');
   show('balanceRow', tab==='week');
+  show('mealsView', tab==='meals');
   show('todoView', tab==='todo');
   show('rulesView', tab==='rules');
-  show('dock', tab!=='rules');               // the person switcher also filters the to-do list
+  show('dock', tab==='week' || tab==='todo');  // the person switcher also filters the to-do list
   show('todayOnlyBtn', tab==='week');
-  headerTabs.select({ week:0, todo:1, rules:2 }[tab], { quiet: true });
-  measureHeader();   // the to-do and rules tabs have a shorter header
+  headerTabs.select({ week:0, meals:1, todo:2, rules:0 }[tab], { quiet: true });   // House rules lives under Chores
+  measureHeader();   // the other tabs have a shorter header
+}
+// "iOS Dark" is the iOS theme locked to dark mode; plain "iOS" follows the phone's setting.
+function applyThemeAttr(t){
+  document.documentElement.setAttribute('data-theme', t === 'ios-dark' ? 'ios' : t);
+  if (t === 'ios-dark') document.documentElement.setAttribute('data-ios', 'dark');
+  else document.documentElement.removeAttribute('data-ios');
 }
 function setTheme(t){
   theme = t;
-  document.documentElement.setAttribute('data-theme', t);
+  applyThemeAttr(t);
   markActiveTheme();
   syncThemeColor();
   saveTheme();
@@ -2290,8 +2782,9 @@ function setTheme(t){
 function syncThemeColor(){
   const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
   if (bg) document.querySelector('meta[name="theme-color"]').setAttribute('content', bg);
-  document.querySelector('link[rel="apple-touch-icon"]').setAttribute('href', `icons/touch-${theme}.png`);
-  document.querySelector('link[rel="icon"]').setAttribute('href', `icons/favicon-${theme}.png`);
+  const icon = theme === 'ios-dark' ? 'ios' : theme;
+  document.querySelector('link[rel="apple-touch-icon"]').setAttribute('href', `icons/touch-${icon}.png`);
+  document.querySelector('link[rel="icon"]').setAttribute('href', `icons/favicon-${icon}.png`);
 }
 function markActiveTheme(){
   document.querySelectorAll('.themeopt').forEach(b=> b.classList.toggle('active', b.dataset.t===theme));
@@ -2353,6 +2846,7 @@ measureHeader();
 function renderAll(){
   renderWeek();
   if (currentTab==='rules') renderRules();
+  if (currentTab==='meals') renderMeals();
   renderTodos();   // cheap; also keeps the tab's open count current
   if (!document.getElementById('statsSheet').hidden) renderStats();
 }
@@ -2385,6 +2879,7 @@ function checkNewDay(){
   const day = todayStr();
   if (day === lastDay) return;
   const wasOnThisWeek = SCHEDULE.weeks[currentWeekIdx] && SCHEDULE.weeks[currentWeekIdx].week_start === mondayOf(lastDay);
+  if (mealWeekStart === mondayOf(lastDay)) mealWeekStart = mondayOf(day);   // meals follow into the new week too
   lastDay = day;
   toggledDays = {};                    // re-collapse the days that are now in the past
   if (ensureWeeksAhead()) saveSchedule();
