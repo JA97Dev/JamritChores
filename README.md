@@ -24,10 +24,9 @@ One-time setup in the [Firebase console](https://console.firebase.google.com):
    email address** (any field will do, e.g. `name: "Joshua"`). The first of
    these accounts to sign in names your household and the board is copied
    into it; the other joins it on their next sign-in.
-7. **Let someone create households** (optional): add a document to a
-   `creators` collection whose Document ID is their Google email. They get
-   "+ New household" in the settings menu, and if they aren't in a household
-   yet they're asked to name one when they first sign in.
+
+Anyone else who signs in is asked to create a household of their own or to
+join one with an invite link.
 
 ## Households
 
@@ -37,11 +36,17 @@ email with a role: `owner` (manages the household), `editor` (can change the
 board) or `viewer` (read-only). `firestore.rules` enforces this on the server.
 
 Owners manage people from the settings menu (tap "The Board", then People):
-add someone by their Google email with a role, change roles, or remove them.
-Adding the email is the invite: the person joins by signing in with that
-account. A household has up to 8 people and always keeps at least one owner.
-Anyone can leave. If you're in more than one household, the settings menu
-lets you switch between them.
+- **Invite with a link**: pick Can edit or View only, create a link and share
+  it. Anyone who opens it can join with that role for 7 days, unless an owner
+  cancels it first. Links are stored at `invites/{code}`; a code can be opened
+  by someone who knows it, but the codes can't be listed.
+- **Add by email**: the person joins by signing in with that Google account.
+- Change anyone's role, or remove them.
+
+A household has up to 8 people and always keeps at least one owner. Anyone
+can leave, and anyone can start a new household from the settings menu. If
+you're in more than one household, the settings menu lets you switch between
+them.
 
 The original board at `board/*` is left untouched as a backup once it has been
 copied into `households/home`. Owners can rename the household from the

@@ -2,17 +2,23 @@ rules_version = '2';
 
 // Households: each household has its own board, and only its members can open it.
 //
-//   households/{id}           name, members { email: 'owner' | 'editor' | 'viewer' }, memberEmails [email]
+//   households/{id}           name, members { email: 'owner' | 'editor' | 'viewer' }, memberEmails [email],
+//                             invites { code: { role, expiresAt } } (the links that are still open)
 //   households/{id}/board/*   schedule, checked, rules, todos, meals
+//   invites/{code}            hid, name, role, createdBy, expiresAt
 //
-// Owners manage the household (name, members and roles). Editors can change the board.
-// Viewers can only look. Anyone can leave. Emails are lower-case Google account addresses;
-// adding someone's email is the invite: they join by signing in with that account.
+// Owners manage the household (name, members, roles and invite links). Editors can change
+// the board. Viewers can only look. Anyone can leave. Emails are lower-case Google account
+// addresses.
 //
-// Creating a new household is limited to accounts listed in "creators" (add a document
-// whose ID is their email). The original two-person "members" list still works during
-// the move to households: those accounts can read the old board, create the
-// "home" household from it, and add themselves to it as owners.
+// Anyone signed in can create a household of their own. People join one in two ways:
+//   - an owner adds their email, and they sign in with that account;
+//   - they open an invite link: knowing the code lets them read that one invite and add
+//     themselves with its role, until it expires or an owner cancels it.
+//
+// The original two-person "members" list still works during the move to households:
+// those accounts can read the old board, create the "home" household from it, and add
+// themselves to it as owners.
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() {
@@ -23,9 +29,6 @@ service cloud.firestore {
     }
     function legacyMember() {
       return signedIn() && exists(/databases/$(database)/documents/members/$(request.auth.token.email));
-    }
-    function creator() {
-      return signedIn() && exists(/databases/$(database)/documents/creators/$(request.auth.token.email));
     }
     function roleIn(hid) {
       return get(/databases/$(database)/documents/households/$(hid)).data.members.get(email(), null);
@@ -46,31 +49,48 @@ service cloud.firestore {
         && request.resource.data.members.values().hasAny(['owner'])
         && membersConsistent();
     }
-    // The change only touches the signed-in person's own entry in members.
-    function onlyMyEntry() {
-      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'memberEmails'])
+    // The change only touches the signed-in person's own entry in members
+    // (plus, when joining with a link, which code they used).
+    function onlyMyEntry(extra) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'memberEmails'].concat(extra))
         && request.resource.data.members.diff(resource.data.members).affectedKeys().hasOnly([email()]);
+    }
+    // The invite named in joinedWith is still open for this household and gives this role.
+    function inviteLetsMeJoin(hid) {
+      let code = request.resource.data.joinedWith;
+      let invite = get(/databases/$(database)/documents/invites/$(code)).data;
+      return code is string && code in resource.data.get('invites', {})
+        && invite.hid == hid && invite.role == request.resource.data.members[email()]
+        && invite.expiresAt > request.time;
     }
 
     match /households/{hid} {
       allow read: if signedIn() && (email() in resource.data.memberEmails
                                     || (legacyMember() && hid == 'home'));
 
-      allow create: if (creator() || (legacyMember() && hid == 'home'))
+      // Anyone can start a household, with only themselves in it, as its owner.
+      allow create: if signedIn()
+                    && request.resource.data.members.keys().hasOnly([email()])
                     && request.resource.data.members[email()] == 'owner'
                     && validMembers() && validName();
 
-      // Owners can rename the household and add, remove or change anyone's role.
+      // Owners can rename the household, add, remove or change anyone's role, and open or
+      // cancel invite links.
       allow update: if signedIn() && resource.data.members.get(email(), null) == 'owner'
                     && validMembers() && validName();
 
+      // Join with an invite link: add only yourself, with the role the link gives.
+      allow update: if signedIn() && !(email() in resource.data.members)
+                    && onlyMyEntry(['joinedWith']) && inviteLetsMeJoin(hid)
+                    && validMembers();
+
       // Anyone can leave a household they're in (as long as an owner is left).
       allow update: if signedIn() && resource.data.members.get(email(), null) != null
-                    && onlyMyEntry() && !(email() in request.resource.data.members)
+                    && onlyMyEntry([]) && !(email() in request.resource.data.members)
                     && validMembers();
 
       // One-time join for the original two members: add yourself to home as an owner.
-      allow update: if legacyMember() && hid == 'home' && onlyMyEntry()
+      allow update: if legacyMember() && hid == 'home' && onlyMyEntry([])
                     && request.resource.data.members[email()] == 'owner'
                     && validMembers();
 
@@ -82,6 +102,19 @@ service cloud.firestore {
       }
     }
 
+    // Invite links. Anyone signed in can open one whose code they know (but can't list
+    // them); only the household's owners can create or cancel them. They last up to 7 days.
+    match /invites/{code} {
+      allow get: if signedIn();
+      allow create: if signedIn() && code.size() >= 10
+                    && roleIn(request.resource.data.hid) == 'owner'
+                    && request.resource.data.keys().hasOnly(['hid', 'name', 'role', 'createdBy', 'expiresAt'])
+                    && request.resource.data.role in ['editor', 'viewer']
+                    && request.resource.data.expiresAt is timestamp
+                    && request.resource.data.expiresAt < request.time + duration.value(8, 'd');
+      allow delete: if signedIn() && roleIn(resource.data.hid) == 'owner';
+    }
+
     // The original shared board, from before households. Kept working until everyone's
     // phone has picked up the household version; the app copies it into home.
     match /board/{docId} {
@@ -89,9 +122,6 @@ service cloud.firestore {
     }
 
     match /members/{email} {
-      allow read: if request.auth != null && request.auth.token.email == email;
-    }
-    match /creators/{email} {
       allow read: if request.auth != null && request.auth.token.email == email;
     }
   }
